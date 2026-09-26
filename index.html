@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meu Cinema & Séries - Catalog Player</title>
+  <title>Meu Cinema - Catalog Player</title>
   
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -26,154 +26,146 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    body { background-color: #0f0f0f; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .glass { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    body { background-color: #0d0d0f; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .glass { background: rgba(18, 18, 22, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
 
-  <!-- TOP HEADER -->
-  <header class="sticky top-0 z-40 border-b border-zinc-800/80 glass px-4 py-3 sm:px-8 flex items-center justify-between">
+  <!-- TOP HEADER CLEAN -->
+  <header class="sticky top-0 z-40 border-b border-zinc-800/50 glass px-4 py-3.5 sm:px-8 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/30">
-        <i class="fa-solid fa-play text-sm"></i>
+      <div class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white font-black text-base shadow-md shadow-brand-500/20">
+        <i class="fa-solid fa-play text-xs"></i>
       </div>
       <div>
-        <h1 class="font-bold text-lg leading-none tracking-tight text-white">Meu Cinema</h1>
-        <p class="text-[11px] text-zinc-400 font-medium flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Sincronizado na Nuvem
-        </p>
+        <h1 class="font-bold text-base leading-none tracking-tight text-white">Meu Cinema</h1>
       </div>
     </div>
 
-    <div class="flex items-center gap-2 sm:gap-3">
-      <button onclick="openCategoryModal()" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg border border-zinc-700 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 transition flex items-center gap-1.5 cursor-pointer">
-        <i class="fa-solid fa-tags text-zinc-400"></i>
+    <div class="flex items-center gap-2">
+      <button onclick="openCategoryModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-zinc-800/60 hover:bg-zinc-800 text-zinc-300 border border-zinc-700/40 transition flex items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-layer-group text-zinc-400"></i>
         <span>Categorias</span>
       </button>
 
-      <button onclick="openModal()" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 transition flex items-center gap-1.5 cursor-pointer">
-        <i class="fa-solid fa-plus"></i>
-        <span>Adicionar Título</span>
+      <button onclick="openModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 transition flex items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-plus text-xs"></i>
+        <span>Adicionar</span>
       </button>
     </div>
   </header>
 
   <!-- MAIN CATALOG -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
-    <!-- SEARCH & FILTERS -->
-    <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+    
+    <!-- BARRA DE BUSCA E FILTROS INTEGRADA -->
+    <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-zinc-800/40 pb-4">
       <div class="relative flex-1 max-w-md">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
-        <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar filme, série ou anime..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+        <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar filme, série ou canal..." class="w-full bg-zinc-900/80 border border-zinc-800/80 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition">
       </div>
-      <div id="filterButtonsContainer" class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1">
+      <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5">
         <!-- Generated Dynamically -->
       </div>
     </div>
 
-    <!-- CARDS GRID -->
-    <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <!-- CARDS GRID CLEAN -->
+    <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5">
       <!-- Generated Dynamically -->
     </div>
 
     <!-- EMPTY STATE -->
-    <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-3">
-      <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 text-2xl">
+    <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-2">
+      <div class="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 text-lg">
         <i class="fa-solid fa-film"></i>
       </div>
-      <p class="text-zinc-400 font-medium text-sm">Nenhum título encontrado.</p>
-      <p class="text-xs text-zinc-600 max-w-xs">Adicione títulos com seus links de API para assistir em qualquer dispositivo.</p>
+      <p class="text-zinc-400 font-medium text-xs">Nenhum título encontrado.</p>
     </div>
   </main>
 
   <!-- CATEGORY MANAGEMENT MODAL -->
   <div id="categoryModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
-      <button onclick="closeCategoryModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg cursor-pointer">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeCategoryModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <h3 class="text-lg font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-tags text-brand-500"></i>
+      <h3 class="text-sm font-bold text-white flex items-center gap-2">
+        <i class="fa-solid fa-layer-group text-brand-500"></i>
         <span>Gerenciar Categorias</span>
       </h3>
 
       <div class="flex gap-2">
-        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: Documentário)" class="flex-1 bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
-        <button onclick="addCategory()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow transition cursor-pointer">
+        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: Esporte, Animes)" class="flex-1 bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+        <button onclick="addCategory()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow transition cursor-pointer">
           Adicionar
         </button>
       </div>
 
-      <div class="space-y-2 pt-2">
-        <label class="block text-xs font-semibold text-zinc-400">Categorias Atuais</label>
-        <div id="categoryList" class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+      <div class="space-y-1.5 pt-1">
+        <label class="block text-[11px] font-semibold text-zinc-400">Categorias Atuais</label>
+        <div id="categoryList" class="max-h-48 overflow-y-auto space-y-1 pr-1">
           <!-- Dynamically populated -->
         </div>
       </div>
 
       <div class="flex justify-end pt-2">
-        <button onclick="closeCategoryModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Fechar</button>
+        <button onclick="closeCategoryModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Fechar</button>
       </div>
     </div>
   </div>
 
   <!-- ADD/EDIT ITEM MODAL -->
   <div id="modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg cursor-pointer">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <h3 id="modalTitle" class="text-lg font-bold text-white">Adicionar Novo Título</h3>
+      <h3 id="modalTitle" class="text-sm font-bold text-white">Adicionar Título</h3>
 
-      <form id="itemForm" onsubmit="saveItem(event)" class="space-y-4">
+      <form id="itemForm" onsubmit="saveItem(event)" class="space-y-3">
         <input type="hidden" id="itemId">
 
         <div>
-          <label class="block text-xs font-semibold text-zinc-400 mb-1">Título</label>
-          <input type="text" id="titleInput" required placeholder="Ex: Attack on Titan" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título</label>
+          <input type="text" id="titleInput" required placeholder="Ex: Disney Plus, Attack on Titan" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo / Categoria</label>
-            <select id="typeInput" onchange="toggleEpisodeField()" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Categoria</label>
+            <select id="typeInput" onchange="toggleEpisodeField()" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
               <!-- Dynamically populated categories -->
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-zinc-400 mb-1">URL da Capa (Opcional)</label>
-            <input type="url" id="bannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">URL da Capa (Opcional)</label>
+            <input type="url" id="bannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
           </div>
         </div>
 
-        <!-- CAMPO DE ANOTAÇÃO MANUAL DE TEMPORADA / PROGRESSO -->
         <div id="noteContainer" class="hidden">
-          <label class="block text-xs font-semibold text-zinc-400 mb-1">Anotação da Temporada / Progresso (Opcional)</label>
-          <input type="text" id="noteInput" placeholder="Ex: Temporada 2" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Anotação (Opcional)</label>
+          <input type="text" id="noteInput" placeholder="Ex: Temporada 2" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
         </div>
 
-        <!-- SINGLE API LINK / IFRAME -->
         <div id="singleApiContainer">
-          <label class="block text-xs font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
-          <textarea id="apiInput" rows="3" placeholder="Cole aqui o <iframe src='https://...'> ou a URL direta da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
+          <textarea id="apiInput" rows="3" placeholder="Cole o <iframe src='https://...'> ou a URL da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
-        <!-- MULTI EPISODES CONTAINER (FOR SERIES/ANIMES/ETC) -->
         <div id="episodesContainer" class="hidden space-y-2">
-          <label class="block text-xs font-semibold text-zinc-400">Episódios (1 Link ou iframe por linha)</label>
-          <textarea id="episodesInput" rows="5" placeholder="Cole aqui o seu <iframe src='...'></iframe> completo" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
-          <p class="text-[10px] text-zinc-500">Você pode colar o &lt;iframe&gt; completo da API aqui sem se preocupar.</p>
+          <label class="block text-[11px] font-semibold text-zinc-400">Episódios (1 por linha)</label>
+          <textarea id="episodesInput" rows="4" placeholder="Cole o <iframe src='...'></iframe> completo" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 cursor-pointer">Salvar na Nuvem</button>
+          <button type="button" onclick="closeModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 cursor-pointer">Salvar</button>
         </div>
       </form>
     </div>
@@ -181,7 +173,7 @@
 
   <!-- PLAYER OVERLAY LAYER -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black hidden flex-col">
-    <div id="playerHeader" class="absolute top-3 right-3 z-50 flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 p-2 rounded-xl backdrop-blur-md shadow-2xl">
+    <div id="playerHeader" class="absolute top-3 right-3 z-50 flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 p-1.5 rounded-xl backdrop-blur-md shadow-2xl">
       <div class="hidden sm:block px-2 text-left">
         <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[150px]">...</h2>
         <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
@@ -190,7 +182,7 @@
       <select id="episodeSelect" onchange="changeEpisode(this.value)" class="hidden bg-zinc-800 border border-zinc-700 text-xs text-zinc-200 rounded-lg px-2 py-1 focus:outline-none">
       </select>
 
-      <button onclick="closePlayer()" title="Fechar Player" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+      <button onclick="closePlayer()" title="Fechar Player" class="px-3 py-1 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
         <span>Sair</span>
       </button>
@@ -218,8 +210,25 @@
     const categoriesRef = db.ref('categories');
 
     let catalog = [];
-    let categories = ['Filme', 'Série', 'Anime'];
+    let categories = ['Filme', 'Série', 'Anime', 'Esporte'];
     let currentFilter = 'ALL';
+
+    // GERADOR DE GRADIENTE ELEGANTE PARA CAPAS SEM IMAGEM
+    const gradientPairs = [
+      'from-slate-900 to-zinc-800',
+      'from-zinc-900 to-stone-900',
+      'from-neutral-900 to-red-950',
+      'from-red-950 to-zinc-900',
+      'from-zinc-900 to-indigo-950',
+      'from-zinc-900 to-blue-950'
+    ];
+
+    function getCardGradient(id) {
+      let hash = 0;
+      for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+      const idx = Math.abs(hash) % gradientPairs.length;
+      return gradientPairs[idx];
+    }
 
     // ESCUTA EM TEMPO REAL CATEGORIAS
     categoriesRef.on('value', (snapshot) => {
@@ -227,7 +236,7 @@
       if (data && Array.isArray(data)) {
         categories = data;
       } else {
-        categories = ['Filme', 'Série', 'Anime'];
+        categories = ['Filme', 'Série', 'Anime', 'Esporte'];
         categoriesRef.set(categories);
       }
       renderCategoryUI();
@@ -250,9 +259,7 @@
       return raw.trim();
     }
 
-    // GERENCIAMENTO DE CATEGORIAS
     function renderCategoryUI() {
-      // Renderiza Filtros no Topo
       const container = document.getElementById('filterButtonsContainer');
       container.innerHTML = '';
 
@@ -260,8 +267,8 @@
       allBtn.onclick = () => setFilter('ALL');
       allBtn.id = 'filter-ALL';
       allBtn.className = currentFilter === 'ALL'
-        ? "px-3 py-1.5 rounded-lg text-xs font-medium border border-brand-500 bg-brand-500/10 text-brand-500 whitespace-nowrap"
-        : "px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 whitespace-nowrap";
+        ? "px-3 py-1 rounded-lg text-xs font-semibold bg-brand-500 text-white shadow-sm transition whitespace-nowrap"
+        : "px-3 py-1 rounded-lg text-xs font-medium bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 border border-zinc-800/60 transition whitespace-nowrap";
       allBtn.innerText = 'Todos';
       container.appendChild(allBtn);
 
@@ -270,13 +277,12 @@
         btn.onclick = () => setFilter(cat);
         btn.id = `filter-${cat}`;
         btn.className = currentFilter === cat
-          ? "px-3 py-1.5 rounded-lg text-xs font-medium border border-brand-500 bg-brand-500/10 text-brand-500 whitespace-nowrap"
-          : "px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 whitespace-nowrap";
+          ? "px-3 py-1 rounded-lg text-xs font-semibold bg-brand-500 text-white shadow-sm transition whitespace-nowrap"
+          : "px-3 py-1 rounded-lg text-xs font-medium bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 border border-zinc-800/60 transition whitespace-nowrap";
         btn.innerText = cat;
         container.appendChild(btn);
       });
 
-      // Renderiza Dropdown no Modal de Cadastro
       const select = document.getElementById('typeInput');
       select.innerHTML = '';
       categories.forEach(cat => {
@@ -286,17 +292,16 @@
         select.appendChild(opt);
       });
 
-      // Renderiza Lista no Modal de Gerenciamento
       const catList = document.getElementById('categoryList');
       catList.innerHTML = '';
       categories.forEach((cat, idx) => {
         const item = document.createElement('div');
-        item.className = "flex items-center justify-between bg-zinc-800 px-3 py-2 rounded-xl text-xs text-zinc-200 border border-zinc-700/50";
+        item.className = "flex items-center justify-between bg-zinc-800/80 px-3 py-1.5 rounded-lg text-xs text-zinc-200 border border-zinc-700/40";
         item.innerHTML = `
           <span class="font-medium">${cat}</span>
           ${categories.length > 1 ? `
-            <button onclick="removeCategory(${idx})" class="text-zinc-500 hover:text-red-400 p-1 cursor-pointer" title="Remover Categoria">
-              <i class="fa-solid fa-trash text-xs"></i>
+            <button onclick="removeCategory(${idx})" class="text-zinc-500 hover:text-red-400 p-1 cursor-pointer">
+              <i class="fa-solid fa-trash text-[10px]"></i>
             </button>
           ` : ''}
         `;
@@ -365,37 +370,52 @@
         empty.classList.remove('flex');
 
         filtered.forEach(item => {
-          const defaultBanner = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80';
           const card = document.createElement('div');
-          card.className = "group relative bg-zinc-900/60 border border-zinc-800/80 rounded-xl overflow-hidden hover:border-zinc-700 transition flex flex-col cursor-pointer";
+          card.className = "group relative bg-zinc-900/40 border border-zinc-800/60 hover:border-zinc-700/80 rounded-xl overflow-hidden transition-all duration-300 flex flex-col cursor-pointer";
           
-          let progressBadge = '';
-          if (item.type !== 'Filme' && item.seasonNote) {
-            progressBadge = `<span class="absolute bottom-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded bg-zinc-900/90 border border-zinc-700/80 text-emerald-400 shadow"><i class="fa-solid fa-bookmark text-[9px] mr-1"></i>${item.seasonNote}</span>`;
+          let imageHtml = '';
+          if (item.banner && item.banner.trim() !== '') {
+            imageHtml = `<img src="${item.banner}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">`;
+          } else {
+            const grad = getCardGradient(item.id);
+            imageHtml = `
+              <div class="w-full h-full bg-gradient-to-br ${grad} flex flex-col items-center justify-center p-3 text-center border-b border-zinc-800/40">
+                <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
+                <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
+              </div>
+            `;
+          }
+
+          let noteBadge = '';
+          if (item.seasonNote) {
+            noteBadge = `<span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-emerald-400">${item.seasonNote}</span>`;
           }
 
           card.innerHTML = `
-            <div class="aspect-[2/3] w-full bg-zinc-800 relative overflow-hidden" onclick="playItem('${item.id}')">
-              <img src="${item.banner || defaultBanner}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='${defaultBanner}'">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                <div class="w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/40">
-                  <i class="fa-solid fa-play text-lg ml-0.5"></i>
+            <div class="aspect-[2/3] w-full bg-zinc-950 relative overflow-hidden" onclick="playItem('${item.id}')">
+              ${imageHtml}
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/40 transform scale-90 group-hover:scale-100 transition duration-300">
+                  <i class="fa-solid fa-play text-sm ml-0.5"></i>
                 </div>
               </div>
-              <span class="absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 text-zinc-300">${item.type}</span>
-              ${progressBadge}
             </div>
-            <div class="p-3 flex items-start justify-between gap-2">
+
+            <div class="p-2.5 flex items-center justify-between gap-1.5 bg-zinc-900/60 border-t border-zinc-800/40">
               <div onclick="playItem('${item.id}')" class="flex-1 min-w-0">
-                <h4 class="font-semibold text-xs text-zinc-200 truncate group-hover:text-brand-500 transition">${item.title}</h4>
-                <p class="text-[10px] text-zinc-500 mt-0.5">${item.episodes ? item.episodes.length + ' Item(s)' : 'Filme Completo'}</p>
+                <h4 class="font-medium text-xs text-zinc-200 truncate group-hover:text-brand-500 transition">${item.title}</h4>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="text-[10px] text-zinc-500">${item.type}</span>
+                  ${noteBadge}
+                </div>
               </div>
-              <div class="flex items-center gap-1">
-                <button onclick="editItem('${item.id}', event)" title="Editar / Anotar" class="text-zinc-600 hover:text-zinc-300 text-xs p-1 cursor-pointer">
-                  <i class="fa-solid fa-pen"></i>
+              
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                <button onclick="editItem('${item.id}', event)" title="Editar" class="text-zinc-500 hover:text-zinc-200 p-1 cursor-pointer">
+                  <i class="fa-solid fa-pen text-[10px]"></i>
                 </button>
-                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-600 hover:text-red-400 text-xs p-1 cursor-pointer">
-                  <i class="fa-solid fa-trash"></i>
+                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-500 hover:text-red-400 p-1 cursor-pointer">
+                  <i class="fa-solid fa-trash text-[10px]"></i>
                 </button>
               </div>
             </div>
@@ -425,7 +445,7 @@
     function openModal() {
       document.getElementById('itemForm').reset();
       document.getElementById('itemId').value = '';
-      document.getElementById('modalTitle').innerText = 'Adicionar Novo Título';
+      document.getElementById('modalTitle').innerText = 'Adicionar Título';
       toggleEpisodeField();
       document.getElementById('modal').classList.remove('hidden');
     }
@@ -449,7 +469,7 @@
         document.getElementById('episodesInput').value = (item.episodes || []).join('\n');
       }
 
-      document.getElementById('modalTitle').innerText = 'Editar Título / Anotações';
+      document.getElementById('modalTitle').innerText = 'Editar Título';
       document.getElementById('modal').classList.remove('hidden');
     }
 
