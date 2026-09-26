@@ -120,16 +120,19 @@
           </div>
         </div>
 
+        <!-- CAMPO DE ANOTAÇÃO MANUAL DE TEMPORADA / PROGRESSO -->
         <div id="noteContainer" class="hidden">
           <label class="block text-xs font-semibold text-zinc-400 mb-1">Anotação da Temporada / Progresso (Opcional)</label>
           <input type="text" id="noteInput" placeholder="Ex: Temporada 2" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
         </div>
 
+        <!-- SINGLE API LINK / IFRAME -->
         <div id="singleApiContainer">
           <label class="block text-xs font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
           <textarea id="apiInput" rows="3" placeholder="Cole aqui o <iframe src='https://...'> ou a URL direta da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
+        <!-- MULTI EPISODES CONTAINER (FOR SERIES/ANIMES) -->
         <div id="episodesContainer" class="hidden space-y-2">
           <label class="block text-xs font-semibold text-zinc-400">Episódios (1 Link ou iframe por linha)</label>
           <textarea id="episodesInput" rows="5" placeholder="Cole aqui o seu <iframe src='...'></iframe> completo" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
@@ -144,27 +147,26 @@
     </div>
   </div>
 
-  <!-- PLAYER OVERLAY LAYER -->
+  <!-- PLAYER OVERLAY LAYER (COM CONTROLES REPOSICIONADOS PARA O CANTO DIREITO) -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black hidden flex-col">
-    <div id="playerHeader" class="absolute top-0 left-0 right-0 z-50 p-3 sm:p-4 bg-gradient-to-b from-black/90 to-transparent flex items-center justify-between transition-opacity duration-300">
-      <div class="flex items-center gap-3">
-        <button onclick="closePlayer()" class="w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 text-white flex items-center justify-center transition cursor-pointer">
-          <i class="fa-solid fa-arrow-left text-sm"></i>
-        </button>
-        <div>
-          <h2 id="playerTitle" class="text-sm sm:text-base font-bold text-white leading-tight">...</h2>
-          <p id="playerSubtitle" class="text-xs text-zinc-400 font-medium"></p>
-        </div>
+    <!-- CONTROLES FLUTUANTES NO CANTO SUPERIOR DIREITO (Deixa o canto esquerdo totalmente livre para a API) -->
+    <div id="playerHeader" class="absolute top-3 right-3 z-50 flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 p-2 rounded-xl backdrop-blur-md shadow-2xl">
+      <div class="hidden sm:block px-2 text-left">
+        <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[150px]">...</h2>
+        <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
       </div>
 
-      <div class="flex items-center gap-2">
-        <select id="episodeSelect" onchange="changeEpisode(this.value)" class="hidden bg-zinc-900/90 border border-zinc-700 text-xs text-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none">
-        </select>
-        <button onclick="closePlayer()" class="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg border border-zinc-700 transition cursor-pointer">Sair</button>
-      </div>
+      <select id="episodeSelect" onchange="changeEpisode(this.value)" class="hidden bg-zinc-800 border border-zinc-700 text-xs text-zinc-200 rounded-lg px-2 py-1 focus:outline-none">
+      </select>
+
+      <button onclick="closePlayer()" title="Fechar Player" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-lg transition flex items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+        <span>Sair</span>
+      </button>
     </div>
 
-    <div id="iframeHolder" class="w-full h-full flex items-center justify-center"></div>
+    <!-- ÁREA TOTAL DO IFRAME DA API -->
+    <div id="iframeHolder" class="w-full h-full"></div>
   </div>
 
   <script>
@@ -197,7 +199,6 @@
       renderCatalog();
     });
 
-    // MANTÉM O TEXTO BRUTO DO IFRAME SEPARADO SE NECESSÁRIO
     function parseApiUrl(raw) {
       if (!raw) return '';
       return raw.trim();
@@ -243,10 +244,8 @@
           card.className = "group relative bg-zinc-900/60 border border-zinc-800/80 rounded-xl overflow-hidden hover:border-zinc-700 transition flex flex-col cursor-pointer";
           
           let progressBadge = '';
-          if (item.type !== 'Filme') {
-            const lastEp = (item.lastEpisodeIndex !== undefined) ? (item.lastEpisodeIndex + 1) : 1;
-            const noteText = item.seasonNote ? `${item.seasonNote} • ` : '';
-            progressBadge = `<span class="absolute bottom-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded bg-zinc-900/90 border border-zinc-700/80 text-emerald-400 shadow"><i class="fa-solid fa-bookmark text-[9px] mr-1"></i>${noteText}Ep. ${lastEp}</span>`;
+          if (item.type !== 'Filme' && item.seasonNote) {
+            progressBadge = `<span class="absolute bottom-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded bg-zinc-900/90 border border-zinc-700/80 text-emerald-400 shadow"><i class="fa-solid fa-bookmark text-[9px] mr-1"></i>${item.seasonNote}</span>`;
           }
 
           card.innerHTML = `
@@ -340,14 +339,11 @@
       const banner = document.getElementById('bannerInput').value.trim();
       const seasonNote = document.getElementById('noteInput').value.trim();
 
-      const existingItem = catalog.find(i => i.id === id) || {};
-
       let itemData = { 
         title, 
         type, 
         banner, 
-        seasonNote,
-        lastEpisodeIndex: existingItem.lastEpisodeIndex !== undefined ? existingItem.lastEpisodeIndex : 0
+        seasonNote
       };
 
       if (type === 'Filme') {
@@ -390,13 +386,12 @@
           activeItem.episodes.forEach((url, index) => {
             const opt = document.createElement('option');
             opt.value = index;
-            opt.innerText = `Episódio ${index + 1}`;
+            opt.innerText = `Ep. ${index + 1}`;
             select.appendChild(opt);
           });
 
-          const startEpIndex = activeItem.lastEpisodeIndex || 0;
-          select.value = startEpIndex;
-          renderApiContent(activeItem.episodes[startEpIndex], `Episódio ${startEpIndex + 1}`);
+          select.value = 0;
+          renderApiContent(activeItem.episodes[0], `Episódio 1`);
         } else {
           select.classList.add('hidden');
           renderApiContent(activeItem.episodes[0], 'Player Principal');
@@ -414,13 +409,9 @@
       const epIndex = parseInt(index);
       if (activeItem && activeItem.episodes[epIndex] !== undefined) {
         renderApiContent(activeItem.episodes[epIndex], `Episódio ${epIndex + 1}`);
-        
-        activeItem.lastEpisodeIndex = epIndex;
-        db.ref(`catalog/${activeItem.id}/lastEpisodeIndex`).set(epIndex);
       }
     }
 
-    // RENDERIZADOR INTELIGENTE (Injeta o <iframe ...> exatamente como foi colado ou cria um novo)
     function renderApiContent(rawContent, subtitle) {
       document.getElementById('playerSubtitle').innerText = subtitle;
       const holder = document.getElementById('iframeHolder');
@@ -431,7 +422,6 @@
         return;
       }
 
-      // Se for uma tag <iframe ...> completa colada pelo usuário
       if (rawContent.includes('<iframe') && rawContent.includes('</iframe>')) {
         holder.innerHTML = rawContent;
         const insertedIframe = holder.querySelector('iframe');
@@ -441,7 +431,6 @@
           insertedIframe.referrerPolicy = "no-referrer";
         }
       } else {
-        // Se for uma URL direta
         let cleanUrl = rawContent;
         if (cleanUrl.includes('src=')) {
           const match = cleanUrl.match(/src=["']([^"']+)["']/i);
