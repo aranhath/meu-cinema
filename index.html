@@ -120,23 +120,20 @@
           </div>
         </div>
 
-        <!-- CAMPO DE ANOTAÇÃO MANUAL DE TEMPORADA / PROGRESSO -->
         <div id="noteContainer" class="hidden">
           <label class="block text-xs font-semibold text-zinc-400 mb-1">Anotação da Temporada / Progresso (Opcional)</label>
           <input type="text" id="noteInput" placeholder="Ex: Temporada 2" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
         </div>
 
-        <!-- SINGLE API LINK / IFRAME -->
         <div id="singleApiContainer">
           <label class="block text-xs font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
           <textarea id="apiInput" rows="3" placeholder="Cole aqui o <iframe src='https://...'> ou a URL direta da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
-        <!-- MULTI EPISODES CONTAINER (FOR SERIES/ANIMES) -->
         <div id="episodesContainer" class="hidden space-y-2">
-          <label class="block text-xs font-semibold text-zinc-400">Episódios (1 Link/iframe por linha)</label>
-          <textarea id="episodesInput" rows="5" placeholder="Cole o <iframe src='https://...'> completo ou o link da API por linha" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
-          <p class="text-[10px] text-zinc-500">Se a sua API já possui seletor de episódios no player, basta colar uma linha com a API completa.</p>
+          <label class="block text-xs font-semibold text-zinc-400">Episódios (1 Link ou iframe por linha)</label>
+          <textarea id="episodesInput" rows="5" placeholder="Cole aqui o seu <iframe src='...'></iframe> completo" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <p class="text-[10px] text-zinc-500">Você pode colar o &lt;iframe&gt; completo da API aqui sem se preocupar.</p>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -167,11 +164,11 @@
       </div>
     </div>
 
-    <div id="iframeHolder" class="w-full h-full"></div>
+    <div id="iframeHolder" class="w-full h-full flex items-center justify-center"></div>
   </div>
 
   <script>
-    // CONFIGURAÇÃO DO FIREBASE INTEGRADA
+    // CONFIGURAÇÃO DO FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyC2NZ67Uh1biKo27WvRoT5B41GLMOUM0xo",
       authDomain: "meu-cinema-931ad.firebaseapp.com",
@@ -190,7 +187,6 @@
     let catalog = [];
     let currentFilter = 'ALL';
 
-    // LEITURA EM TEMPO REAL DO BANCO DE DADOS
     catalogRef.on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -201,15 +197,10 @@
       renderCatalog();
     });
 
-    // PARSER NEUTRO E SEGURO DE URL (Preserva parâmetros exatos da API)
+    // MANTÉM O TEXTO BRUTO DO IFRAME SEPARADO SE NECESSÁRIO
     function parseApiUrl(raw) {
       if (!raw) return '';
-      let url = raw.trim();
-      if (url.includes('src=')) {
-        const match = url.match(/src=["']([^"']+)["']/i);
-        if (match && match[1]) url = match[1];
-      }
-      return url.replace(/^["']|["']$/g, '').trim();
+      return raw.trim();
     }
 
     function setFilter(type) {
@@ -251,7 +242,6 @@
           const card = document.createElement('div');
           card.className = "group relative bg-zinc-900/60 border border-zinc-800/80 rounded-xl overflow-hidden hover:border-zinc-700 transition flex flex-col cursor-pointer";
           
-          // Formata badge de progresso
           let progressBadge = '';
           if (item.type !== 'Filme') {
             const lastEp = (item.lastEpisodeIndex !== undefined) ? (item.lastEpisodeIndex + 1) : 1;
@@ -371,7 +361,7 @@
         if (!error) {
           closeModal();
         } else {
-          alert('Erro ao salvar no banco de dados. Verifique as Regras do Realtime Database.');
+          alert('Erro ao salvar no banco de dados.');
         }
       });
     }
@@ -404,18 +394,16 @@
             select.appendChild(opt);
           });
 
-          // Abre no último episódio que parou de assistir
           const startEpIndex = activeItem.lastEpisodeIndex || 0;
           select.value = startEpIndex;
-          loadIframe(activeItem.episodes[startEpIndex], `Episódio ${startEpIndex + 1}`);
+          renderApiContent(activeItem.episodes[startEpIndex], `Episódio ${startEpIndex + 1}`);
         } else {
-          // Se houver apenas 1 link cadastrado (player com seletor de episódios próprio da API)
           select.classList.add('hidden');
-          loadIframe(activeItem.episodes[0], 'Player Principal');
+          renderApiContent(activeItem.episodes[0], 'Player Principal');
         }
       } else {
         select.classList.add('hidden');
-        loadIframe(activeItem.apiUrl, 'Filme Completo');
+        renderApiContent(activeItem.apiUrl, 'Filme Completo');
       }
 
       document.getElementById('playerOverlay').classList.remove('hidden');
@@ -425,34 +413,53 @@
     function changeEpisode(index) {
       const epIndex = parseInt(index);
       if (activeItem && activeItem.episodes[epIndex] !== undefined) {
-        loadIframe(activeItem.episodes[epIndex], `Episódio ${epIndex + 1}`);
+        renderApiContent(activeItem.episodes[epIndex], `Episódio ${epIndex + 1}`);
         
-        // Atualiza e salva o progresso na nuvem
         activeItem.lastEpisodeIndex = epIndex;
         db.ref(`catalog/${activeItem.id}/lastEpisodeIndex`).set(epIndex);
       }
     }
 
-    function loadIframe(url, subtitle) {
+    // RENDERIZADOR INTELIGENTE (Injeta o <iframe ...> exatamente como foi colado ou cria um novo)
+    function renderApiContent(rawContent, subtitle) {
       document.getElementById('playerSubtitle').innerText = subtitle;
       const holder = document.getElementById('iframeHolder');
       holder.innerHTML = '';
 
-      if (!url) {
+      if (!rawContent) {
         holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">URL da API não configurada.</div>`;
         return;
       }
 
-      const iframe = document.createElement('iframe');
-      iframe.src = url;
-      iframe.className = "w-full h-full border-0";
-      iframe.referrerPolicy = "no-referrer";
-      iframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *; clipboard-write *; accelerometer *; gyroscope *";
-      iframe.setAttribute('allowfullscreen', 'true');
-      iframe.setAttribute('webkitallowfullscreen', 'true');
-      iframe.setAttribute('mozallowfullscreen', 'true');
+      // Se for uma tag <iframe ...> completa colada pelo usuário
+      if (rawContent.includes('<iframe') && rawContent.includes('</iframe>')) {
+        holder.innerHTML = rawContent;
+        const insertedIframe = holder.querySelector('iframe');
+        if (insertedIframe) {
+          insertedIframe.style.width = "100%";
+          insertedIframe.style.height = "100%";
+          insertedIframe.referrerPolicy = "no-referrer";
+        }
+      } else {
+        // Se for uma URL direta
+        let cleanUrl = rawContent;
+        if (cleanUrl.includes('src=')) {
+          const match = cleanUrl.match(/src=["']([^"']+)["']/i);
+          if (match && match[1]) cleanUrl = match[1];
+        }
+        cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
 
-      holder.appendChild(iframe);
+        const iframe = document.createElement('iframe');
+        iframe.src = cleanUrl;
+        iframe.className = "w-full h-full border-0";
+        iframe.referrerPolicy = "no-referrer";
+        iframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *; clipboard-write *; accelerometer *; gyroscope *";
+        iframe.setAttribute('allowfullscreen', 'true');
+        iframe.setAttribute('webkitallowfullscreen', 'true');
+        iframe.setAttribute('mozallowfullscreen', 'true');
+
+        holder.appendChild(iframe);
+      }
     }
 
     function closePlayer() {
