@@ -21,7 +21,7 @@
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
-  <!-- Firebase SDK -->
+  <!-- Firebase SDK (v9 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -30,6 +30,27 @@
     .glass { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Regra estrita para o Modal não ser bloqueado por CSS */
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background-color: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    #playerOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background-color: #000;
+      flex-direction: column;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
@@ -50,8 +71,8 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <button type="button" onclick="openModal()" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 transition flex items-center gap-1.5 cursor-pointer">
-        <i class="fa-solid fa-plus"></i>
+      <button type="button" onclick="abrirModalAdicionar()" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition flex items-center gap-2 cursor-pointer active:scale-95">
+        <i class="fa-solid fa-plus text-sm"></i>
         <span>Adicionar Título</span>
       </button>
     </div>
@@ -79,19 +100,19 @@
     </div>
 
     <!-- EMPTY STATE -->
-    <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-3">
+    <div id="emptyState" style="display: none;" class="flex-col items-center justify-center py-20 text-center space-y-3">
       <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 text-2xl">
         <i class="fa-solid fa-film"></i>
       </div>
       <p class="text-zinc-400 font-medium text-sm">Nenhum título encontrado.</p>
-      <p class="text-xs text-zinc-600 max-w-xs">Adicione títulos com seus links de API para assistir em qualquer dispositivo.</p>
+      <p class="text-xs text-zinc-600 max-w-xs">Clique em "Adicionar Título" acima para salvar seus filmes, séries ou animes.</p>
     </div>
   </main>
 
-  <!-- ADD/EDIT MODAL -->
-  <div id="modal" style="display: none;" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-center justify-center p-4">
+  <!-- ADD/EDIT MODAL OVERLAY -->
+  <div id="modalOverlay">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button type="button" onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg cursor-pointer">
+      <button type="button" onclick="fecharModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
@@ -108,7 +129,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo</label>
-            <select id="typeInput" onchange="toggleEpisodeField()" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
+            <select id="typeInput" onchange="atualizarCamposPorTipo()" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
               <option value="Filme">Filme</option>
               <option value="Série">Série</option>
               <option value="Anime">Anime</option>
@@ -137,7 +158,7 @@
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
+          <button type="button" onclick="fecharModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 cursor-pointer">Salvar na Nuvem</button>
         </div>
       </form>
@@ -145,7 +166,7 @@
   </div>
 
   <!-- PLAYER OVERLAY LAYER -->
-  <div id="playerOverlay" style="display: none;" class="fixed inset-0 z-50 bg-black flex-col">
+  <div id="playerOverlay">
     <div id="playerHeader" class="absolute top-0 left-0 right-0 z-50 p-3 sm:p-4 bg-gradient-to-b from-black/90 to-transparent flex items-center justify-between transition-opacity duration-300">
       <div class="flex items-center gap-3">
         <button type="button" onclick="closePlayer()" class="w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 text-white flex items-center justify-center transition cursor-pointer">
@@ -168,9 +189,9 @@
   </div>
 
   <script>
-    // ABERTURA E FECHAMENTO INCONDICIONAL DO MODAL
-    function openModal() {
-      const modal = document.getElementById('modal');
+    // 1. FUNÇÃO DE ABERTURA DIRETA E GARANTIDA DO MODAL (Sem travas)
+    function abrirModalAdicionar() {
+      const modal = document.getElementById('modalOverlay');
       const form = document.getElementById('itemForm');
       if (form) form.reset();
       
@@ -178,16 +199,16 @@
       document.getElementById('typeInput').value = 'Filme';
       document.getElementById('modalTitle').innerText = 'Adicionar Novo Título';
       
-      toggleEpisodeField();
+      atualizarCamposPorTipo();
       
       modal.style.display = 'flex';
     }
 
-    function closeModal() {
-      document.getElementById('modal').style.display = 'none';
+    function fecharModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
     }
 
-    function toggleEpisodeField() {
+    function atualizarCamposPorTipo() {
       const type = document.getElementById('typeInput').value;
       const single = document.getElementById('singleApiContainer');
       const multi = document.getElementById('episodesContainer');
@@ -204,7 +225,7 @@
       }
     }
 
-    // CONFIGURAÇÃO FIREBASE
+    // 2. CONFIGURAÇÃO FIREBASE E BANCO DE DADOS
     const firebaseConfig = {
       apiKey: "AIzaSyC2NZ67Uh1biKo27WvRoT5B41GLMOUM0xo",
       authDomain: "meu-cinema-931ad.firebaseapp.com",
@@ -271,11 +292,9 @@
       });
 
       if (filtered.length === 0) {
-        empty.classList.remove('hidden');
-        empty.classList.add('flex');
+        empty.style.display = 'flex';
       } else {
-        empty.classList.add('hidden');
-        empty.classList.remove('flex');
+        empty.style.display = 'none';
 
         filtered.forEach(item => {
           const defaultBanner = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80';
@@ -331,7 +350,7 @@
       document.getElementById('bannerInput').value = item.banner || '';
       document.getElementById('noteInput').value = item.seasonNote || '';
       
-      toggleEpisodeField();
+      atualizarCamposPorTipo();
 
       if (item.type === 'Filme') {
         document.getElementById('apiInput').value = item.apiUrl || '';
@@ -340,7 +359,7 @@
       }
 
       document.getElementById('modalTitle').innerText = 'Editar Título / Anotações';
-      document.getElementById('modal').style.display = 'flex';
+      document.getElementById('modalOverlay').style.display = 'flex';
     }
 
     function saveItem(e) {
@@ -370,9 +389,9 @@
 
       db.ref(`catalog/${id}`).set(itemData, (error) => {
         if (!error) {
-          closeModal();
+          fecharModal();
         } else {
-          alert('Erro ao salvar no banco de dados.');
+          alert('Erro ao salvar no banco de dados. Verifique o Firebase.');
         }
       });
     }
