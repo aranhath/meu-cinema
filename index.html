@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StreamHub - Gerenciador de APIs & Vídeos</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            dark: {
+              base: '#0B0F17',
+              card: '#161C28',
+              hover: '#1F293D',
+              border: 'rgba(255, 255, 255, 0.08)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0F17;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2D3748;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4A5568;
+    }
+    .glass-effect {
+      background: rgba(22, 28, 40, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .hover-scale {
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .hover-scale:hover {
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+<body class="bg-dark-base text-gray-100 font-sans min-h-full flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+  <header class="sticky top-0 z-40 glass-effect border-b border-dark-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-4">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
+            <i class="fa-solid fa-play text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-lg leading-none tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">StreamHub</h1>
+            <span class="text-xs text-gray-400 font-medium">Meu Catálogo de APIs</span>
+          </div>
+        </div>
+
+        <!-- Desktop Search Bar -->
+        <div class="flex-1 max-w-md hidden md:block">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar filmes, animes, séries..." 
+                   class="w-full bg-dark-base border border-dark-border rounded-xl pl-10 pr-4 py-2 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-colors">
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="openModal()" class="flex items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white px-3.5 py-2 rounded-xl font-medium text-sm transition-all shadow-lg shadow-brand-600/25 active:scale-95">
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span class="hidden sm:inline">Adicionar API</span>
+          </button>
+          
+          <div class="h-6 w-px bg-dark-border hidden sm:block"></div>
+
+          <!-- Backup Controls -->
+          <button onclick="exportData()" title="Exportar Backup (JSON)" class="p-2.5 text-gray-400 hover:text-white bg-dark-card hover:bg-dark-hover border border-dark-border rounded-xl text-sm transition-colors">
+            <i class="fa-solid fa-download"></i>
+          </button>
+          
+          <label title="Importar Backup (JSON)" class="p-2.5 text-gray-400 hover:text-white bg-dark-card hover:bg-dark-hover border border-dark-border rounded-xl text-sm transition-colors cursor-pointer">
+            <i class="fa-solid fa-upload"></i>
+            <input type="file" id="importFileInput" accept=".json" onchange="importData(event)" class="hidden">
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Mobile Search Input -->
+      <div class="pb-3 md:hidden">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+          <input type="text" id="searchInputMobile" oninput="syncAndRenderSearch(this.value)" placeholder="Buscar por título ou gênero..." 
+                 class="w-full bg-dark-base border border-dark-border rounded-xl pl-10 pr-4 py-2 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-brand-500">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="catalogView" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Filter Navigation Tabs -->
+    <div class="flex items-center justify-between gap-4 mb-6 overflow-x-auto pb-2 scrollbar-none">
+      <div class="flex items-center gap-2" id="filterContainer">
+        <button onclick="setFilter('all')" data-filter="all" class="filter-btn active bg-brand-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Todos</button>
+        <button onclick="setFilter('favoritos')" data-filter="favoritos" class="filter-btn bg-dark-card text-gray-400 hover:text-white border border-dark-border px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"><i class="fa-solid fa-star text-amber-400 mr-1.5"></i>Favoritos</button>
+        <button onclick="setFilter('Filme')" data-filter="Filme" class="filter-btn bg-dark-card text-gray-400 hover:text-white border border-dark-border px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Filmes</button>
+        <button onclick="setFilter('Série')" data-filter="Série" class="filter-btn bg-dark-card text-gray-400 hover:text-white border border-dark-border px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Séries</button>
+        <button onclick="setFilter('Anime')" data-filter="Anime" class="filter-btn bg-dark-card text-gray-400 hover:text-white border border-dark-border px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Animes</button>
+        <button onclick="setFilter('Outro')" data-filter="Outro" class="filter-btn bg-dark-card text-gray-400 hover:text-white border border-dark-border px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Outros</button>
+      </div>
+      <div class="text-xs text-gray-400 font-medium whitespace-nowrap" id="itemCount">0 itens</div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div id="cardsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+      <!-- Dynamic Content Injection -->
+    </div>
+
+    <!-- Empty State Component -->
+    <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center">
+      <div class="w-16 h-16 rounded-full bg-dark-card border border-dark-border flex items-center justify-center text-gray-500 mb-4 text-2xl">
+        <i class="fa-solid fa-film"></i>
+      </div>
+      <h3 class="text-base font-semibold text-gray-200">Nenhum conteúdo encontrado</h3>
+      <p class="text-sm text-gray-400 max-w-sm mt-1">Sua biblioteca está vazia ou nenhum item atende aos filtros atuais.</p>
+      <button onclick="openModal()" class="mt-4 bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 rounded-xl font-medium text-sm transition-all shadow-lg shadow-brand-600/20">
+        Cadastrar Primeiro Item
+      </button>
+    </div>
+  </main>
+
+  <div id="playerView" class="fixed inset-0 z-50 bg-black hidden flex-col">
+    <!-- Floating Collapsible Control Bar -->
+    <div id="playerControlBar" class="absolute top-0 left-0 right-0 p-4 glass-effect border-b border-dark-border z-20 flex items-center justify-between transition-all duration-300 transform">
+      <div class="flex items-center gap-3">
+        <button onclick="closePlayer()" class="p-2 rounded-xl bg-dark-hover text-gray-300 hover:text-white transition-colors">
+          <i class="fa-solid fa-arrow-left text-lg"></i>
+        </button>
+        <div>
+          <h2 id="playerTitle" class="font-bold text-base text-white leading-tight truncate max-w-xs sm:max-w-md">Título do Vídeo</h2>
+          <span id="playerSubtitle" class="text-xs text-brand-500 font-medium">Episódio 1</span>
+        </div>
+      </div>
+
+      <!-- Episode Selector & Toggle Bar Controls -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <select id="episodeSelect" onchange="switchEpisode(this.value)" class="hidden bg-dark-base border border-dark-border rounded-xl px-3 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-brand-500">
+          <!-- Dynamic Episodes -->
+        </select>
+        
+        <button onclick="togglePlayerControls()" title="Ocultar Barra" class="p-2 text-gray-400 hover:text-white text-sm">
+          <i class="fa-solid fa-compress"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Toggle Button to restore controls -->
+    <button id="showControlsBtn" onclick="togglePlayerControls()" class="fixed top-3 right-3 z-30 bg-black/70 text-gray-300 hover:text-white border border-dark-border px-3 py-1.5 rounded-lg text-xs opacity-40 hover:opacity-100 transition-opacity hidden">
+      <i class="fa-solid fa-gear mr-1"></i> Controles
+    </button>
+
+    <!-- Player Iframe Wrapper -->
+    <div class="w-full h-full relative flex items-center justify-center bg-black">
+      <div id="iframeContainer" class="w-full h-full">
+        <!-- Dynamic Iframe injected here -->
+      </div>
+    </div>
+  </div>
+
+  <div id="contentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-dark-border flex items-center justify-between">
+        <h3 id="modalTitle" class="font-bold text-lg text-white">Adicionar Novo Conteúdo</h3>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body Form -->
+      <form id="itemForm" onsubmit="handleSaveItem(event)" class="p-6 overflow-y-auto space-y-4">
+        <input type="hidden" id="editItemId">
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- Title Input -->
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Título *</label>
+            <input type="text" id="inputTitle" required placeholder="Ex: Attack on Titan, Matrix, Loki" 
+                   class="w-full bg-dark-base border border-dark-border rounded-xl px-3.5 py-2.5 text-sm text-gray-100 focus:outline-none focus:border-brand-500">
+          </div>
+
+          <!-- Type Selector -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Tipo *</label>
+            <select id="inputType" required class="w-full bg-dark-base border border-dark-border rounded-xl px-3.5 py-2.5 text-sm text-gray-100 focus:outline-none focus:border-brand-500">
+              <option value="Filme">Filme</option>
+              <option value="Série">Série</option>
+              <option value="Anime">Anime</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Poster Image URL -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">URL da Capa / Poster (Opcional)</label>
+          <input type="url" id="inputPoster" placeholder="https://imagem.com/capa.jpg" 
+                 class="w-full bg-dark-base border border-dark-border rounded-xl px-3.5 py-2.5 text-sm text-gray-100 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <!-- Episodes/Links Section -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Links / APIs de Vídeo *</label>
+            <button type="button" onclick="addEpisodeField()" class="text-xs text-brand-500 hover:text-brand-400 font-medium flex items-center gap-1">
+              <i class="fa-solid fa-plus"></i> Adicionar Episódio/Link
+            </button>
+          </div>
+
+          <div id="episodesList" class="space-y-3">
+            <!-- Dynamic Episode Rows -->
+          </div>
+          <p class="text-[11px] text-gray-500 mt-1.5">Cole a tag <code>&lt;iframe src="..."&gt;</code> completa ou apenas o link de acesso direto da API.</p>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="pt-4 border-t border-dark-border flex items-center justify-end gap-3">
+          <button type="button" onclick="closeModal()" class="px-4 py-2.5 rounded-xl border border-dark-border text-gray-300 hover:text-white text-sm font-medium transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-medium transition-colors shadow-lg shadow-brand-600/25">
+            Salvar Conteúdo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 glass-effect border border-dark-border rounded-xl px-4 py-3 text-sm text-white flex items-center gap-2 shadow-2xl">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-green-400"></i>
+    <span id="toastMessage">Notificação</span>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'streamhub_catalog_data';
+    let catalog = [];
+    let currentFilter = 'all';
+    let activeItem = null;
+
+    // Load initial data on startup
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCatalog();
+      renderCatalog();
+    });
+
+    // LocalStorage Data Management
+    function loadCatalog() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          catalog = JSON.parse(saved);
+        } catch (e) {
+          console.error("Erro ao carregar catálogo", e);
+          catalog = [];
+        }
+      } else {
+        // Default seed item
+        catalog = [
+          {
+            id: 'sample-1',
+            title: 'Attack on Titan (Exemplo)',
+            type: 'Anime',
+            favorite: true,
+            poster: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&auto=format&fit=crop&q=60',
+            episodes: [
+              { name: 'Episódio 1', url: 'https://superflixapi.sbs/anime/1429' }
+            ]
+          }
+        ];
+        saveCatalog();
+      }
+    }
+
+    function saveCatalog() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(catalog));
+    }
+
+    function cleanApiUrl(input) {
+      if (!input) return '';
+      const trimmed = input.trim();
+      if (trimmed.includes('src=')) {
+        const match = trimmed.match(/src=["']([^"']+)["']/i);
+        if (match && match[1]) return match[1];
+      }
+      return trimmed;
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById('cardsGrid');
+      const empty = document.getElementById('emptyState');
+      const searchVal = (document.getElementById('searchInput').value || '').toLowerCase();
+
+      grid.innerHTML = '';
+
+      const filtered = catalog.filter(item => {
+        let matchesFilter = false;
+        if (currentFilter === 'all') matchesFilter = true;
+        else if (currentFilter === 'favoritos') matchesFilter = item.favorite === true;
+        else matchesFilter = item.type === currentFilter;
+
+        const matchesSearch = item.title.toLowerCase().includes(searchVal);
+        return matchesFilter && matchesSearch;
+      });
+
+      document.getElementById('itemCount').innerText = `${filtered.length} ${filtered.length === 1 ? 'item' : 'itens'}`;
+
+      if (filtered.length === 0) {
+        empty.classList.remove('hidden');
+        empty.classList.add('flex');
+      } else {
+        empty.classList.add('hidden');
+        empty.classList.remove('flex');
+
+        filtered.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'group relative bg-dark-card border border-dark-border rounded-xl overflow-hidden flex flex-col hover-scale shadow-lg hover:border-brand-500/50 transition-all';
+          
+          const epCount = item.episodes ? item.episodes.length : 1;
+          const posterSrc = item.poster || '';
+          const isFav = item.favorite === true;
+
+          card.innerHTML = `
+            <!-- Poster Wrapper -->
+            <div class="relative w-full aspect-[2/3] bg-dark-base overflow-hidden">
+              ${posterSrc ? `
+                <img src="${posterSrc}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full flex flex-col items-center justify-center text-gray-600 p-2 text-center\'><i class=\'fa-solid fa-image text-3xl mb-2\'></i><span class=\'text-xs font-medium\'>Sem Capa</span></div>';">
+              ` : `
+                <div class="w-full h-full flex flex-col items-center justify-center text-gray-600 p-2 text-center">
+                  <i class="fa-solid fa-film text-3xl mb-2"></i>
+                  <span class="text-xs font-medium">${item.title}</span>
+                </div>
+              `}
+              
+              <!-- Badge Type -->
+              <span class="absolute top-2 left-2 bg-black/70 backdrop-blur-md text-white text-[10px] font-semibold px-2 py-0.5 rounded-md border border-white/10">
+                ${item.type}
+              </span>
+
+              <!-- Favorite Button Badge -->
+              <button onclick="toggleFavorite('${item.id}')" title="Favoritar" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/70 backdrop-blur-md flex items-center justify-center text-xs transition-colors ${isFav ? 'text-amber-400' : 'text-gray-400 hover:text-white'}">
+                <i class="fa-${isFav ? 'solid' : 'regular'} fa-star"></i>
+              </button>
+
+              <!-- Hover Play Overlay -->
+              <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                <button onclick="playItem('${item.id}')" class="w-12 h-12 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-600/50 hover:scale-110 transition-transform">
+                  <i class="fa-solid fa-play text-lg translate-x-0.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Details -->
+            <div class="p-3 flex-1 flex flex-col justify-between">
+              <div>
+                <h3 class="font-semibold text-sm text-gray-100 truncate group-hover:text-brand-500 transition-colors" title="${item.title}">${item.title}</h3>
+                <p class="text-xs text-gray-400 mt-0.5">${epCount} ${epCount === 1 ? 'link/episódio' : 'episódios'}</p>
+              </div>
+
+              <!-- Card Controls -->
+              <div class="flex items-center justify-between mt-3 pt-2 border-t border-dark-border">
+                <button onclick="playItem('${item.id}')" class="text-xs font-medium text-brand-500 hover:text-brand-400 flex items-center gap-1">
+                  <i class="fa-solid fa-play text-[10px]"></i> Assistir
+                </button>
+                <div class="flex items-center gap-1">
+                  <button onclick="openModal('${item.id}')" title="Editar" class="p-1.5 text-gray-400 hover:text-white text-xs">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button onclick="deleteItem('${item.id}')" title="Excluir" class="p-1.5 text-gray-400 hover:text-red-400 text-xs">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+    }
+
+    function setFilter(type) {
+      currentFilter = type;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.filter === type) {
+          btn.className = 'filter-btn active bg-brand-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap';
+        } else {
+          btn.className = 'filter-btn bg-dark-card text-gray-400 hover:text-white border border-dark-border px-4 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap';
+        }
+      });
+      renderCatalog();
+    }
+
+    function syncAndRenderSearch(val) {
+      document.getElementById('searchInput').value = val;
+      renderCatalog();
+    }
+
+    function toggleFavorite(id) {
+      const item = catalog.find(i => i.id === id);
+      if (item) {
+        item.favorite = !item.favorite;
+        saveCatalog();
+        renderCatalog();
+        showToast(item.favorite ? 'Adicionado aos favoritos!' : 'Removido dos favoritos.');
+      }
+    }
+
+    function openModal(id = null) {
+      const modal = document.getElementById('contentModal');
+      const form = document.getElementById('itemForm');
+      const episodesContainer = document.getElementById('episodesList');
+      episodesContainer.innerHTML = '';
+
+      if (id) {
+        document.getElementById('modalTitle').innerText = 'Editar Conteúdo';
+        const item = catalog.find(i => i.id === id);
+        if (item) {
+          document.getElementById('editItemId').value = item.id;
+          document.getElementById('inputTitle').value = item.title;
+          document.getElementById('inputType').value = item.type;
+          document.getElementById('inputPoster').value = item.poster || '';
+
+          if (item.episodes && item.episodes.length > 0) {
+            item.episodes.forEach(ep => addEpisodeField(ep.name, ep.url));
+          } else {
+            addEpisodeField();
+          }
+        }
+      } else {
+        document.getElementById('modalTitle').innerText = 'Adicionar Novo Conteúdo';
+        form.reset();
+        document.getElementById('editItemId').value = '';
+        addEpisodeField();
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('contentModal').classList.add('hidden');
+    }
+
+    function addEpisodeField(name = '', url = '') {
+      const container = document.getElementById('episodesList');
+      const index = container.children.length + 1;
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-2 ep-row';
+      row.innerHTML = `
+        <input type="text" placeholder="Nome (ex: Ep ${index})" value="${name}" class="ep-name w-1/3 bg-dark-base border border-dark-border rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-brand-500">
+        <input type="text" required placeholder="Código <iframe> ou Link API https://..." value="${url}" class="ep-url flex-1 bg-dark-base border border-dark-border rounded-xl px-3 py-2 text-xs text-gray-100 focus:outline-none focus:border-brand-500">
+        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-gray-400 hover:text-red-400 text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
+      container.appendChild(row);
+    }
+
+    function handleSaveItem(e) {
+      e.preventDefault();
+      const id = document.getElementById('editItemId').value;
+      const title = document.getElementById('inputTitle').value.trim();
+      const type = document.getElementById('inputType').value;
+      const poster = document.getElementById('inputPoster').value.trim();
+
+      const epRows = document.querySelectorAll('.ep-row');
+      const episodes = [];
+
+      epRows.forEach((row, idx) => {
+        let epName = row.querySelector('.ep-name').value.trim();
+        let epUrl = row.querySelector('.ep-url').value.trim();
+        if (!epName) epName = `Episódio ${idx + 1}`;
+        if (epUrl) {
+          episodes.push({
+            name: epName,
+            url: cleanApiUrl(epUrl)
+          });
+        }
+      });
+
+      if (episodes.length === 0) {
+        showToast('Adicione pelo menos um link ou iframe válido!', 'error');
+        return;
+      }
+
+      if (id) {
+        const index = catalog.findIndex(i => i.id === id);
+        if (index !== -1) {
+          catalog[index] = { ...catalog[index], title, type, poster, episodes };
+          showToast('Conteúdo atualizado com sucesso!');
+        }
+      } else {
+        const newItem = {
+          id: 'item_' + Date.now(),
+          title,
+          type,
+          favorite: false,
+          poster,
+          episodes
+        };
+        catalog.unshift(newItem);
+        showToast('Novo item cadastrado com sucesso!');
+      }
+
+      saveCatalog();
+      renderCatalog();
+      closeModal();
+    }
+
+    function deleteItem(id) {
+      if (confirm('Deseja realmente remover este item do catálogo?')) {
+        catalog = catalog.filter(i => i.id !== id);
+        saveCatalog();
+        renderCatalog();
+        showToast('Item removido.');
+      }
+    }
+
+    function playItem(id) {
+      const item = catalog.find(i => i.id === id);
+      if (!item || !item.episodes || item.episodes.length === 0) {
+        showToast('Nenhum link configurado para este vídeo.', 'error');
+        return;
+      }
+
+      activeItem = item;
+      document.getElementById('playerTitle').innerText = item.title;
+      
+      const epSelect = document.getElementById('episodeSelect');
+      epSelect.innerHTML = '';
+
+      if (item.episodes.length > 1) {
+        epSelect.classList.remove('hidden');
+        item.episodes.forEach((ep, idx) => {
+          const opt = document.createElement('option');
+          opt.value = idx;
+          opt.innerText = ep.name;
+          epSelect.appendChild(opt);
+        });
+      } else {
+        epSelect.classList.add('hidden');
+      }
+
+      switchEpisode(0);
+      document.getElementById('playerView').classList.remove('hidden');
+      document.getElementById('playerView').classList.add('flex');
+    }
+
+    function switchEpisode(index) {
+      const idx = parseInt(index, 10);
+      if (!activeItem || !activeItem.episodes[idx]) return;
+
+      const ep = activeItem.episodes[idx];
+      document.getElementById('playerSubtitle').innerText = ep.name;
+
+      const container = document.getElementById('iframeContainer');
+      container.innerHTML = '';
+
+      const frame = document.createElement('iframe');
+      frame.src = ep.url;
+      frame.className = 'w-full h-full border-0';
+      frame.allow = 'autoplay *; encrypted-media *; picture-in-picture *; fullscreen *; clipboard-write *; accelerometer *; gyroscope *';
+      frame.setAttribute('allowfullscreen', 'true');
+      frame.setAttribute('webkitallowfullscreen', 'true');
+      frame.setAttribute('mozallowfullscreen', 'true');
+
+      container.appendChild(frame);
+    }
+
+    function closePlayer() {
+      document.getElementById('playerView').classList.add('hidden');
+      document.getElementById('playerView').classList.remove('flex');
+      document.getElementById('iframeContainer').innerHTML = '';
+      activeItem = null;
+    }
+
+    function togglePlayerControls() {
+      const bar = document.getElementById('playerControlBar');
+      const showBtn = document.getElementById('showControlsBtn');
+
+      if (bar.classList.contains('-translate-y-full')) {
+        bar.classList.remove('-translate-y-full');
+        showBtn.classList.add('hidden');
+      } else {
+        bar.classList.add('-translate-y-full');
+        showBtn.classList.remove('hidden');
+      }
+    }
+
+    function exportData() {
+      if (catalog.length === 0) {
+        showToast('O catálogo está vazio para exportação.', 'error');
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(catalog, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `streamhub_backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Backup do catálogo baixado!');
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            catalog = imported;
+            saveCatalog();
+            renderCatalog();
+            showToast('Catálogo restaurado com sucesso!');
+          } else {
+            showToast('Arquivo JSON com formato inválido.', 'error');
+          }
+        } catch (err) {
+          showToast('Erro ao ler o arquivo JSON.', 'error');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMessage');
+      const toastIcon = document.getElementById('toastIcon');
+
+      toastMsg.innerText = message;
+      if (type === 'error') {
+        toastIcon.className = 'fa-solid fa-circle-exclamation text-red-400';
+      } else {
+        toastIcon.className = 'fa-solid fa-circle-check text-green-400';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
