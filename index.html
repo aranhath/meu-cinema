@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meu Cinema - Catalog Player</title>
+  <title>Meu Cinema - Catalog & Live TV Player</title>
   
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -65,7 +65,7 @@
     <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-zinc-800/40 pb-4">
       <div class="relative flex-1 max-w-md">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-        <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar no seu catálogo..." class="w-full bg-zinc-900/80 border border-zinc-800/80 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition">
+        <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar filmes, séries ou canais ao vivo..." class="w-full bg-zinc-900/80 border border-zinc-800/80 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition">
       </div>
       <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5">
         <!-- Generated Dynamically -->
@@ -82,11 +82,11 @@
       <div class="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 text-lg">
         <i class="fa-solid fa-film"></i>
       </div>
-      <p class="text-zinc-400 font-medium text-xs">Nenhum título encontrado.</p>
+      <p class="text-zinc-400 font-medium text-xs">Nenhum título ou canal encontrado.</p>
     </div>
   </main>
 
-  <!-- ADD AUTOMATED / MANUAL MODAL -->
+  <!-- ADD AUTOMATED / MANUAL / LIVE TV MODAL -->
   <div id="addModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] flex flex-col">
       <button onclick="closeAddModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer z-10">
@@ -94,16 +94,19 @@
       </button>
 
       <!-- TAB BUTTONS -->
-      <div class="flex border-b border-zinc-800 gap-4">
-        <button id="tabAutoBtn" onclick="switchAddTab('auto')" class="pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Busca Automática TMDB
+      <div class="flex border-b border-zinc-800 gap-3 overflow-x-auto hide-scrollbar">
+        <button id="tabAutoBtn" onclick="switchAddTab('auto')" class="pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Filmes/Séries (TMDB)
         </button>
-        <button id="tabManualBtn" onclick="switchAddTab('manual')" class="pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-pen-to-square"></i> Cadastro Manual / Esporte
+        <button id="tabLiveBtn" onclick="switchAddTab('live')" class="pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <i class="fa-solid fa-tv text-emerald-500"></i> TV ao Vivo (Rei dos Embeds)
+        </button>
+        <button id="tabManualBtn" onclick="switchAddTab('manual')" class="pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+          <i class="fa-solid fa-pen-to-square"></i> Outro/Iframe
         </button>
       </div>
 
-      <!-- AUTO SEARCH CONTENT -->
+      <!-- AUTO SEARCH CONTENT (TMDB) -->
       <div id="autoSearchTab" class="space-y-3 flex-1 flex flex-col overflow-hidden">
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
@@ -113,9 +116,49 @@
         <div id="tmdbResults" class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[220px] max-h-[350px]">
           <div class="text-center py-10 text-xs text-zinc-500">
             <i class="fa-solid fa-tv text-2xl mb-2 text-zinc-700 block"></i>
-            Pesquise por qualquer título para adicionar automaticamente com capa e informações.
+            Pesquise por qualquer filme, série ou anime para adicionar automaticamente com capa.
           </div>
         </div>
+      </div>
+
+      <!-- LIVE TV CONTENT (REI DOS EMBEDS) -->
+      <div id="liveTvTab" class="hidden space-y-3 overflow-y-auto pr-1">
+        <form onsubmit="saveLiveChannel(event)" class="space-y-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Nome do Canal / Evento</label>
+            <input type="text" id="liveTitleInput" required placeholder="Ex: ESPN 1, SporTV, Premiere, Globo SP" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-semibold text-zinc-400 mb-1">ID do Canal no Rei dos Embeds</label>
+              <input type="text" id="liveIdInput" placeholder="Ex: espn, sportv, premiere" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500">
+              <p class="text-[10px] text-zinc-500 mt-1">Gera a URL: <span class="text-zinc-400 font-mono">reidosembeds.online/canal/...</span></p>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Categoria</label>
+              <select id="liveCategoryInput" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+                <option value="TV ao Vivo">TV ao Vivo</option>
+                <option value="Esporte">Esporte</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">OU Cole o Código iframe / Link Completo do Rei dos Embeds</label>
+            <textarea id="liveIframeInput" rows="2" placeholder="Ex: <iframe src='https://reidosembeds.online/canal/espn' ...></iframe>" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">URL da Logo / Capa (Opcional)</label>
+            <input type="url" id="liveBannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          </div>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeAddModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
+            <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer">Salvar Canal</button>
+          </div>
+        </form>
       </div>
 
       <!-- MANUAL CONTENT -->
@@ -125,7 +168,7 @@
 
           <div>
             <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título</label>
-            <input type="text" id="titleInput" required placeholder="Ex: Disney Plus, ESPN, Premiere" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+            <input type="text" id="titleInput" required placeholder="Ex: Disney Plus, Paramount" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
           </div>
 
           <div class="grid grid-cols-2 gap-2.5">
@@ -218,7 +261,7 @@
       </h3>
 
       <div class="flex gap-2">
-        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: Dorama, Desenho)" class="flex-1 bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: TV ao Vivo, Desenho)" class="flex-1 bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
         <button onclick="addCategory()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow transition cursor-pointer">
           Adicionar
         </button>
@@ -276,7 +319,7 @@
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
     let catalog = [];
-    let categories = ['Filme', 'Série', 'Anime', 'Esporte'];
+    let categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
     let currentFilter = 'ALL';
     let tmdbTimeout = null;
 
@@ -285,8 +328,12 @@
       const data = snapshot.val();
       if (data && Array.isArray(data)) {
         categories = data;
+        if (!categories.includes('TV ao Vivo')) {
+          categories.push('TV ao Vivo');
+          categoriesRef.set(categories);
+        }
       } else {
-        categories = ['Filme', 'Série', 'Anime', 'Esporte'];
+        categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
         categoriesRef.set(categories);
       }
       renderCategoryUI();
@@ -411,7 +458,7 @@
         resultsDiv.innerHTML = `
           <div class="text-center py-10 text-xs text-zinc-500">
             <i class="fa-solid fa-tv text-2xl mb-2 text-zinc-700 block"></i>
-            Pesquise por qualquer título para adicionar automaticamente com capa e informações.
+            Pesquise por qualquer filme, série ou anime para adicionar automaticamente com capa.
           </div>
         `;
         return;
@@ -443,7 +490,6 @@
             const card = document.createElement('div');
             card.className = "flex items-center gap-3 bg-zinc-800/60 border border-zinc-700/40 p-2 rounded-xl hover:border-brand-500 transition cursor-pointer group";
             
-            // Passa os dados de forma segura sem quebrar o HTML no evento de clique
             card.addEventListener('click', () => {
               saveItemAuto(item.id, title, isMovie, poster);
             });
@@ -472,7 +518,7 @@
       }, 400);
     }
 
-    // SALVAR TÍTULO DA BUSCA AUTOMÁTICA
+    // SALVAR TÍTULO DA BUSCA AUTOMÁTICA (TMDB)
     function saveItemAuto(tmdbId, title, isMovie, banner) {
       const id = db.ref('catalog').push().key;
       let category = isMovie ? 'Filme' : 'Série';
@@ -504,6 +550,40 @@
       });
     }
 
+    // SALVAR CANAL AO VIVO (REI DOS EMBEDS)
+    function saveLiveChannel(e) {
+      e.preventDefault();
+      const id = db.ref('catalog').push().key;
+      const title = document.getElementById('liveTitleInput').value.trim();
+      const channelId = document.getElementById('liveIdInput').value.trim();
+      const category = document.getElementById('liveCategoryInput').value;
+      const iframeRaw = document.getElementById('liveIframeInput').value.trim();
+      const banner = document.getElementById('liveBannerInput').value.trim();
+
+      let apiUrl = '';
+      if (iframeRaw) {
+        apiUrl = iframeRaw;
+      } else if (channelId) {
+        apiUrl = `https://reidosembeds.online/canal/${channelId}`;
+      }
+
+      const itemData = {
+        title,
+        type: category,
+        banner: banner || '',
+        apiUrl,
+        seasonNote: 'AO VIVO'
+      };
+
+      db.ref(`catalog/${id}`).set(itemData, (error) => {
+        if (!error) {
+          closeAddModal();
+        } else {
+          alert('Erro ao salvar no banco de dados.');
+        }
+      });
+    }
+
     // MODAL DE ADIÇÃO (TABS)
     function openAddModal() {
       document.getElementById('itemForm').reset();
@@ -511,7 +591,7 @@
       document.getElementById('tmdbResults').innerHTML = `
         <div class="text-center py-10 text-xs text-zinc-500">
           <i class="fa-solid fa-tv text-2xl mb-2 text-zinc-700 block"></i>
-          Pesquise por qualquer título para adicionar automaticamente com capa e informações.
+          Pesquise por qualquer filme, série ou anime para adicionar automaticamente com capa.
         </div>
       `;
       switchAddTab('auto');
@@ -524,20 +604,29 @@
 
     function switchAddTab(tab) {
       const autoTab = document.getElementById('autoSearchTab');
+      const liveTab = document.getElementById('liveTvTab');
       const manualTab = document.getElementById('manualTab');
       const autoBtn = document.getElementById('tabAutoBtn');
+      const liveBtn = document.getElementById('tabLiveBtn');
       const manualBtn = document.getElementById('tabManualBtn');
+
+      autoTab.classList.add('hidden');
+      liveTab.classList.add('hidden');
+      manualTab.classList.add('hidden');
+
+      autoBtn.className = "pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap";
+      liveBtn.className = "pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap";
+      manualBtn.className = "pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap";
 
       if (tab === 'auto') {
         autoTab.classList.remove('hidden');
-        manualTab.classList.add('hidden');
-        autoBtn.className = "pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer";
-        manualBtn.className = "pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer";
+        autoBtn.className = "pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap";
+      } else if (tab === 'live') {
+        liveTab.classList.remove('hidden');
+        liveBtn.className = "pb-2 text-xs font-bold border-b-2 border-emerald-500 text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap";
       } else {
-        autoTab.classList.add('hidden');
         manualTab.classList.remove('hidden');
-        manualBtn.className = "pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer";
-        autoBtn.className = "pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer";
+        manualBtn.className = "pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap";
       }
     }
 
@@ -654,18 +743,15 @@
           card.innerHTML = `
             <div class="aspect-[2/3] w-full bg-zinc-950 relative overflow-hidden" onclick="playItem('${item.id}')">
               
-              <!-- Fundo Padrão (Caso não tenha banner ou a imagem falhe) -->
               <div class="w-full h-full bg-gradient-to-br from-zinc-900 to-stone-900 flex flex-col items-center justify-center p-3 text-center absolute inset-0">
                 <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
                 <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
               </div>
 
-              <!-- Imagem da Capa do TMDB -->
               ${hasBanner ? `
                 <img src="${item.banner}" alt="${item.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10" onerror="this.classList.add('hidden');">
               ` : ''}
 
-              <!-- Hover Overlay com Botão de Play -->
               <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
                 <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/40 transform scale-90 group-hover:scale-100 transition duration-300">
                   <i class="fa-solid fa-play text-sm ml-0.5"></i>
@@ -716,7 +802,7 @@
           : (item.type === 'Anime' ? `https://superflixapi.quest/anime/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`);
       }
 
-      renderApiContent(playerUrl, item.type === 'Filme' ? 'Filme Completo' : 'Player Principal');
+      renderApiContent(playerUrl, item.type === 'Filme' ? 'Filme Completo' : (item.type === 'TV ao Vivo' ? 'Transmissão ao Vivo' : 'Player Principal'));
       document.getElementById('playerOverlay').classList.remove('hidden');
       document.getElementById('playerOverlay').classList.add('flex');
     }
