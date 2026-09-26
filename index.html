@@ -30,27 +30,6 @@
     .glass { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    /* Regra estrita para o Modal não ser bloqueado por CSS */
-    #modalOverlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background-color: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-    #playerOverlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background-color: #000;
-      flex-direction: column;
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
@@ -71,8 +50,8 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <button type="button" onclick="abrirModalAdicionar()" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition flex items-center gap-2 cursor-pointer active:scale-95">
-        <i class="fa-solid fa-plus text-sm"></i>
+      <button onclick="openModal()" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 transition flex items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-plus"></i>
         <span>Adicionar Título</span>
       </button>
     </div>
@@ -100,19 +79,19 @@
     </div>
 
     <!-- EMPTY STATE -->
-    <div id="emptyState" style="display: none;" class="flex-col items-center justify-center py-20 text-center space-y-3">
+    <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-3">
       <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 text-2xl">
         <i class="fa-solid fa-film"></i>
       </div>
       <p class="text-zinc-400 font-medium text-sm">Nenhum título encontrado.</p>
-      <p class="text-xs text-zinc-600 max-w-xs">Clique em "Adicionar Título" acima para salvar seus filmes, séries ou animes.</p>
+      <p class="text-xs text-zinc-600 max-w-xs">Adicione títulos com seus links de API para assistir em qualquer dispositivo.</p>
     </div>
   </main>
 
-  <!-- ADD/EDIT MODAL OVERLAY -->
-  <div id="modalOverlay">
+  <!-- ADD/EDIT MODAL -->
+  <div id="modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button type="button" onclick="fecharModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg cursor-pointer">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
@@ -129,7 +108,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo</label>
-            <select id="typeInput" onchange="atualizarCamposPorTipo()" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
+            <select id="typeInput" onchange="toggleEpisodeField()" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
               <option value="Filme">Filme</option>
               <option value="Série">Série</option>
               <option value="Anime">Anime</option>
@@ -141,24 +120,27 @@
           </div>
         </div>
 
-        <div id="noteContainer" style="display: none;">
+        <!-- CAMPO DE ANOTAÇÃO MANUAL DE TEMPORADA / PROGRESSO -->
+        <div id="noteContainer" class="hidden">
           <label class="block text-xs font-semibold text-zinc-400 mb-1">Anotação da Temporada / Progresso (Opcional)</label>
           <input type="text" id="noteInput" placeholder="Ex: Temporada 2" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
         </div>
 
+        <!-- SINGLE API LINK / IFRAME -->
         <div id="singleApiContainer">
           <label class="block text-xs font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
           <textarea id="apiInput" rows="3" placeholder="Cole aqui o <iframe src='https://...'> ou a URL direta da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
-        <div id="episodesContainer" style="display: none;" class="space-y-2">
-          <label class="block text-xs font-semibold text-zinc-400">Episódios / Link do Player API (1 por linha ou <iframe> completo)</label>
-          <textarea id="episodesInput" rows="5" placeholder="https://superflixapi.quest/anime/1429" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
-          <p class="text-[10px] text-zinc-500">Cole a tag <iframe> completa ou o link da API por linha.</p>
+        <!-- MULTI EPISODES CONTAINER (FOR SERIES/ANIMES) -->
+        <div id="episodesContainer" class="hidden space-y-2">
+          <label class="block text-xs font-semibold text-zinc-400">Episódios (1 Link/iframe por linha)</label>
+          <textarea id="episodesInput" rows="5" placeholder="Cole o <iframe src='https://...'> completo ou o link da API por linha" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <p class="text-[10px] text-zinc-500">Se a sua API já possui seletor de episódios no player, basta colar uma linha com a API completa.</p>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="fecharModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
+          <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 cursor-pointer">Salvar na Nuvem</button>
         </div>
       </form>
@@ -166,10 +148,10 @@
   </div>
 
   <!-- PLAYER OVERLAY LAYER -->
-  <div id="playerOverlay">
+  <div id="playerOverlay" class="fixed inset-0 z-50 bg-black hidden flex-col">
     <div id="playerHeader" class="absolute top-0 left-0 right-0 z-50 p-3 sm:p-4 bg-gradient-to-b from-black/90 to-transparent flex items-center justify-between transition-opacity duration-300">
       <div class="flex items-center gap-3">
-        <button type="button" onclick="closePlayer()" class="w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 text-white flex items-center justify-center transition cursor-pointer">
+        <button onclick="closePlayer()" class="w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 text-white flex items-center justify-center transition cursor-pointer">
           <i class="fa-solid fa-arrow-left text-sm"></i>
         </button>
         <div>
@@ -179,9 +161,9 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <select id="episodeSelect" onchange="changeEpisode(this.value)" style="display: none;" class="bg-zinc-900/90 border border-zinc-700 text-xs text-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none">
+        <select id="episodeSelect" onchange="changeEpisode(this.value)" class="hidden bg-zinc-900/90 border border-zinc-700 text-xs text-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none">
         </select>
-        <button type="button" onclick="closePlayer()" class="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg border border-zinc-700 transition cursor-pointer">Sair</button>
+        <button onclick="closePlayer()" class="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg border border-zinc-700 transition cursor-pointer">Sair</button>
       </div>
     </div>
 
@@ -189,43 +171,7 @@
   </div>
 
   <script>
-    // 1. FUNÇÃO DE ABERTURA DIRETA E GARANTIDA DO MODAL (Sem travas)
-    function abrirModalAdicionar() {
-      const modal = document.getElementById('modalOverlay');
-      const form = document.getElementById('itemForm');
-      if (form) form.reset();
-      
-      document.getElementById('itemId').value = '';
-      document.getElementById('typeInput').value = 'Filme';
-      document.getElementById('modalTitle').innerText = 'Adicionar Novo Título';
-      
-      atualizarCamposPorTipo();
-      
-      modal.style.display = 'flex';
-    }
-
-    function fecharModal() {
-      document.getElementById('modalOverlay').style.display = 'none';
-    }
-
-    function atualizarCamposPorTipo() {
-      const type = document.getElementById('typeInput').value;
-      const single = document.getElementById('singleApiContainer');
-      const multi = document.getElementById('episodesContainer');
-      const note = document.getElementById('noteContainer');
-
-      if (type === 'Filme') {
-        single.style.display = 'block';
-        multi.style.display = 'none';
-        note.style.display = 'none';
-      } else {
-        single.style.display = 'none';
-        multi.style.display = 'block';
-        note.style.display = 'block';
-      }
-    }
-
-    // 2. CONFIGURAÇÃO FIREBASE E BANCO DE DADOS
+    // CONFIGURAÇÃO DO FIREBASE INTEGRADA
     const firebaseConfig = {
       apiKey: "AIzaSyC2NZ67Uh1biKo27WvRoT5B41GLMOUM0xo",
       authDomain: "meu-cinema-931ad.firebaseapp.com",
@@ -244,6 +190,7 @@
     let catalog = [];
     let currentFilter = 'ALL';
 
+    // LEITURA EM TEMPO REAL DO BANCO DE DADOS
     catalogRef.on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -254,14 +201,15 @@
       renderCatalog();
     });
 
+    // PARSER NEUTRO E SEGURO DE URL (Preserva parâmetros exatos da API)
     function parseApiUrl(raw) {
       if (!raw) return '';
-      let str = raw.trim();
-      if (str.includes('src=')) {
-        const match = str.match(/src=["']([^"']+)["']/i);
-        if (match && match[1]) str = match[1];
+      let url = raw.trim();
+      if (url.includes('src=')) {
+        const match = url.match(/src=["']([^"']+)["']/i);
+        if (match && match[1]) url = match[1];
       }
-      return str.replace(/^["']|["']$/g, '').trim();
+      return url.replace(/^["']|["']$/g, '').trim();
     }
 
     function setFilter(type) {
@@ -292,15 +240,18 @@
       });
 
       if (filtered.length === 0) {
-        empty.style.display = 'flex';
+        empty.classList.remove('hidden');
+        empty.classList.add('flex');
       } else {
-        empty.style.display = 'none';
+        empty.classList.add('hidden');
+        empty.classList.remove('flex');
 
         filtered.forEach(item => {
           const defaultBanner = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80';
           const card = document.createElement('div');
           card.className = "group relative bg-zinc-900/60 border border-zinc-800/80 rounded-xl overflow-hidden hover:border-zinc-700 transition flex flex-col cursor-pointer";
           
+          // Formata badge de progresso
           let progressBadge = '';
           if (item.type !== 'Filme') {
             const lastEp = (item.lastEpisodeIndex !== undefined) ? (item.lastEpisodeIndex + 1) : 1;
@@ -325,10 +276,10 @@
                 <p class="text-[10px] text-zinc-500 mt-0.5">${item.episodes ? item.episodes.length + ' Item(s)' : 'Filme Completo'}</p>
               </div>
               <div class="flex items-center gap-1">
-                <button type="button" onclick="editItem('${item.id}', event)" title="Editar / Anotar" class="text-zinc-600 hover:text-zinc-300 text-xs p-1 cursor-pointer">
+                <button onclick="editItem('${item.id}', event)" title="Editar / Anotar" class="text-zinc-600 hover:text-zinc-300 text-xs p-1 cursor-pointer">
                   <i class="fa-solid fa-pen"></i>
                 </button>
-                <button type="button" onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-600 hover:text-red-400 text-xs p-1 cursor-pointer">
+                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-600 hover:text-red-400 text-xs p-1 cursor-pointer">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </div>
@@ -337,6 +288,31 @@
           grid.appendChild(card);
         });
       }
+    }
+
+    function toggleEpisodeField() {
+      const type = document.getElementById('typeInput').value;
+      const single = document.getElementById('singleApiContainer');
+      const multi = document.getElementById('episodesContainer');
+      const note = document.getElementById('noteContainer');
+
+      if (type === 'Filme') {
+        single.classList.remove('hidden');
+        multi.classList.add('hidden');
+        note.classList.add('hidden');
+      } else {
+        single.classList.add('hidden');
+        multi.classList.remove('hidden');
+        note.classList.remove('hidden');
+      }
+    }
+
+    function openModal() {
+      document.getElementById('itemForm').reset();
+      document.getElementById('itemId').value = '';
+      document.getElementById('modalTitle').innerText = 'Adicionar Novo Título';
+      toggleEpisodeField();
+      document.getElementById('modal').classList.remove('hidden');
     }
 
     function editItem(id, e) {
@@ -350,7 +326,7 @@
       document.getElementById('bannerInput').value = item.banner || '';
       document.getElementById('noteInput').value = item.seasonNote || '';
       
-      atualizarCamposPorTipo();
+      toggleEpisodeField();
 
       if (item.type === 'Filme') {
         document.getElementById('apiInput').value = item.apiUrl || '';
@@ -359,7 +335,11 @@
       }
 
       document.getElementById('modalTitle').innerText = 'Editar Título / Anotações';
-      document.getElementById('modalOverlay').style.display = 'flex';
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
     }
 
     function saveItem(e) {
@@ -389,9 +369,9 @@
 
       db.ref(`catalog/${id}`).set(itemData, (error) => {
         if (!error) {
-          fecharModal();
+          closeModal();
         } else {
-          alert('Erro ao salvar no banco de dados. Verifique o Firebase.');
+          alert('Erro ao salvar no banco de dados. Verifique as Regras do Realtime Database.');
         }
       });
     }
@@ -414,33 +394,40 @@
 
       if (activeItem.type !== 'Filme' && activeItem.episodes && activeItem.episodes.length > 0) {
         if (activeItem.episodes.length > 1) {
-          select.style.display = 'inline-block';
+          select.classList.remove('hidden');
           select.innerHTML = '';
+          
           activeItem.episodes.forEach((url, index) => {
             const opt = document.createElement('option');
             opt.value = index;
             opt.innerText = `Episódio ${index + 1}`;
             select.appendChild(opt);
           });
+
+          // Abre no último episódio que parou de assistir
           const startEpIndex = activeItem.lastEpisodeIndex || 0;
           select.value = startEpIndex;
           loadIframe(activeItem.episodes[startEpIndex], `Episódio ${startEpIndex + 1}`);
         } else {
-          select.style.display = 'none';
+          // Se houver apenas 1 link cadastrado (player com seletor de episódios próprio da API)
+          select.classList.add('hidden');
           loadIframe(activeItem.episodes[0], 'Player Principal');
         }
       } else {
-        select.style.display = 'none';
+        select.classList.add('hidden');
         loadIframe(activeItem.apiUrl, 'Filme Completo');
       }
 
-      document.getElementById('playerOverlay').style.display = 'flex';
+      document.getElementById('playerOverlay').classList.remove('hidden');
+      document.getElementById('playerOverlay').classList.add('flex');
     }
 
     function changeEpisode(index) {
       const epIndex = parseInt(index);
       if (activeItem && activeItem.episodes[epIndex] !== undefined) {
         loadIframe(activeItem.episodes[epIndex], `Episódio ${epIndex + 1}`);
+        
+        // Atualiza e salva o progresso na nuvem
         activeItem.lastEpisodeIndex = epIndex;
         db.ref(`catalog/${activeItem.id}/lastEpisodeIndex`).set(epIndex);
       }
@@ -471,7 +458,8 @@
     function closePlayer() {
       const holder = document.getElementById('iframeHolder');
       holder.innerHTML = '';
-      document.getElementById('playerOverlay').style.display = 'none';
+      document.getElementById('playerOverlay').classList.add('hidden');
+      document.getElementById('playerOverlay').classList.remove('flex');
       activeItem = null;
     }
   </script>
