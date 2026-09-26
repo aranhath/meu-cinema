@@ -50,7 +50,7 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <button onclick="openModal()" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 transition flex items-center gap-1.5">
+      <button id="addBtn" type="button" onclick="openModal()" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 transition flex items-center gap-1.5 cursor-pointer">
         <i class="fa-solid fa-plus"></i>
         <span>Adicionar Título</span>
       </button>
@@ -91,7 +91,7 @@
   <!-- ADD/EDIT MODAL -->
   <div id="modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg">
+      <button type="button" onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
@@ -148,7 +148,7 @@
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black hidden flex-col">
     <div id="playerHeader" class="absolute top-0 left-0 right-0 z-50 p-3 sm:p-4 bg-gradient-to-b from-black/90 to-transparent flex items-center justify-between transition-opacity duration-300">
       <div class="flex items-center gap-3">
-        <button onclick="closePlayer()" class="w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 text-white flex items-center justify-center transition">
+        <button type="button" onclick="closePlayer()" class="w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 text-white flex items-center justify-center transition">
           <i class="fa-solid fa-arrow-left text-sm"></i>
         </button>
         <div>
@@ -160,7 +160,7 @@
       <div class="flex items-center gap-2">
         <select id="episodeSelect" onchange="changeEpisode(this.value)" class="hidden bg-zinc-900/90 border border-zinc-700 text-xs text-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none">
         </select>
-        <button onclick="closePlayer()" class="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg border border-zinc-700 transition">Sair</button>
+        <button type="button" onclick="closePlayer()" class="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg border border-zinc-700 transition">Sair</button>
       </div>
     </div>
 
@@ -222,7 +222,8 @@
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
       const empty = document.getElementById('emptyState');
-      const search = document.getElementById('searchInput').value.toLowerCase();
+      const searchInput = document.getElementById('searchInput');
+      const search = searchInput ? searchInput.value.toLowerCase() : '';
 
       grid.innerHTML = '';
 
@@ -268,10 +269,10 @@
                 <p class="text-[10px] text-zinc-500 mt-0.5">${item.episodes ? item.episodes.length + ' Item(s)' : 'Filme Completo'}</p>
               </div>
               <div class="flex items-center gap-1">
-                <button onclick="editItem('${item.id}', event)" title="Editar / Anotar" class="text-zinc-600 hover:text-zinc-300 text-xs p-1">
+                <button type="button" onclick="editItem('${item.id}', event)" title="Editar / Anotar" class="text-zinc-600 hover:text-zinc-300 text-xs p-1 cursor-pointer">
                   <i class="fa-solid fa-pen"></i>
                 </button>
-                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-600 hover:text-red-400 text-xs p-1">
+                <button type="button" onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-600 hover:text-red-400 text-xs p-1 cursor-pointer">
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </div>
@@ -284,14 +285,13 @@
 
     function toggleEpisodeField() {
       const typeInput = document.getElementById('typeInput');
-      if (!typeInput) return;
-
-      const type = typeInput.value;
       const single = document.getElementById('singleApiContainer');
       const multi = document.getElementById('episodesContainer');
       const note = document.getElementById('noteContainer');
 
-      if (type === 'Filme') {
+      if (!typeInput || !single || !multi || !note) return;
+
+      if (typeInput.value === 'Filme') {
         single.classList.remove('hidden');
         multi.classList.add('hidden');
         note.classList.add('hidden');
@@ -303,12 +303,22 @@
     }
 
     function openModal() {
-      document.getElementById('itemForm').reset();
-      document.getElementById('itemId').value = '';
-      document.getElementById('typeInput').value = 'Filme';
-      document.getElementById('modalTitle').innerText = 'Adicionar Novo Título';
-      toggleEpisodeField();
-      document.getElementById('modal').classList.remove('hidden');
+      try {
+        const form = document.getElementById('itemForm');
+        if (form) form.reset();
+
+        document.getElementById('itemId').value = '';
+        document.getElementById('typeInput').value = 'Filme';
+        document.getElementById('modalTitle').innerText = 'Adicionar Novo Título';
+        
+        toggleEpisodeField();
+
+        const modal = document.getElementById('modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } catch (err) {
+        console.error("Erro ao abrir modal:", err);
+      }
     }
 
     function editItem(id, e) {
@@ -331,11 +341,15 @@
       }
 
       document.getElementById('modalTitle').innerText = 'Editar Título / Anotações';
-      document.getElementById('modal').classList.remove('hidden');
+      const modal = document.getElementById('modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
     function closeModal() {
-      document.getElementById('modal').classList.add('hidden');
+      const modal = document.getElementById('modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
 
     function saveItem(e) {
@@ -410,8 +424,9 @@
         loadIframe(activeItem.apiUrl, 'Filme Completo');
       }
 
-      document.getElementById('playerOverlay').classList.remove('hidden');
-      document.getElementById('playerOverlay').classList.add('flex');
+      const playerOverlay = document.getElementById('playerOverlay');
+      playerOverlay.classList.remove('hidden');
+      playerOverlay.classList.add('flex');
     }
 
     function changeEpisode(index) {
@@ -449,8 +464,9 @@
     function closePlayer() {
       const holder = document.getElementById('iframeHolder');
       holder.innerHTML = '';
-      document.getElementById('playerOverlay').classList.add('hidden');
-      document.getElementById('playerOverlay').classList.remove('flex');
+      const playerOverlay = document.getElementById('playerOverlay');
+      playerOverlay.classList.add('hidden');
+      playerOverlay.classList.remove('flex');
       activeItem = null;
     }
   </script>
