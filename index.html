@@ -50,6 +50,11 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
+      <button onclick="openCategoryModal()" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg border border-zinc-700 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 transition flex items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-tags text-zinc-400"></i>
+        <span>Categorias</span>
+      </button>
+
       <button onclick="openModal()" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 transition flex items-center gap-1.5 cursor-pointer">
         <i class="fa-solid fa-plus"></i>
         <span>Adicionar Título</span>
@@ -65,11 +70,8 @@
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
         <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar filme, série ou anime..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500 transition">
       </div>
-      <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1">
-        <button onclick="setFilter('ALL')" id="filter-ALL" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-brand-500 bg-brand-500/10 text-brand-500 whitespace-nowrap">Todos</button>
-        <button onclick="setFilter('Filme')" id="filter-Filme" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 whitespace-nowrap">Filmes</button>
-        <button onclick="setFilter('Série')" id="filter-Série" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 whitespace-nowrap">Séries</button>
-        <button onclick="setFilter('Anime')" id="filter-Anime" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 whitespace-nowrap">Animes</button>
+      <div id="filterButtonsContainer" class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1">
+        <!-- Generated Dynamically -->
       </div>
     </div>
 
@@ -88,7 +90,39 @@
     </div>
   </main>
 
-  <!-- ADD/EDIT MODAL -->
+  <!-- CATEGORY MANAGEMENT MODAL -->
+  <div id="categoryModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeCategoryModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 class="text-lg font-bold text-white flex items-center gap-2">
+        <i class="fa-solid fa-tags text-brand-500"></i>
+        <span>Gerenciar Categorias</span>
+      </h3>
+
+      <div class="flex gap-2">
+        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: Documentário)" class="flex-1 bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
+        <button onclick="addCategory()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow transition cursor-pointer">
+          Adicionar
+        </button>
+      </div>
+
+      <div class="space-y-2 pt-2">
+        <label class="block text-xs font-semibold text-zinc-400">Categorias Atuais</label>
+        <div id="categoryList" class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeCategoryModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD/EDIT ITEM MODAL -->
   <div id="modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <button onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-lg cursor-pointer">
@@ -107,11 +141,9 @@
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo</label>
+            <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo / Categoria</label>
             <select id="typeInput" onchange="toggleEpisodeField()" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3.5 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
-              <option value="Filme">Filme</option>
-              <option value="Série">Série</option>
-              <option value="Anime">Anime</option>
+              <!-- Dynamically populated categories -->
             </select>
           </div>
           <div>
@@ -132,7 +164,7 @@
           <textarea id="apiInput" rows="3" placeholder="Cole aqui o <iframe src='https://...'> ou a URL direta da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
-        <!-- MULTI EPISODES CONTAINER (FOR SERIES/ANIMES) -->
+        <!-- MULTI EPISODES CONTAINER (FOR SERIES/ANIMES/ETC) -->
         <div id="episodesContainer" class="hidden space-y-2">
           <label class="block text-xs font-semibold text-zinc-400">Episódios (1 Link ou iframe por linha)</label>
           <textarea id="episodesInput" rows="5" placeholder="Cole aqui o seu <iframe src='...'></iframe> completo" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
@@ -147,9 +179,8 @@
     </div>
   </div>
 
-  <!-- PLAYER OVERLAY LAYER (COM CONTROLES REPOSICIONADOS PARA O CANTO DIREITO) -->
+  <!-- PLAYER OVERLAY LAYER -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black hidden flex-col">
-    <!-- CONTROLES FLUTUANTES NO CANTO SUPERIOR DIREITO (Deixa o canto esquerdo totalmente livre para a API) -->
     <div id="playerHeader" class="absolute top-3 right-3 z-50 flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 p-2 rounded-xl backdrop-blur-md shadow-2xl">
       <div class="hidden sm:block px-2 text-left">
         <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[150px]">...</h2>
@@ -165,7 +196,6 @@
       </button>
     </div>
 
-    <!-- ÁREA TOTAL DO IFRAME DA API -->
     <div id="iframeHolder" class="w-full h-full"></div>
   </div>
 
@@ -185,10 +215,26 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const catalogRef = db.ref('catalog');
+    const categoriesRef = db.ref('categories');
 
     let catalog = [];
+    let categories = ['Filme', 'Série', 'Anime'];
     let currentFilter = 'ALL';
 
+    // ESCUTA EM TEMPO REAL CATEGORIAS
+    categoriesRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data && Array.isArray(data)) {
+        categories = data;
+      } else {
+        categories = ['Filme', 'Série', 'Anime'];
+        categoriesRef.set(categories);
+      }
+      renderCategoryUI();
+      renderCatalog();
+    });
+
+    // ESCUTA EM TEMPO REAL CATÁLOGO
     catalogRef.on('value', (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -204,16 +250,96 @@
       return raw.trim();
     }
 
+    // GERENCIAMENTO DE CATEGORIAS
+    function renderCategoryUI() {
+      // Renderiza Filtros no Topo
+      const container = document.getElementById('filterButtonsContainer');
+      container.innerHTML = '';
+
+      const allBtn = document.createElement('button');
+      allBtn.onclick = () => setFilter('ALL');
+      allBtn.id = 'filter-ALL';
+      allBtn.className = currentFilter === 'ALL'
+        ? "px-3 py-1.5 rounded-lg text-xs font-medium border border-brand-500 bg-brand-500/10 text-brand-500 whitespace-nowrap"
+        : "px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 whitespace-nowrap";
+      allBtn.innerText = 'Todos';
+      container.appendChild(allBtn);
+
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.onclick = () => setFilter(cat);
+        btn.id = `filter-${cat}`;
+        btn.className = currentFilter === cat
+          ? "px-3 py-1.5 rounded-lg text-xs font-medium border border-brand-500 bg-brand-500/10 text-brand-500 whitespace-nowrap"
+          : "px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 whitespace-nowrap";
+        btn.innerText = cat;
+        container.appendChild(btn);
+      });
+
+      // Renderiza Dropdown no Modal de Cadastro
+      const select = document.getElementById('typeInput');
+      select.innerHTML = '';
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.innerText = cat;
+        select.appendChild(opt);
+      });
+
+      // Renderiza Lista no Modal de Gerenciamento
+      const catList = document.getElementById('categoryList');
+      catList.innerHTML = '';
+      categories.forEach((cat, idx) => {
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between bg-zinc-800 px-3 py-2 rounded-xl text-xs text-zinc-200 border border-zinc-700/50";
+        item.innerHTML = `
+          <span class="font-medium">${cat}</span>
+          ${categories.length > 1 ? `
+            <button onclick="removeCategory(${idx})" class="text-zinc-500 hover:text-red-400 p-1 cursor-pointer" title="Remover Categoria">
+              <i class="fa-solid fa-trash text-xs"></i>
+            </button>
+          ` : ''}
+        `;
+        catList.appendChild(item);
+      });
+    }
+
+    function openCategoryModal() {
+      document.getElementById('newCategoryInput').value = '';
+      document.getElementById('categoryModal').classList.remove('hidden');
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.add('hidden');
+    }
+
+    function addCategory() {
+      const input = document.getElementById('newCategoryInput');
+      const val = input.value.trim();
+      if (!val) return;
+
+      if (!categories.includes(val)) {
+        categories.push(val);
+        categoriesRef.set(categories);
+        input.value = '';
+      } else {
+        alert('Esta categoria já existe!');
+      }
+    }
+
+    function removeCategory(index) {
+      if (confirm(`Deseja remover a categoria "${categories[index]}"?`)) {
+        categories.splice(index, 1);
+        categoriesRef.set(categories);
+        if (!categories.includes(currentFilter)) {
+          currentFilter = 'ALL';
+        }
+      }
+    }
+
     function setFilter(type) {
       currentFilter = type;
-      ['ALL', 'Filme', 'Série', 'Anime'].forEach(t => {
-        const btn = document.getElementById(`filter-${t}`);
-        if (t === type) {
-          btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium border border-brand-500 bg-brand-500/10 text-brand-500 whitespace-nowrap";
-        } else {
-          btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 whitespace-nowrap";
-        }
-      });
+      renderCategoryUI();
       renderCatalog();
     }
 
