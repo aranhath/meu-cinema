@@ -27,7 +27,7 @@
 
   <style>
     body { background-color: #0d0d0f; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .glass { background: rgba(18, 18, 22, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    .glass { background: rgba(18, 18, 22, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -51,7 +51,7 @@
         <span>Categorias</span>
       </button>
 
-      <button onclick="openModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 transition flex items-center gap-1.5 cursor-pointer">
+      <button onclick="openAddModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 transition flex items-center gap-1.5 cursor-pointer">
         <i class="fa-solid fa-plus text-xs"></i>
         <span>Adicionar</span>
       </button>
@@ -65,7 +65,7 @@
     <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-zinc-800/40 pb-4">
       <div class="relative flex-1 max-w-md">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-        <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar filme, série ou canal..." class="w-full bg-zinc-900/80 border border-zinc-800/80 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition">
+        <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar título no seu catálogo..." class="w-full bg-zinc-900/80 border border-zinc-800/80 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition">
       </div>
       <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5">
         <!-- Generated Dynamically -->
@@ -86,6 +86,131 @@
     </div>
   </main>
 
+  <!-- ADD AUTOMATED / MANUAL MODAL -->
+  <div id="addModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] flex flex-col">
+      <button onclick="closeAddModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer z-10">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- TAB BUTTONS -->
+      <div class="flex border-b border-zinc-800 gap-4">
+        <button id="tabAutoBtn" onclick="switchAddTab('auto')" class="pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Busca Automática TMDB
+        </button>
+        <button id="tabManualBtn" onclick="switchAddTab('manual')" class="pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5">
+          <i class="fa-solid fa-pen-to-square"></i> Cadastro Manual / Esporte
+        </button>
+      </div>
+
+      <!-- AUTO SEARCH CONTENT -->
+      <div id="autoSearchTab" class="space-y-3 flex-1 flex flex-col overflow-hidden">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+          <input type="text" id="tmdbSearchInput" onkeyup="searchTMDB()" placeholder="Digite o nome do filme, série ou anime..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div id="tmdbResults" class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[220px] max-h-[350px]">
+          <div class="text-center py-10 text-xs text-zinc-500">
+            <i class="fa-solid fa-tv text-2xl mb-2 text-zinc-700 block"></i>
+            Pesquise por qualquer título para adicionar automaticamente com capa e informações.
+          </div>
+        </div>
+      </div>
+
+      <!-- MANUAL CONTENT -->
+      <div id="manualTab" class="hidden space-y-3 overflow-y-auto pr-1">
+        <form id="itemForm" onsubmit="saveItemManual(event)" class="space-y-3">
+          <input type="hidden" id="itemId">
+
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título</label>
+            <input type="text" id="titleInput" placeholder="Ex: Disney Plus, ESPN, Premiere" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Categoria</label>
+              <select id="typeInput" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+                <!-- Dynamically populated categories -->
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-zinc-400 mb-1">URL da Capa (Opcional)</label>
+              <input type="url" id="bannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
+            <textarea id="apiInput" rows="3" placeholder="Cole o <iframe src='https://...'> ou a URL da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeAddModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
+            <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 cursor-pointer">Salvar na Nuvem</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT DETAILS & PROGRESS MODAL -->
+  <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeEditModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 class="text-sm font-bold text-white flex items-center gap-2">
+        <i class="fa-solid fa-pen text-brand-500"></i>
+        <span>Editar Título & Progresso</span>
+      </h3>
+
+      <form id="editForm" onsubmit="saveEditDetails(event)" class="space-y-3">
+        <input type="hidden" id="editItemId">
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título</label>
+          <input type="text" id="editTitleInput" required class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Categoria</label>
+            <select id="editTypeInput" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Anotação / Progresso</label>
+            <input type="text" id="editNoteInput" placeholder="Ex: T2 • Ep. 6" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          </div>
+        </div>
+
+        <div id="seriesEpisodesConfig" class="grid grid-cols-2 gap-2.5 pt-1">
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Temporada Atual</label>
+            <input type="number" id="editSeasonInput" min="1" value="1" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Episódio Atual</label>
+            <input type="number" id="editEpisodeInput" min="1" value="1" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">URL da Capa</label>
+          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeEditModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 cursor-pointer">Salvar Alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- CATEGORY MANAGEMENT MODAL -->
   <div id="categoryModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl relative">
@@ -99,7 +224,7 @@
       </h3>
 
       <div class="flex gap-2">
-        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: Esporte, Animes)" class="flex-1 bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: Dorama, Desenho)" class="flex-1 bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
         <button onclick="addCategory()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow transition cursor-pointer">
           Adicionar
         </button>
@@ -118,69 +243,13 @@
     </div>
   </div>
 
-  <!-- ADD/EDIT ITEM MODAL -->
-  <div id="modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closeModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <h3 id="modalTitle" class="text-sm font-bold text-white">Adicionar Título</h3>
-
-      <form id="itemForm" onsubmit="saveItem(event)" class="space-y-3">
-        <input type="hidden" id="itemId">
-
-        <div>
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título</label>
-          <input type="text" id="titleInput" required placeholder="Ex: Disney Plus, Attack on Titan" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Categoria</label>
-            <select id="typeInput" onchange="toggleEpisodeField()" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-              <!-- Dynamically populated categories -->
-            </select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">URL da Capa (Opcional)</label>
-            <input type="url" id="bannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-          </div>
-        </div>
-
-        <div id="noteContainer" class="hidden">
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Anotação (Opcional)</label>
-          <input type="text" id="noteInput" placeholder="Ex: Temporada 2" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-        </div>
-
-        <div id="singleApiContainer">
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
-          <textarea id="apiInput" rows="3" placeholder="Cole o <iframe src='https://...'> ou a URL da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
-        </div>
-
-        <div id="episodesContainer" class="hidden space-y-2">
-          <label class="block text-[11px] font-semibold text-zinc-400">Episódios (1 por linha)</label>
-          <textarea id="episodesInput" rows="4" placeholder="Cole o <iframe src='...'></iframe> completo" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
-        </div>
-
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 cursor-pointer">Salvar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- PLAYER OVERLAY LAYER -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black hidden flex-col">
     <div id="playerHeader" class="absolute top-3 right-3 z-50 flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 p-1.5 rounded-xl backdrop-blur-md shadow-2xl">
       <div class="hidden sm:block px-2 text-left">
-        <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[150px]">...</h2>
+        <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[180px]">...</h2>
         <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
       </div>
-
-      <select id="episodeSelect" onchange="changeEpisode(this.value)" class="hidden bg-zinc-800 border border-zinc-700 text-xs text-zinc-200 rounded-lg px-2 py-1 focus:outline-none">
-      </select>
 
       <button onclick="closePlayer()" title="Fechar Player" class="px-3 py-1 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
@@ -209,26 +278,13 @@
     const catalogRef = db.ref('catalog');
     const categoriesRef = db.ref('categories');
 
+    // TMDB API KEY
+    const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
+
     let catalog = [];
     let categories = ['Filme', 'Série', 'Anime', 'Esporte'];
     let currentFilter = 'ALL';
-
-    // GERADOR DE GRADIENTE ELEGANTE PARA CAPAS SEM IMAGEM
-    const gradientPairs = [
-      'from-slate-900 to-zinc-800',
-      'from-zinc-900 to-stone-900',
-      'from-neutral-900 to-red-950',
-      'from-red-950 to-zinc-900',
-      'from-zinc-900 to-indigo-950',
-      'from-zinc-900 to-blue-950'
-    ];
-
-    function getCardGradient(id) {
-      let hash = 0;
-      for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
-      const idx = Math.abs(hash) % gradientPairs.length;
-      return gradientPairs[idx];
-    }
+    let tmdbTimeout = null;
 
     // ESCUTA EM TEMPO REAL CATEGORIAS
     categoriesRef.on('value', (snapshot) => {
@@ -254,11 +310,7 @@
       renderCatalog();
     });
 
-    function parseApiUrl(raw) {
-      if (!raw) return '';
-      return raw.trim();
-    }
-
+    // GERENCIAMENTO DE CATEGORIAS
     function renderCategoryUI() {
       const container = document.getElementById('filterButtonsContainer');
       container.innerHTML = '';
@@ -283,13 +335,21 @@
         container.appendChild(btn);
       });
 
-      const select = document.getElementById('typeInput');
-      select.innerHTML = '';
+      const selectManual = document.getElementById('typeInput');
+      const selectEdit = document.getElementById('editTypeInput');
+      selectManual.innerHTML = '';
+      selectEdit.innerHTML = '';
+
       categories.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat;
-        opt.innerText = cat;
-        select.appendChild(opt);
+        const opt1 = document.createElement('option');
+        opt1.value = cat;
+        opt1.innerText = cat;
+        selectManual.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = cat;
+        opt2.innerText = cat;
+        selectEdit.appendChild(opt2);
       });
 
       const catList = document.getElementById('categoryList');
@@ -348,6 +408,226 @@
       renderCatalog();
     }
 
+    // BUSCA AUTOMÁTICA VIA TMDB
+    function searchTMDB() {
+      clearTimeout(tmdbTimeout);
+      const query = document.getElementById('tmdbSearchInput').value.trim();
+      const resultsDiv = document.getElementById('tmdbResults');
+
+      if (!query) {
+        resultsDiv.innerHTML = `
+          <div class="text-center py-10 text-xs text-zinc-500">
+            <i class="fa-solid fa-tv text-2xl mb-2 text-zinc-700 block"></i>
+            Pesquise por qualquer título para adicionar automaticamente com capa e informações.
+          </div>
+        `;
+        return;
+      }
+
+      tmdbTimeout = setTimeout(async () => {
+        resultsDiv.innerHTML = `<div class="text-center py-10 text-xs text-zinc-400"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Buscando títulos...</div>`;
+        
+        try {
+          const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`);
+          const data = await res.json();
+
+          if (!data.results || data.results.length === 0) {
+            resultsDiv.innerHTML = `<div class="text-center py-10 text-xs text-zinc-500">Nenhum título encontrado na base de dados.</div>`;
+            return;
+          }
+
+          resultsDiv.innerHTML = '';
+          data.results.forEach(item => {
+            if (item.media_type !== 'movie' && item.media_type !== 'tv') return;
+
+            const title = item.title || item.name;
+            const date = item.release_date || item.first_air_date || '';
+            const year = date ? date.split('-')[0] : 'N/A';
+            const isMovie = item.media_type === 'movie';
+            const typeLabel = isMovie ? 'Filme' : 'Série';
+            const poster = item.poster_path ? `https://image.tmdb.org/t500/${item.poster_path}` : '';
+
+            const card = document.createElement('div');
+            card.className = "flex items-center gap-3 bg-zinc-800/60 border border-zinc-700/40 p-2 rounded-xl hover:border-brand-500 transition cursor-pointer group";
+            card.onclick = () => saveItemAuto(item.id, title, isMovie, poster);
+
+            card.innerHTML = `
+              <div class="w-12 h-16 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 relative">
+                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-700 text-xs"><i class="fa-solid fa-film"></i></div>`}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-xs text-zinc-200 group-hover:text-brand-500 truncate">${title}</h4>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-zinc-900 font-semibold text-zinc-400">${typeLabel}</span>
+                  <span class="text-[10px] text-zinc-500">${year}</span>
+                </div>
+              </div>
+              <button class="px-3 py-1.5 rounded-lg bg-brand-500 text-white text-xs font-semibold opacity-90 group-hover:opacity-100 transition flex items-center gap-1">
+                <i class="fa-solid fa-plus text-[10px]"></i>
+                <span>Adicionar</span>
+              </button>
+            `;
+            resultsDiv.appendChild(card);
+          });
+        } catch (err) {
+          resultsDiv.innerHTML = `<div class="text-center py-10 text-xs text-red-400">Erro ao consultar a API. Tente novamente.</div>`;
+        }
+      }, 400);
+    }
+
+    // SALVAR TÍTULO DA BUSCA AUTOMÁTICA
+    function saveItemAuto(tmdbId, title, isMovie, banner) {
+      const id = db.ref('catalog').push().key;
+      let category = isMovie ? 'Filme' : 'Série';
+      
+      // Tenta categorizar Anime se o título contiver características
+      if (!isMovie && (title.toLowerCase().includes('anime') || title.toLowerCase().includes('titan') || title.toLowerCase().includes('naruto') || title.toLowerCase().includes('piece'))) {
+        if (categories.includes('Anime')) category = 'Anime';
+      }
+
+      const itemData = {
+        title,
+        type: category,
+        banner,
+        tmdbId: String(tmdbId),
+        isAuto: true,
+        season: 1,
+        episode: 1,
+        seasonNote: ''
+      };
+
+      db.ref(`catalog/${id}`).set(itemData, (error) => {
+        if (!error) {
+          closeAddModal();
+        } else {
+          alert('Erro ao salvar no banco de dados.');
+        }
+      });
+    }
+
+    // MODAL DE ADIÇÃO (TABS)
+    function openAddModal() {
+      document.getElementById('itemForm').reset();
+      document.getElementById('tmdbSearchInput').value = '';
+      document.getElementById('tmdbResults').innerHTML = `
+        <div class="text-center py-10 text-xs text-zinc-500">
+          <i class="fa-solid fa-tv text-2xl mb-2 text-zinc-700 block"></i>
+          Pesquise por qualquer título para adicionar automaticamente com capa e informações.
+        </div>
+      `;
+      switchAddTab('auto');
+      document.getElementById('addModal').classList.remove('hidden');
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').classList.add('hidden');
+    }
+
+    function switchAddTab(tab) {
+      const autoTab = document.getElementById('autoSearchTab');
+      const manualTab = document.getElementById('manualTab');
+      const autoBtn = document.getElementById('tabAutoBtn');
+      const manualBtn = document.getElementById('tabManualBtn');
+
+      if (tab === 'auto') {
+        autoTab.classList.remove('hidden');
+        manualTab.classList.add('hidden');
+        autoBtn.className = "pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer";
+        manualBtn.className = "pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer";
+      } else {
+        autoTab.classList.add('hidden');
+        manualTab.classList.remove('hidden');
+        manualBtn.className = "pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer";
+        autoBtn.className = "pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer";
+      }
+    }
+
+    // CADASTRO MANUAL
+    function saveItemManual(e) {
+      e.preventDefault();
+      const id = db.ref('catalog').push().key;
+      const title = document.getElementById('titleInput').value.trim();
+      const type = document.getElementById('typeInput').value;
+      const banner = document.getElementById('bannerInput').value.trim();
+      const rawApi = document.getElementById('apiInput').value.trim();
+
+      const itemData = {
+        title,
+        type,
+        banner,
+        apiUrl: rawApi,
+        isAuto: false
+      };
+
+      db.ref(`catalog/${id}`).set(itemData, (error) => {
+        if (!error) {
+          closeAddModal();
+        } else {
+          alert('Erro ao salvar no banco de dados.');
+        }
+      });
+    }
+
+    // MODAL DE EDIÇÃO DE DETALHES & PROGRESSO
+    function editItem(id, e) {
+      if (e) e.stopPropagation();
+      const item = catalog.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('editItemId').value = item.id;
+      document.getElementById('editTitleInput').value = item.title;
+      document.getElementById('editTypeInput').value = item.type;
+      document.getElementById('editBannerInput').value = item.banner || '';
+      document.getElementById('editNoteInput').value = item.seasonNote || '';
+
+      const seriesConfig = document.getElementById('seriesEpisodesConfig');
+      if (item.type !== 'Filme') {
+        seriesConfig.classList.remove('hidden');
+        document.getElementById('editSeasonInput').value = item.season || 1;
+        document.getElementById('editEpisodeInput').value = item.episode || 1;
+      } else {
+        seriesConfig.classList.add('hidden');
+      }
+
+      document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.add('hidden');
+    }
+
+    function saveEditDetails(e) {
+      e.preventDefault();
+      const id = document.getElementById('editItemId').value;
+      const title = document.getElementById('editTitleInput').value.trim();
+      const type = document.getElementById('editTypeInput').value;
+      const banner = document.getElementById('editBannerInput').value.trim();
+      const seasonNote = document.getElementById('editNoteInput').value.trim();
+      
+      let updateData = { title, type, banner, seasonNote };
+
+      if (type !== 'Filme') {
+        updateData.season = parseInt(document.getElementById('editSeasonInput').value) || 1;
+        updateData.episode = parseInt(document.getElementById('editEpisodeInput').value) || 1;
+      }
+
+      db.ref(`catalog/${id}`).update(updateData, (error) => {
+        if (!error) {
+          closeEditModal();
+        } else {
+          alert('Erro ao atualizar no banco de dados.');
+        }
+      });
+    }
+
+    function deleteItem(id, e) {
+      if (e) e.stopPropagation();
+      if (confirm('Deseja excluir este título do catálogo?')) {
+        db.ref(`catalog/${id}`).remove();
+      }
+    }
+
+    // RENDERIZAÇÃO DO CATÁLOGO CLEAN
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
       const empty = document.getElementById('emptyState');
@@ -377,9 +657,8 @@
           if (item.banner && item.banner.trim() !== '') {
             imageHtml = `<img src="${item.banner}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">`;
           } else {
-            const grad = getCardGradient(item.id);
             imageHtml = `
-              <div class="w-full h-full bg-gradient-to-br ${grad} flex flex-col items-center justify-center p-3 text-center border-b border-zinc-800/40">
+              <div class="w-full h-full bg-gradient-to-br from-zinc-900 to-stone-900 flex flex-col items-center justify-center p-3 text-center">
                 <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
                 <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
               </div>
@@ -389,6 +668,8 @@
           let noteBadge = '';
           if (item.seasonNote) {
             noteBadge = `<span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-emerald-400">${item.seasonNote}</span>`;
+          } else if (item.type !== 'Filme' && item.season && item.episode) {
+            noteBadge = `<span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-emerald-400">T${item.season} E${item.episode}</span>`;
           }
 
           card.innerHTML = `
@@ -425,137 +706,34 @@
       }
     }
 
-    function toggleEpisodeField() {
-      const type = document.getElementById('typeInput').value;
-      const single = document.getElementById('singleApiContainer');
-      const multi = document.getElementById('episodesContainer');
-      const note = document.getElementById('noteContainer');
-
-      if (type === 'Filme') {
-        single.classList.remove('hidden');
-        multi.classList.add('hidden');
-        note.classList.add('hidden');
-      } else {
-        single.classList.add('hidden');
-        multi.classList.remove('hidden');
-        note.classList.remove('hidden');
-      }
-    }
-
-    function openModal() {
-      document.getElementById('itemForm').reset();
-      document.getElementById('itemId').value = '';
-      document.getElementById('modalTitle').innerText = 'Adicionar Título';
-      toggleEpisodeField();
-      document.getElementById('modal').classList.remove('hidden');
-    }
-
-    function editItem(id, e) {
-      if (e) e.stopPropagation();
+    // PLAYER REPRODUTOR AUTOMÁTICO / MANUAL
+    function playItem(id) {
       const item = catalog.find(i => i.id === id);
       if (!item) return;
 
-      document.getElementById('itemId').value = item.id;
-      document.getElementById('titleInput').value = item.title;
-      document.getElementById('typeInput').value = item.type;
-      document.getElementById('bannerInput').value = item.banner || '';
-      document.getElementById('noteInput').value = item.seasonNote || '';
+      document.getElementById('playerTitle').innerText = item.title;
       
-      toggleEpisodeField();
+      let playerUrl = '';
+      let subtitle = 'Player Principal';
 
-      if (item.type === 'Filme') {
-        document.getElementById('apiInput').value = item.apiUrl || '';
-      } else {
-        document.getElementById('episodesInput').value = (item.episodes || []).join('\n');
-      }
-
-      document.getElementById('modalTitle').innerText = 'Editar Título';
-      document.getElementById('modal').classList.remove('hidden');
-    }
-
-    function closeModal() {
-      document.getElementById('modal').classList.add('hidden');
-    }
-
-    function saveItem(e) {
-      e.preventDefault();
-      const id = document.getElementById('itemId').value || db.ref('catalog').push().key;
-      const title = document.getElementById('titleInput').value.trim();
-      const type = document.getElementById('typeInput').value;
-      const banner = document.getElementById('bannerInput').value.trim();
-      const seasonNote = document.getElementById('noteInput').value.trim();
-
-      let itemData = { 
-        title, 
-        type, 
-        banner, 
-        seasonNote
-      };
-
-      if (type === 'Filme') {
-        itemData.apiUrl = parseApiUrl(document.getElementById('apiInput').value);
-      } else {
-        const rawEps = document.getElementById('episodesInput').value.split('\n');
-        itemData.episodes = rawEps.map(line => parseApiUrl(line)).filter(url => url.length > 0);
-      }
-
-      db.ref(`catalog/${id}`).set(itemData, (error) => {
-        if (!error) {
-          closeModal();
+      if (item.isAuto && item.tmdbId) {
+        if (item.type === 'Filme') {
+          playerUrl = `https://superflixapi.quest/filme/${item.tmdbId}`;
+          subtitle = 'Filme Completo';
         } else {
-          alert('Erro ao salvar no banco de dados.');
-        }
-      });
-    }
-
-    function deleteItem(id, e) {
-      if (e) e.stopPropagation();
-      if (confirm('Deseja excluir este título do catálogo na nuvem?')) {
-        db.ref(`catalog/${id}`).remove();
-      }
-    }
-
-    let activeItem = null;
-
-    function playItem(id) {
-      activeItem = catalog.find(i => i.id === id);
-      if (!activeItem) return;
-
-      document.getElementById('playerTitle').innerText = activeItem.title;
-      const select = document.getElementById('episodeSelect');
-
-      if (activeItem.type !== 'Filme' && activeItem.episodes && activeItem.episodes.length > 0) {
-        if (activeItem.episodes.length > 1) {
-          select.classList.remove('hidden');
-          select.innerHTML = '';
-          
-          activeItem.episodes.forEach((url, index) => {
-            const opt = document.createElement('option');
-            opt.value = index;
-            opt.innerText = `Ep. ${index + 1}`;
-            select.appendChild(opt);
-          });
-
-          select.value = 0;
-          renderApiContent(activeItem.episodes[0], `Episódio 1`);
-        } else {
-          select.classList.add('hidden');
-          renderApiContent(activeItem.episodes[0], 'Player Principal');
+          const s = item.season || 1;
+          const e = item.episode || 1;
+          playerUrl = `https://superflixapi.quest/serie/${item.tmdbId}/${s}/${e}`;
+          subtitle = `Temporada ${s} • Episódio ${e}`;
         }
       } else {
-        select.classList.add('hidden');
-        renderApiContent(activeItem.apiUrl, 'Filme Completo');
+        playerUrl = item.apiUrl || '';
+        subtitle = item.type === 'Filme' ? 'Filme Completo' : 'Canal / Player Transmissão';
       }
 
+      renderApiContent(playerUrl, subtitle);
       document.getElementById('playerOverlay').classList.remove('hidden');
       document.getElementById('playerOverlay').classList.add('flex');
-    }
-
-    function changeEpisode(index) {
-      const epIndex = parseInt(index);
-      if (activeItem && activeItem.episodes[epIndex] !== undefined) {
-        renderApiContent(activeItem.episodes[epIndex], `Episódio ${epIndex + 1}`);
-      }
     }
 
     function renderApiContent(rawContent, subtitle) {
@@ -602,7 +780,6 @@
       holder.innerHTML = '';
       document.getElementById('playerOverlay').classList.add('hidden');
       document.getElementById('playerOverlay').classList.remove('flex');
-      activeItem = null;
     }
   </script>
 </body>
