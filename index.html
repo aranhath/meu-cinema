@@ -53,7 +53,7 @@
 
       <button onclick="openAddModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 transition flex items-center gap-1.5 cursor-pointer">
         <i class="fa-solid fa-plus text-xs"></i>
-        <span>Adicionar</span>
+        <span>Adicionar Título</span>
       </button>
     </div>
   </header>
@@ -65,7 +65,7 @@
     <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-zinc-800/40 pb-4">
       <div class="relative flex-1 max-w-md">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-        <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar título no seu catálogo..." class="w-full bg-zinc-900/80 border border-zinc-800/80 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition">
+        <input type="text" id="searchInput" oninput="renderCatalog()" placeholder="Buscar no seu catálogo..." class="w-full bg-zinc-900/80 border border-zinc-800/80 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition">
       </div>
       <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5">
         <!-- Generated Dynamically -->
@@ -95,10 +95,10 @@
 
       <!-- TAB BUTTONS -->
       <div class="flex border-b border-zinc-800 gap-4">
-        <button id="tabAutoBtn" onclick="switchAddTab('auto')" class="pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5">
+        <button id="tabAutoBtn" onclick="switchAddTab('auto')" class="pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Busca Automática TMDB
         </button>
-        <button id="tabManualBtn" onclick="switchAddTab('manual')" class="pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5">
+        <button id="tabManualBtn" onclick="switchAddTab('manual')" class="pb-2 text-xs font-semibold text-zinc-400 hover:text-zinc-200 flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-pen-to-square"></i> Cadastro Manual / Esporte
         </button>
       </div>
@@ -125,7 +125,7 @@
 
           <div>
             <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título</label>
-            <input type="text" id="titleInput" placeholder="Ex: Disney Plus, ESPN, Premiere" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+            <input type="text" id="titleInput" required placeholder="Ex: Disney Plus, ESPN, Premiere" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
           </div>
 
           <div class="grid grid-cols-2 gap-2.5">
@@ -157,14 +157,14 @@
 
   <!-- EDIT DETAILS & PROGRESS MODAL -->
   <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl relative">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <button onclick="closeEditModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
         <i class="fa-solid fa-pen text-brand-500"></i>
-        <span>Editar Título & Progresso</span>
+        <span>Editar Título & Configurações</span>
       </h3>
 
       <form id="editForm" onsubmit="saveEditDetails(event)" class="space-y-3">
@@ -187,20 +187,14 @@
           </div>
         </div>
 
-        <div id="seriesEpisodesConfig" class="grid grid-cols-2 gap-2.5 pt-1">
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Temporada Atual</label>
-            <input type="number" id="editSeasonInput" min="1" value="1" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Episódio Atual</label>
-            <input type="number" id="editEpisodeInput" min="1" value="1" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-          </div>
-        </div>
-
         <div>
           <label class="block text-[11px] font-semibold text-zinc-400 mb-1">URL da Capa</label>
           <input type="url" id="editBannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
+          <textarea id="editApiInput" rows="3" placeholder="Cole o <iframe src='https://...'> ou a URL da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -310,7 +304,6 @@
       renderCatalog();
     });
 
-    // GERENCIAMENTO DE CATEGORIAS
     function renderCategoryUI() {
       const container = document.getElementById('filterButtonsContainer');
       container.innerHTML = '';
@@ -445,7 +438,7 @@
             const year = date ? date.split('-')[0] : 'N/A';
             const isMovie = item.media_type === 'movie';
             const typeLabel = isMovie ? 'Filme' : 'Série';
-            const poster = item.poster_path ? `https://image.tmdb.org/t500/${item.poster_path}` : '';
+            const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
 
             const card = document.createElement('div');
             card.className = "flex items-center gap-3 bg-zinc-800/60 border border-zinc-700/40 p-2 rounded-xl hover:border-brand-500 transition cursor-pointer group";
@@ -453,7 +446,7 @@
 
             card.innerHTML = `
               <div class="w-12 h-16 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 relative">
-                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-700 text-xs"><i class="fa-solid fa-film"></i></div>`}
+                ${poster ? `<img src="${poster}" class="w-full h-full object-cover" onerror="this.style.display='none'">` : `<div class="w-full h-full flex items-center justify-center text-zinc-700 text-xs"><i class="fa-solid fa-film"></i></div>`}
               </div>
               <div class="flex-1 min-w-0">
                 <h4 class="font-bold text-xs text-zinc-200 group-hover:text-brand-500 truncate">${title}</h4>
@@ -480,19 +473,20 @@
       const id = db.ref('catalog').push().key;
       let category = isMovie ? 'Filme' : 'Série';
       
-      // Tenta categorizar Anime se o título contiver características
       if (!isMovie && (title.toLowerCase().includes('anime') || title.toLowerCase().includes('titan') || title.toLowerCase().includes('naruto') || title.toLowerCase().includes('piece'))) {
         if (categories.includes('Anime')) category = 'Anime';
       }
+
+      const apiUrl = isMovie 
+        ? `https://superflixapi.quest/filme/${tmdbId}`
+        : `https://superflixapi.quest/anime/${tmdbId}`;
 
       const itemData = {
         title,
         type: category,
         banner,
+        apiUrl,
         tmdbId: String(tmdbId),
-        isAuto: true,
-        season: 1,
-        episode: 1,
         seasonNote: ''
       };
 
@@ -555,8 +549,7 @@
         title,
         type,
         banner,
-        apiUrl: rawApi,
-        isAuto: false
+        apiUrl: rawApi
       };
 
       db.ref(`catalog/${id}`).set(itemData, (error) => {
@@ -568,7 +561,7 @@
       });
     }
 
-    // MODAL DE EDIÇÃO DE DETALHES & PROGRESSO
+    // MODAL DE EDIÇÃO
     function editItem(id, e) {
       if (e) e.stopPropagation();
       const item = catalog.find(i => i.id === id);
@@ -579,15 +572,12 @@
       document.getElementById('editTypeInput').value = item.type;
       document.getElementById('editBannerInput').value = item.banner || '';
       document.getElementById('editNoteInput').value = item.seasonNote || '';
-
-      const seriesConfig = document.getElementById('seriesEpisodesConfig');
-      if (item.type !== 'Filme') {
-        seriesConfig.classList.remove('hidden');
-        document.getElementById('editSeasonInput').value = item.season || 1;
-        document.getElementById('editEpisodeInput').value = item.episode || 1;
-      } else {
-        seriesConfig.classList.add('hidden');
+      
+      let currentApi = item.apiUrl || '';
+      if (!currentApi && item.episodes && item.episodes.length > 0) {
+        currentApi = item.episodes.join('\n');
       }
+      document.getElementById('editApiInput').value = currentApi;
 
       document.getElementById('editModal').classList.remove('hidden');
     }
@@ -603,13 +593,9 @@
       const type = document.getElementById('editTypeInput').value;
       const banner = document.getElementById('editBannerInput').value.trim();
       const seasonNote = document.getElementById('editNoteInput').value.trim();
+      const apiUrl = document.getElementById('editApiInput').value.trim();
       
-      let updateData = { title, type, banner, seasonNote };
-
-      if (type !== 'Filme') {
-        updateData.season = parseInt(document.getElementById('editSeasonInput').value) || 1;
-        updateData.episode = parseInt(document.getElementById('editEpisodeInput').value) || 1;
-      }
+      let updateData = { title, type, banner, seasonNote, apiUrl };
 
       db.ref(`catalog/${id}`).update(updateData, (error) => {
         if (!error) {
@@ -653,29 +639,23 @@
           const card = document.createElement('div');
           card.className = "group relative bg-zinc-900/40 border border-zinc-800/60 hover:border-zinc-700/80 rounded-xl overflow-hidden transition-all duration-300 flex flex-col cursor-pointer";
           
-          let imageHtml = '';
-          if (item.banner && item.banner.trim() !== '') {
-            imageHtml = `<img src="${item.banner}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">`;
-          } else {
-            imageHtml = `
-              <div class="w-full h-full bg-gradient-to-br from-zinc-900 to-stone-900 flex flex-col items-center justify-center p-3 text-center">
-                <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
-                <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
-              </div>
-            `;
-          }
-
           let noteBadge = '';
           if (item.seasonNote) {
             noteBadge = `<span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-emerald-400">${item.seasonNote}</span>`;
-          } else if (item.type !== 'Filme' && item.season && item.episode) {
-            noteBadge = `<span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-emerald-400">T${item.season} E${item.episode}</span>`;
           }
 
           card.innerHTML = `
             <div class="aspect-[2/3] w-full bg-zinc-950 relative overflow-hidden" onclick="playItem('${item.id}')">
-              ${imageHtml}
-              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              ${item.banner && item.banner.trim() !== '' ? `
+                <img src="${item.banner}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.onerror=null; this.remove();">
+              ` : ''}
+              
+              <div class="w-full h-full bg-gradient-to-br from-zinc-900 to-stone-900 flex flex-col items-center justify-center p-3 text-center absolute inset-0 -z-0">
+                <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
+                <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
+              </div>
+
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
                 <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/40 transform scale-90 group-hover:scale-100 transition duration-300">
                   <i class="fa-solid fa-play text-sm ml-0.5"></i>
                 </div>
@@ -706,32 +686,26 @@
       }
     }
 
-    // PLAYER REPRODUTOR AUTOMÁTICO / MANUAL
+    // REPRODUTOR DE CONTEÚDO
     function playItem(id) {
       const item = catalog.find(i => i.id === id);
       if (!item) return;
 
       document.getElementById('playerTitle').innerText = item.title;
       
-      let playerUrl = '';
-      let subtitle = 'Player Principal';
-
-      if (item.isAuto && item.tmdbId) {
-        if (item.type === 'Filme') {
-          playerUrl = `https://superflixapi.quest/filme/${item.tmdbId}`;
-          subtitle = 'Filme Completo';
-        } else {
-          const s = item.season || 1;
-          const e = item.episode || 1;
-          playerUrl = `https://superflixapi.quest/serie/${item.tmdbId}/${s}/${e}`;
-          subtitle = `Temporada ${s} • Episódio ${e}`;
-        }
-      } else {
-        playerUrl = item.apiUrl || '';
-        subtitle = item.type === 'Filme' ? 'Filme Completo' : 'Canal / Player Transmissão';
+      let playerUrl = item.apiUrl || '';
+      
+      if (!playerUrl && item.episodes && item.episodes.length > 0) {
+        playerUrl = item.episodes[0];
       }
 
-      renderApiContent(playerUrl, subtitle);
+      if (!playerUrl && item.tmdbId) {
+        playerUrl = item.type === 'Filme' 
+          ? `https://superflixapi.quest/filme/${item.tmdbId}`
+          : `https://superflixapi.quest/anime/${item.tmdbId}`;
+      }
+
+      renderApiContent(playerUrl, item.type === 'Filme' ? 'Filme Completo' : 'Player Principal');
       document.getElementById('playerOverlay').classList.remove('hidden');
       document.getElementById('playerOverlay').classList.add('flex');
     }
