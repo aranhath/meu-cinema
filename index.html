@@ -442,11 +442,15 @@
 
             const card = document.createElement('div');
             card.className = "flex items-center gap-3 bg-zinc-800/60 border border-zinc-700/40 p-2 rounded-xl hover:border-brand-500 transition cursor-pointer group";
-            card.onclick = () => saveItemAuto(item.id, title, isMovie, poster);
+            
+            // Passa os dados de forma segura sem quebrar o HTML no evento de clique
+            card.addEventListener('click', () => {
+              saveItemAuto(item.id, title, isMovie, poster);
+            });
 
             card.innerHTML = `
               <div class="w-12 h-16 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 relative">
-                ${poster ? `<img src="${poster}" class="w-full h-full object-cover" onerror="this.style.display='none'">` : `<div class="w-full h-full flex items-center justify-center text-zinc-700 text-xs"><i class="fa-solid fa-film"></i></div>`}
+                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-700 text-xs"><i class="fa-solid fa-film"></i></div>`}
               </div>
               <div class="flex-1 min-w-0">
                 <h4 class="font-bold text-xs text-zinc-200 group-hover:text-brand-500 truncate">${title}</h4>
@@ -473,18 +477,19 @@
       const id = db.ref('catalog').push().key;
       let category = isMovie ? 'Filme' : 'Série';
       
-      if (!isMovie && (title.toLowerCase().includes('anime') || title.toLowerCase().includes('titan') || title.toLowerCase().includes('naruto') || title.toLowerCase().includes('piece'))) {
+      const lowerTitle = title.toLowerCase();
+      if (!isMovie && (lowerTitle.includes('anime') || lowerTitle.includes('titan') || lowerTitle.includes('naruto') || lowerTitle.includes('piece') || lowerTitle.includes('dragon ball') || lowerTitle.includes('jujutsu'))) {
         if (categories.includes('Anime')) category = 'Anime';
       }
 
       const apiUrl = isMovie 
         ? `https://superflixapi.quest/filme/${tmdbId}`
-        : `https://superflixapi.quest/anime/${tmdbId}`;
+        : (category === 'Anime' ? `https://superflixapi.quest/anime/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`);
 
       const itemData = {
         title,
         type: category,
-        banner,
+        banner: banner || '',
         apiUrl,
         tmdbId: String(tmdbId),
         seasonNote: ''
@@ -613,7 +618,7 @@
       }
     }
 
-    // RENDERIZAÇÃO DO CATÁLOGO CLEAN
+    // RENDERIZAÇÃO DO CATÁLOGO
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
       const empty = document.getElementById('emptyState');
@@ -644,18 +649,24 @@
             noteBadge = `<span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-emerald-400">${item.seasonNote}</span>`;
           }
 
+          const hasBanner = item.banner && item.banner.trim() !== '';
+
           card.innerHTML = `
             <div class="aspect-[2/3] w-full bg-zinc-950 relative overflow-hidden" onclick="playItem('${item.id}')">
-              ${item.banner && item.banner.trim() !== '' ? `
-                <img src="${item.banner}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.onerror=null; this.remove();">
-              ` : ''}
               
-              <div class="w-full h-full bg-gradient-to-br from-zinc-900 to-stone-900 flex flex-col items-center justify-center p-3 text-center absolute inset-0 -z-0">
+              <!-- Fundo Padrão (Caso não tenha banner ou a imagem falhe) -->
+              <div class="w-full h-full bg-gradient-to-br from-zinc-900 to-stone-900 flex flex-col items-center justify-center p-3 text-center absolute inset-0">
                 <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
                 <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
               </div>
 
-              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+              <!-- Imagem da Capa do TMDB -->
+              ${hasBanner ? `
+                <img src="${item.banner}" alt="${item.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10" onerror="this.classList.add('hidden');">
+              ` : ''}
+
+              <!-- Hover Overlay com Botão de Play -->
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
                 <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/40 transform scale-90 group-hover:scale-100 transition duration-300">
                   <i class="fa-solid fa-play text-sm ml-0.5"></i>
                 </div>
@@ -702,7 +713,7 @@
       if (!playerUrl && item.tmdbId) {
         playerUrl = item.type === 'Filme' 
           ? `https://superflixapi.quest/filme/${item.tmdbId}`
-          : `https://superflixapi.quest/anime/${item.tmdbId}`;
+          : (item.type === 'Anime' ? `https://superflixapi.quest/anime/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`);
       }
 
       renderApiContent(playerUrl, item.type === 'Filme' ? 'Filme Completo' : 'Player Principal');
