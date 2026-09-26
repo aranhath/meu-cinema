@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Meu Cinema & Séries - Catalog Player</title>
+  
+  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -18,6 +20,11 @@
     }
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <!-- Firebase SDK (v9 Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     body { background-color: #0f0f0f; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     .glass { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
@@ -35,23 +42,17 @@
       </div>
       <div>
         <h1 class="font-bold text-lg leading-none tracking-tight text-white">Meu Cinema</h1>
-        <p class="text-[11px] text-zinc-400 font-medium">Catálogo & Player de APIs</p>
+        <p class="text-[11px] text-zinc-400 font-medium flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Sincronizado na Nuvem
+        </p>
       </div>
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <button onclick="exportData()" title="Exportar Backup JSON" class="p-2 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 bg-zinc-800/60 hover:bg-zinc-700 text-zinc-300 transition flex items-center gap-1.5">
-        <i class="fa-solid fa-download text-zinc-400"></i>
-        <span class="hidden sm:inline">Exportar</span>
-      </button>
-      <label title="Importar Backup JSON" class="p-2 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 bg-zinc-800/60 hover:bg-zinc-700 text-zinc-300 transition flex items-center gap-1.5 cursor-pointer">
-        <i class="fa-solid fa-upload text-zinc-400"></i>
-        <span class="hidden sm:inline">Importar</span>
-        <input type="file" id="importFile" accept=".json" onchange="importData(event)" class="hidden" />
-      </label>
       <button onclick="openModal()" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 transition flex items-center gap-1.5">
         <i class="fa-solid fa-plus"></i>
-        <span>Adicionar Titulo</span>
+        <span>Adicionar Título</span>
       </button>
     </div>
   </header>
@@ -83,7 +84,7 @@
         <i class="fa-solid fa-film"></i>
       </div>
       <p class="text-zinc-400 font-medium text-sm">Nenhum título encontrado.</p>
-      <p class="text-xs text-zinc-600 max-w-xs">Adicione novos títulos com seus links de API para assistir a qualquer momento.</p>
+      <p class="text-xs text-zinc-600 max-w-xs">Adicione títulos com seus links de API para assistir em qualquer dispositivo.</p>
     </div>
   </main>
 
@@ -134,7 +135,7 @@
 
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold rounded-xl border border-zinc-700 text-zinc-300 hover:bg-zinc-800">Cancelar</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20">Salvar</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20">Salvar na Nuvem</button>
         </div>
       </form>
     </div>
@@ -142,7 +143,6 @@
 
   <!-- PLAYER OVERLAY LAYER -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black hidden flex-col">
-    <!-- FLOATING TOP BAR -->
     <div id="playerHeader" class="absolute top-0 left-0 right-0 z-50 p-3 sm:p-4 bg-gradient-to-b from-black/90 to-transparent flex items-center justify-between transition-opacity duration-300">
       <div class="flex items-center gap-3">
         <button onclick="closePlayer()" class="w-9 h-9 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 text-white flex items-center justify-center transition">
@@ -156,41 +156,55 @@
 
       <div class="flex items-center gap-2">
         <select id="episodeSelect" onchange="changeEpisode(this.value)" class="hidden bg-zinc-900/90 border border-zinc-700 text-xs text-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none">
-          <!-- Populated dynamically -->
         </select>
         <button onclick="closePlayer()" class="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg border border-zinc-700 transition">Sair</button>
       </div>
     </div>
 
-    <!-- IFRAME CONTAINER -->
     <div id="iframeHolder" class="w-full h-full"></div>
   </div>
 
-  <!-- JS LOGIC -->
   <script>
-    let catalog = JSON.parse(localStorage.getItem('my_cinema_catalog')) || [];
+    // 1. CONFIGURAÇÃO DO FIREBASE (Sua chave integrada)
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2NZ67Uh1biKo27WvRoT5B41GLMOUM0xo",
+      authDomain: "meu-cinema-931ad.firebaseapp.com",
+      databaseURL: "https://meu-cinema-931ad-default-rtdb.firebaseio.com",
+      projectId: "meu-cinema-931ad",
+      storageBucket: "meu-cinema-931ad.firebasestorage.app",
+      messagingSenderId: "217991334157",
+      appId: "1:217991334157:web:cba2f7f21f0a835d750844",
+      measurementId: "G-DRWSVHV215"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const catalogRef = db.ref('catalog');
+
+    let catalog = [];
     let currentFilter = 'ALL';
 
-    function saveCatalog() {
-      localStorage.setItem('my_cinema_catalog', JSON.stringify(catalog));
-    }
+    // 2. LEITURA EM TEMPO REAL DO BANCO DE DADOS
+    catalogRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        catalog = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+      } else {
+        catalog = [];
+      }
+      renderCatalog();
+    });
 
-    // Helper: Safely Extracts URL & Enforces HTTPS + Referrer Policy
     function parseApiUrl(raw) {
       if (!raw) return '';
       let url = raw.trim();
-
-      // Extract src if raw is an iframe string
       if (url.includes('src=')) {
         const match = url.match(/src=["']([^"']+)["']/i);
         if (match && match[1]) url = match[1];
       }
-
-      // Enforce HTTPS to prevent mixed content issues on mobile
       if (url.startsWith('http://')) {
         url = url.replace('http://', 'https://');
       }
-
       return url;
     }
 
@@ -283,14 +297,15 @@
       document.getElementById('modal').classList.add('hidden');
     }
 
+    // 3. SALVAR DIRETO NO FIREBASE (Sincronização Nuvem)
     function saveItem(e) {
       e.preventDefault();
-      const id = document.getElementById('itemId').value || Date.now().toString();
+      const id = document.getElementById('itemId').value || db.ref('catalog').push().key;
       const title = document.getElementById('titleInput').value.trim();
       const type = document.getElementById('typeInput').value;
       const banner = document.getElementById('bannerInput').value.trim();
 
-      let itemData = { id, title, type, banner };
+      let itemData = { title, type, banner };
 
       if (type === 'Filme') {
         itemData.apiUrl = parseApiUrl(document.getElementById('apiInput').value);
@@ -299,23 +314,23 @@
         itemData.episodes = rawEps.map(line => parseApiUrl(line)).filter(url => url.length > 0);
       }
 
-      catalog = catalog.filter(i => i.id !== id);
-      catalog.unshift(itemData);
-      saveCatalog();
-      closeModal();
-      renderCatalog();
+      db.ref(`catalog/${id}`).set(itemData, (error) => {
+        if (!error) {
+          closeModal();
+        } else {
+          alert('Erro ao salvar no banco de dados. Verifique as Regras do Realtime Database.');
+        }
+      });
     }
 
+    // 4. EXCLUIR DO FIREBASE
     function deleteItem(id, e) {
       e.stopPropagation();
-      if (confirm('Deseja excluir este título do catálogo?')) {
-        catalog = catalog.filter(i => i.id !== id);
-        saveCatalog();
-        renderCatalog();
+      if (confirm('Deseja excluir este título do catálogo na nuvem?')) {
+        db.ref(`catalog/${id}`).remove();
       }
     }
 
-    // CRITICAL PLAYER LOGIC FOR MOBILE & CROSS-ORIGIN APIS
     let activeItem = null;
 
     function playItem(id) {
@@ -360,15 +375,12 @@
         return;
       }
 
-      // CREATE IFRAME WITH MOBILE FIXES
       const iframe = document.createElement('iframe');
       iframe.src = url;
       iframe.className = "w-full h-full border-0";
       
-      // 1. CRITICAL: Hide GitHub domain referrer so external APIs load on mobile
+      // Oculta o referrer para liberar o carregamento em dispositivos móveis
       iframe.referrerPolicy = "no-referrer";
-      
-      // 2. Pass all necessary media & fullscreen permissions
       iframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *; clipboard-write *; accelerometer *; gyroscope *";
       iframe.setAttribute('allowfullscreen', 'true');
       iframe.setAttribute('webkitallowfullscreen', 'true');
@@ -379,44 +391,11 @@
 
     function closePlayer() {
       const holder = document.getElementById('iframeHolder');
-      holder.innerHTML = ''; // Stop audio playback
+      holder.innerHTML = '';
       document.getElementById('playerOverlay').classList.add('hidden');
       document.getElementById('playerOverlay').classList.remove('flex');
       activeItem = null;
     }
-
-    // EXPORT & IMPORT BACKUP JSON
-    function exportData() {
-      const blob = new Blob([JSON.stringify(catalog, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `meu-cinema-backup-${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-    }
-
-    function importData(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        try {
-          const imported = JSON.parse(evt.target.result);
-          if (Array.isArray(imported)) {
-            catalog = imported;
-            saveCatalog();
-            renderCatalog();
-            alert('Catálogo importado com sucesso!');
-          }
-        } catch (err) {
-          alert('Erro ao carregar o arquivo JSON de backup.');
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    // INITIAL RENDER
-    renderCatalog();
   </script>
 </body>
 </html>
