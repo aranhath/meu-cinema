@@ -290,33 +290,33 @@
     // TMDB API KEY
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
-    // BASE DE CANAIS AO VIVO
+    // BASE DE CANAIS AO VIVO (REI DOS EMBEDS)
     const REI_DOS_EMBEDS_CHANNELS = [
       { id: "globo-sp", name: "Globo SP", cat: "TV ao Vivo" },
       { id: "globo-rj", name: "Globo RJ", cat: "TV ao Vivo" },
       { id: "globo-mg", name: "Globo MG", cat: "TV ao Vivo" },
       { id: "globo-rs", name: "Globo RS", cat: "TV ao Vivo" },
       { id: "globo-df", name: "Globo DF", cat: "TV ao Vivo" },
-      { id: "globo-news", name: "GloboNews", cat: "TV ao Vivo" },
+      { id: "globonews", name: "GloboNews", cat: "TV ao Vivo" },
       { id: "sportv", name: "SporTV 1", cat: "Esporte" },
-      { id: "sportv-2", name: "SporTV 2", cat: "Esporte" },
-      { id: "sportv-3", name: "SporTV 3", cat: "Esporte" },
+      { id: "sportv2", name: "SporTV 2", cat: "Esporte" },
+      { id: "sportv3", name: "SporTV 3", cat: "Esporte" },
       { id: "premiere-clubes", name: "Premiere Clubes", cat: "Esporte" },
-      { id: "premiere-2", name: "Premiere 2", cat: "Esporte" },
-      { id: "premiere-3", name: "Premiere 3", cat: "Esporte" },
-      { id: "premiere-4", name: "Premiere 4", cat: "Esporte" },
-      { id: "premiere-5", name: "Premiere 5", cat: "Esporte" },
-      { id: "premiere-6", name: "Premiere 6", cat: "Esporte" },
-      { id: "premiere-7", name: "Premiere 7", cat: "Esporte" },
-      { id: "premiere-8", name: "Premiere 8", cat: "Esporte" },
+      { id: "premiere2", name: "Premiere 2", cat: "Esporte" },
+      { id: "premiere3", name: "Premiere 3", cat: "Esporte" },
+      { id: "premiere4", name: "Premiere 4", cat: "Esporte" },
+      { id: "premiere5", name: "Premiere 5", cat: "Esporte" },
+      { id: "premiere6", name: "Premiere 6", cat: "Esporte" },
+      { id: "premiere7", name: "Premiere 7", cat: "Esporte" },
+      { id: "premiere8", name: "Premiere 8", cat: "Esporte" },
       { id: "espn", name: "ESPN 1", cat: "Esporte" },
-      { id: "espn-2", name: "ESPN 2", cat: "Esporte" },
-      { id: "espn-3", name: "ESPN 3", cat: "Esporte" },
-      { id: "espn-4", name: "ESPN 4", cat: "Esporte" },
-      { id: "espn-5", name: "ESPN 5", cat: "Esporte" },
-      { id: "espn-6", name: "ESPN 6", cat: "Esporte" },
+      { id: "espn2", name: "ESPN 2", cat: "Esporte" },
+      { id: "espn3", name: "ESPN 3", cat: "Esporte" },
+      { id: "espn4", name: "ESPN 4", cat: "Esporte" },
+      { id: "espn5", name: "ESPN 5", cat: "Esporte" },
+      { id: "espn6", name: "ESPN 6", cat: "Esporte" },
       { id: "combate", name: "Combate", cat: "Esporte" },
-      { id: "band-sports", name: "BandSports", cat: "Esporte" },
+      { id: "bandsports", name: "BandSports", cat: "Esporte" },
       { id: "cazetv", name: "CazéTV", cat: "Esporte" },
       { id: "sbt", name: "SBT", cat: "TV ao Vivo" },
       { id: "record", name: "Record TV", cat: "TV ao Vivo" },
@@ -327,18 +327,8 @@
       { id: "telecine-pipoca", name: "Telecine Pipoca", cat: "TV ao Vivo" },
       { id: "telecine-action", name: "Telecine Action", cat: "TV ao Vivo" },
       { id: "telecine-premium", name: "Telecine Premium", cat: "TV ao Vivo" },
-      { id: "telecine-fun", name: "Telecine Fun", cat: "TV ao Vivo" },
-      { id: "telecine-touch", name: "Telecine Touch", cat: "TV ao Vivo" },
-      { id: "telecine-cult", name: "Telecine Cult", cat: "TV ao Vivo" },
       { id: "hbo", name: "HBO", cat: "TV ao Vivo" },
-      { id: "hbo-2", name: "HBO 2", cat: "TV ao Vivo" },
-      { id: "cartoon-network", name: "Cartoon Network", cat: "TV ao Vivo" },
-      { id: "discovery-kids", name: "Discovery Kids", cat: "TV ao Vivo" },
-      { id: "disney-channel", name: "Disney Channel", cat: "TV ao Vivo" },
-      { id: "paramount-network", name: "Paramount Network", cat: "TV ao Vivo" },
-      { id: "multishow", name: "Multishow", cat: "TV ao Vivo" },
-      { id: "gnt", name: "GNT", cat: "TV ao Vivo" },
-      { id: "viva", name: "VIVA", cat: "TV ao Vivo" }
+      { id: "cartoon-network", name: "Cartoon Network", cat: "TV ao Vivo" }
     ];
 
     let catalog = [];
@@ -652,7 +642,7 @@
       }
     }
 
-    // ADIÇÃO RÁPIDA DE CANAL AO VIVO (ENDPOINT /embed/ CORRIGIDO)
+    // ADIÇÃO RÁPIDA DE CANAL AO VIVO
     function quickAddLive(channelId, name, category, btnElement) {
       const id = db.ref('catalog').push().key;
       const apiUrl = `https://reidosembeds.online/embed/${channelId}`;
@@ -725,11 +715,6 @@
       const banner = document.getElementById('bannerInput').value.trim();
       let rawApi = document.getElementById('apiInput').value.trim();
 
-      // Ajusta automaticamente caso a URL manual tenha sido colada com /canal/
-      if (rawApi.includes('reidosembeds.online/canal/')) {
-        rawApi = rawApi.replace('reidosembeds.online/canal/', 'reidosembeds.online/embed/');
-      }
-
       const itemData = {
         title,
         type,
@@ -779,10 +764,6 @@
       const banner = document.getElementById('editBannerInput').value.trim();
       const seasonNote = document.getElementById('editNoteInput').value.trim();
       let apiUrl = document.getElementById('editApiInput').value.trim();
-      
-      if (apiUrl.includes('reidosembeds.online/canal/')) {
-        apiUrl = apiUrl.replace('reidosembeds.online/canal/', 'reidosembeds.online/embed/');
-      }
 
       let updateData = { title, type, banner, seasonNote, apiUrl };
 
@@ -878,7 +859,7 @@
       }
     }
 
-    // REPRODUTOR DE CONTEÚDO (COM CONVERSÃO AUTOMÁTICA DE ENDPOINT)
+    // REPRODUTOR DE CONTEÚDO MULTI-API
     function playItem(id) {
       const item = catalog.find(i => i.id === id);
       if (!item) return;
@@ -887,11 +868,6 @@
       
       let playerUrl = item.apiUrl || '';
 
-      // Converte URLs antigas do Rei dos Embeds enviadas como /canal/ para /embed/
-      if (playerUrl.includes('reidosembeds.online/canal/')) {
-        playerUrl = playerUrl.replace('reidosembeds.online/canal/', 'reidosembeds.online/embed/');
-      }
-      
       if (!playerUrl && item.episodes && item.episodes.length > 0) {
         playerUrl = item.episodes[0];
       }
@@ -923,7 +899,8 @@
         if (insertedIframe) {
           insertedIframe.style.width = "100%";
           insertedIframe.style.height = "100%";
-          insertedIframe.referrerPolicy = "no-referrer";
+          insertedIframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *";
+          insertedIframe.setAttribute('allowfullscreen', 'true');
         }
       } else {
         let cleanUrl = rawContent;
@@ -936,7 +913,6 @@
         const iframe = document.createElement('iframe');
         iframe.src = cleanUrl;
         iframe.className = "w-full h-full border-0";
-        iframe.referrerPolicy = "no-referrer";
         iframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *; clipboard-write *; accelerometer *; gyroscope *";
         iframe.setAttribute('allowfullscreen', 'true');
         iframe.setAttribute('webkitallowfullscreen', 'true');
