@@ -66,7 +66,7 @@
       <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-zinc-800/40 pb-4">
         <div class="relative flex-1">
           <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-          <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch()" placeholder="Digite para buscar e adicionar filmes, séries, animes ou canais (ex: Globo, Batman, Premiere)..." class="w-full bg-zinc-900/90 border border-zinc-700/80 focus:border-brand-500 rounded-xl pl-9 pr-10 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none transition shadow-inner">
+          <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch()" placeholder="Digite para buscar filmes, séries, animes ou canais ao vivo (ex: Globo, Batman, Premiere)..." class="w-full bg-zinc-900/90 border border-zinc-700/80 focus:border-brand-500 rounded-xl pl-9 pr-10 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none transition shadow-inner">
           <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 text-xs">
             <i class="fa-solid fa-xmark"></i>
           </button>
@@ -88,10 +88,10 @@
           <div id="resultsSavedList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
 
-        <!-- SEÇÃO: CANAIS AO VIVO (REI DOS EMBEDS OTIMIZADO) -->
+        <!-- SEÇÃO: CANAIS AO VIVO (SUPERFLIX API) -->
         <div id="sectionLive" class="hidden space-y-2">
           <h3 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
-            <i class="fa-solid fa-tv text-emerald-400"></i> TV ao Vivo & Esportes (Rei dos Embeds)
+            <i class="fa-solid fa-tv text-emerald-400"></i> TV ao Vivo & Esportes (SuperFlix API)
           </h3>
           <div id="resultsLiveList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
@@ -142,7 +142,7 @@
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título do Canal / Filme</label>
-          <input type="text" id="titleInput" required placeholder="Ex: SporTV HD, Canal Custom" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          <input type="text" id="titleInput" required placeholder="Ex: Globo SP, SporTV, Canal Custom" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
@@ -158,8 +158,8 @@
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link do Player</label>
-          <textarea id="apiInput" rows="3" placeholder="Cole a URL inteira do Rei dos Embeds ou o <iframe src='...'>" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
+          <textarea id="apiInput" rows="3" placeholder="Ex: https://superflixapi.quest/canal/globo" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -209,7 +209,7 @@
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
-          <textarea id="editApiInput" rows="3" placeholder="Cole o <iframe src='...'> ou a URL da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <textarea id="editApiInput" rows="3" placeholder="Cole a URL inteira da SuperFlix API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -260,6 +260,11 @@
         <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
       </div>
 
+      <button id="openExternalBtn" onclick="openExternalPlayer()" title="Abrir Player em Nova Aba" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        <span>Nova Aba</span>
+      </button>
+
       <button onclick="closePlayer()" title="Fechar Player" class="px-3 py-1 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
         <span>Sair</span>
@@ -290,24 +295,24 @@
     // TMDB API KEY
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
-    // BASE DE CANAIS AO VIVO OTIMIZADA (REI DOS EMBEDS)
-    const REI_DOS_EMBEDS_CHANNELS = [
+    // BASE DE CANAIS AO VIVO (SUPERFLIX API)
+    const SUPERFLIX_LIVE_CHANNELS = [
+      { id: "globo", name: "Globo (Nacional)", cat: "TV ao Vivo" },
       { id: "globo-sp", name: "Globo SP", cat: "TV ao Vivo" },
       { id: "globo-rj", name: "Globo RJ", cat: "TV ao Vivo" },
       { id: "globo-mg", name: "Globo MG", cat: "TV ao Vivo" },
-      { id: "globo-rs", name: "Globo RS", cat: "TV ao Vivo" },
       { id: "globonews", name: "GloboNews", cat: "TV ao Vivo" },
       { id: "sportv", name: "SporTV 1", cat: "Esporte" },
-      { id: "sportv2", name: "SporTV 2", cat: "Esporte" },
-      { id: "sportv3", name: "SporTV 3", cat: "Esporte" },
-      { id: "premiere-clubes", name: "Premiere Clubes", cat: "Esporte" },
-      { id: "premiere2", name: "Premiere 2", cat: "Esporte" },
-      { id: "premiere3", name: "Premiere 3", cat: "Esporte" },
-      { id: "premiere4", name: "Premiere 4", cat: "Esporte" },
+      { id: "sportv-2", name: "SporTV 2", cat: "Esporte" },
+      { id: "sportv-3", name: "SporTV 3", cat: "Esporte" },
+      { id: "premiere", name: "Premiere 1", cat: "Esporte" },
+      { id: "premiere-2", name: "Premiere 2", cat: "Esporte" },
+      { id: "premiere-3", name: "Premiere 3", cat: "Esporte" },
+      { id: "premiere-4", name: "Premiere 4", cat: "Esporte" },
       { id: "espn", name: "ESPN 1", cat: "Esporte" },
-      { id: "espn2", name: "ESPN 2", cat: "Esporte" },
-      { id: "espn3", name: "ESPN 3", cat: "Esporte" },
-      { id: "espn4", name: "ESPN 4", cat: "Esporte" },
+      { id: "espn-2", name: "ESPN 2", cat: "Esporte" },
+      { id: "espn-3", name: "ESPN 3", cat: "Esporte" },
+      { id: "espn-4", name: "ESPN 4", cat: "Esporte" },
       { id: "combate", name: "Combate", cat: "Esporte" },
       { id: "bandsports", name: "BandSports", cat: "Esporte" },
       { id: "cazetv", name: "CazéTV", cat: "Esporte" },
@@ -328,6 +333,7 @@
     let categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
     let currentFilter = 'ALL';
     let globalSearchTimeout = null;
+    let currentPlayingUrl = '';
 
     // ESCUTA CATEGORIAS
     categoriesRef.on('value', (snapshot) => {
@@ -457,7 +463,7 @@
       renderCatalog();
     }
 
-    // BUSCA GLOBAL INTELIGENTE (1 CLIQUE)
+    // BUSCA GLOBAL INTELIGENTE (SUPERFLIX)
     function handleGlobalSearch() {
       clearTimeout(globalSearchTimeout);
       const query = document.getElementById('globalSearchInput').value.trim();
@@ -474,17 +480,17 @@
       clearBtn.classList.remove('hidden');
       panel.classList.remove('hidden');
 
-      // 1. FILTRAR ITENS JÁ SALVOS NO CATALOGO
+      // 1. FILTRAR ITENS JÁ SALVOS
       const savedMatches = catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase()));
       renderSavedSearchList(savedMatches);
 
-      // 2. FILTRAR CANAIS AO VIVO (REI DOS EMBEDS)
-      const liveMatches = REI_DOS_EMBEDS_CHANNELS.filter(c => 
+      // 2. FILTRAR CANAIS AO VIVO (SUPERFLIX)
+      const liveMatches = SUPERFLIX_LIVE_CHANNELS.filter(c => 
         c.name.toLowerCase().includes(query.toLowerCase()) || c.id.toLowerCase().includes(query.toLowerCase())
       );
       renderLiveSearchList(liveMatches);
 
-      // 3. BUSCAR TMDB (SUPERFLIX API) COM DEBOUNCE
+      // 3. BUSCAR FILMES/SÉRIES VIA TMDB
       globalSearchTimeout = setTimeout(() => {
         fetchTMDBSearch(query);
       }, 350);
@@ -635,10 +641,10 @@
       }
     }
 
-    // ADIÇÃO RÁPIDA DE CANAL (FORMATO ATUALIZADO REI DOS EMBEDS)
+    // ADIÇÃO RÁPIDA DE CANAL AO VIVO (SUPERFLIX API)
     function quickAddLive(channelId, name, category, btnElement) {
       const id = db.ref('catalog').push().key;
-      const apiUrl = `https://reidosembeds.online/embed/canal/${channelId}`;
+      const apiUrl = `https://superflixapi.quest/canal/${channelId}`;
 
       const itemData = {
         title: name,
@@ -657,7 +663,7 @@
       });
     }
 
-    // ADIÇÃO RÁPIDA DE FILME / SÉRIE / ANIME (SUPERFLIX)
+    // ADIÇÃO RÁPIDA DE FILME / SÉRIE / ANIME (SUPERFLIX API)
     function quickAddTMDB(tmdbId, encodedTitle, isMovie, banner, btnElement) {
       const title = decodeURIComponent(encodedTitle);
       const id = db.ref('catalog').push().key;
@@ -690,7 +696,7 @@
       });
     }
 
-    // MODAL DE CADASTRO MANUAL / IFRAME
+    // MODAL MANUAL
     function openAddModal() {
       document.getElementById('itemForm').reset();
       document.getElementById('addModal').classList.remove('hidden');
@@ -776,7 +782,7 @@
       }
     }
 
-    // RENDERIZAÇÃO DO CATÁLOGO NA GRADE
+    // RENDERIZAÇÃO DO CATÁLOGO
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
       const empty = document.getElementById('emptyState');
@@ -852,7 +858,7 @@
       }
     }
 
-    // REPRODUTOR DE CONTEÚDO OTIMIZADO MULTI-API
+    // REPRODUTOR DE CONTEÚDO (CONVERTE AUTOMÁTICO PARA SUPERFLIX API)
     function playItem(id) {
       const item = catalog.find(i => i.id === id);
       if (!item) return;
@@ -860,6 +866,13 @@
       document.getElementById('playerTitle').innerText = item.title;
       
       let playerUrl = item.apiUrl || '';
+
+      // CONVERSÃO DE CANAIS ANTIGOS PARA SUPERFLIX API
+      if (playerUrl.includes('reidosembeds.online')) {
+        const parts = playerUrl.split('/');
+        const channelSlug = parts[parts.length - 1];
+        playerUrl = `https://superflixapi.quest/canal/${channelSlug}`;
+      }
 
       if (!playerUrl && item.episodes && item.episodes.length > 0) {
         playerUrl = item.episodes[0];
@@ -871,15 +884,7 @@
           : (item.type === 'Anime' ? `https://superflixapi.quest/anime/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`);
       }
 
-      // TRATAMENTO DE ADAPTAÇÃO DINÂMICA DE ROTA PARA O REI DOS EMBEDS
-      if (playerUrl.includes('reidosembeds.online') && !playerUrl.includes('<iframe')) {
-        if (!playerUrl.includes('/embed/canal/') && playerUrl.includes('/embed/')) {
-          playerUrl = playerUrl.replace('/embed/', '/embed/canal/');
-        } else if (playerUrl.includes('/canal/')) {
-          playerUrl = playerUrl.replace('/canal/', '/embed/canal/');
-        }
-      }
-
+      currentPlayingUrl = playerUrl;
       renderApiContent(playerUrl, item.type === 'Filme' ? 'Filme Completo' : (item.type === 'TV ao Vivo' ? 'Transmissão ao Vivo' : 'Player Principal'));
       document.getElementById('playerOverlay').classList.remove('hidden');
       document.getElementById('playerOverlay').classList.add('flex');
@@ -924,9 +929,22 @@
       }
     }
 
+    function openExternalPlayer() {
+      if (currentPlayingUrl) {
+        let cleanUrl = currentPlayingUrl;
+        if (cleanUrl.includes('src=')) {
+          const match = cleanUrl.match(/src=["']([^"']+)["']/i);
+          if (match && match[1]) cleanUrl = match[1];
+        }
+        cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
+        window.open(cleanUrl, '_blank');
+      }
+    }
+
     function closePlayer() {
       const holder = document.getElementById('iframeHolder');
       holder.innerHTML = '';
+      currentPlayingUrl = '';
       document.getElementById('playerOverlay').classList.add('hidden');
       document.getElementById('playerOverlay').classList.remove('flex');
     }
