@@ -1045,6 +1045,1035 @@
           insertedIframe.style.width = "100%";
           insertedIframe.style.height = "100%";
           insertedIframe.referrerPolicy = "no-referrer";
+          insertedIframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *";
+          insertedIframe.setAttribute('allowfullscreen', 'true');
+        }
+      } else {
+        let cleanUrl = rawContent;
+        if (cleanUrl.includes('src=')) {
+          const match = cleanUrl.match(/src=["']([^"']+)["']/i);
+          if (match && match[1]) cleanUrl = match[1];
+        }
+        cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
+
+        const iframe = document.createElement('iframe');
+        iframe.src = cleanUrl;
+        iframe.className = "w-full h-full border-0";
+        iframe.referrerPolicy = "no-referrer";
+        iframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *; clipboard-write *; accelerometer *; gyroscope *";
+        iframe.setAttribute('allowfullscreen', 'true');
+        iframe.setAttribute('webkitallowfullscreen', 'true');
+        iframe.setAttribute('mozallowfullscreen', 'true');
+
+        holder.appendChild(iframe);
+      }
+    }
+
+    function openExternalPlayer() {
+      if (currentPlayingUrl) {
+        let cleanUrl = currentPlayingUrl;
+        if (cleanUrl.includes('src=')) {
+          const match = cleanUrl.match(/src=["']([^"']+)["']/i);
+          if (match && match[1]) cleanUrl = match[1];
+        }
+        cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
+        window.open(cleanUrl, '_blank');
+      }
+    }
+
+    function closePlayer() {
+      const holder = document.getElementById('iframeHolder');
+      holder.innerHTML = '';
+      currentPlayingUrl = '';
+      document.getElementById('playerOverlay').classList.add('hidden');
+      document.getElementById('playerOverlay').classList.remove('flex');
+    }
+  </script>
+</body>
+</html>
+    .liquid-glass-card {
+      background: rgba(22, 22, 28, 0.45);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.5),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .liquid-glass-card:hover {
+      background: rgba(35, 35, 45, 0.65);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7),
+                  0 0 20px rgba(229, 9, 20, 0.2),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .liquid-pill {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .liquid-pill:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* LIVE PULSE BADGE */
+    .live-pulse {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: livePulseAnim 1.5s infinite;
+    }
+
+    @keyframes livePulseAnim {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative">
+
+  <!-- MESH GRADIENT DYNAMIC LIGHTING -->
+  <div class="mesh-background"></div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- TOP HEADER (FLOATING LIQUID GLASS BAR) -->
+  <div class="sticky top-4 z-40 px-4 sm:px-8 max-w-7xl w-full mx-auto">
+    <header class="liquid-glass rounded-2xl px-4 py-3 sm:px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/30 border border-white/20">
+          <i class="fa-solid fa-play"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-base leading-none tracking-tight text-white/90">Meu Cinema</h1>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="openCategoryModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-layer-group text-zinc-400"></i>
+          <span>Categorias</span>
+        </button>
+
+        <button onclick="openAddModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-code text-xs"></i>
+          <span>Link / Iframe</span>
+        </button>
+      </div>
+    </header>
+  </div>
+
+  <!-- MAIN CATALOG CONTENT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
+    
+    <!-- BARRA DE BUSCA GLOBAL UNIFICADA -->
+    <div class="relative z-30">
+      <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+          <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch()" placeholder="Buscar filmes, séries, animes ou canais ao vivo (ex: Globo, SporTV, Premiere)..." class="w-full liquid-glass rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/30 transition">
+          <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5">
+          <!-- Generated Dynamically -->
+        </div>
+      </div>
+
+      <!-- PAINEL FLUTUANTE DE RESULTADOS DA BUSCA GLOBAL -->
+      <div id="searchResultsPanel" class="hidden absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
+        
+        <!-- SEÇÃO: JÁ SALVOS NO SEU CATÁLOGO -->
+        <div id="sectionSaved" class="hidden space-y-2">
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+            <i class="fa-solid fa-bookmark"></i> No Seu Catálogo
+          </h3>
+          <div id="resultsSavedList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+        </div>
+
+        <!-- SEÇÃO: CANAIS AO VIVO -->
+        <div id="sectionLive" class="hidden space-y-2">
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+            <i class="fa-solid fa-tv"></i> TV ao Vivo & Esportes (Rei dos Embeds)
+          </h3>
+          <div id="resultsLiveList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+        </div>
+
+        <!-- SEÇÃO: FILMES & SÉRIES (TMDB) -->
+        <div id="sectionTMDB" class="hidden space-y-2">
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-brand-500 flex items-center gap-1.5 border-b border-white/10 pb-1">
+            <i class="fa-solid fa-film"></i> Filmes, Séries & Animes
+          </h3>
+          <div id="resultsTMDBList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+        </div>
+
+        <!-- BUSCA VAZIA -->
+        <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-400">
+          Nenhum resultado encontrado para a busca.
+        </div>
+      </div>
+    </div>
+
+    <!-- CARDS GRID GLASS -->
+    <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <!-- Generated Dynamically -->
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-2">
+      <div class="w-14 h-14 rounded-2xl liquid-glass flex items-center justify-center text-zinc-500 text-xl mb-2">
+        <i class="fa-solid fa-film"></i>
+      </div>
+      <p class="text-zinc-300 font-medium text-xs">Nenhum título ou canal no seu catálogo.</p>
+    </div>
+  </main>
+
+  <!-- MANUAL ITEM MODAL -->
+  <div id="addModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeAddModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 class="text-sm font-bold text-white flex items-center gap-2">
+        <i class="fa-solid fa-code text-brand-500"></i>
+        <span>Cadastro Manual / Rei dos Embeds</span>
+      </h3>
+
+      <form id="itemForm" onsubmit="saveItemManual(event)" class="space-y-3">
+        <input type="hidden" id="itemId">
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título do Canal / Filme</label>
+          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
+            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40">
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa (Opcional)</label>
+            <input type="url" id="bannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Rei dos Embeds OU Código iframe</label>
+          <textarea id="apiInput" rows="3" placeholder="Ex: https://reidosembeds.online/embed/canal.php?id=globo-rj ou id do canal" class="w-full liquid-pill rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeAddModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar na Nuvem</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDIT DETAILS MODAL -->
+  <div id="editModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 class="text-sm font-bold text-white flex items-center gap-2">
+        <i class="fa-solid fa-pen text-brand-500"></i>
+        <span>Editar Título & Player</span>
+      </h3>
+
+      <form id="editForm" onsubmit="saveEditDetails(event)" class="space-y-3">
+        <input type="hidden" id="editItemId">
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
+          <input type="text" id="editTitleInput" required class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
+            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40">
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Anotação / Status</label>
+            <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa</label>
+          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Código iframe OU Link da API</label>
+          <textarea id="editApiInput" rows="3" placeholder="Cole a URL do Rei dos Embeds" class="w-full liquid-pill rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeEditModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CATEGORY MANAGEMENT MODAL -->
+  <div id="categoryModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeCategoryModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 class="text-sm font-bold text-white flex items-center gap-2">
+        <i class="fa-solid fa-layer-group text-brand-500"></i>
+        <span>Gerenciar Categorias</span>
+      </h3>
+
+      <div class="flex gap-2">
+        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: TV ao Vivo, Desenho)" class="flex-1 liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+        <button onclick="addCategory()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow transition cursor-pointer">
+          Adicionar
+        </button>
+      </div>
+
+      <div class="space-y-1.5 pt-1">
+        <label class="block text-[11px] font-semibold text-zinc-300">Categorias Atuais</label>
+        <div id="categoryList" class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeCategoryModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYER OVERLAY LAYER -->
+  <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex-col">
+    <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 liquid-glass p-2 rounded-2xl shadow-2xl">
+      <div class="hidden sm:block px-3 text-left">
+        <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[200px]">...</h2>
+        <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
+      </div>
+
+      <button id="openExternalBtn" onclick="openExternalPlayer()" title="Abrir Player em Nova Aba" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        <span>Nova Aba</span>
+      </button>
+
+      <button onclick="closePlayer()" title="Fechar Player" class="px-3.5 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-xl shadow-lg shadow-brand-500/30 transition flex items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+        <span>Sair</span>
+      </button>
+    </div>
+
+    <div id="iframeHolder" class="w-full h-full"></div>
+  </div>
+
+  <script>
+    // SISTEMA DE NOTIFICAÇÕES TOAST
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const isSuccess = type === 'success';
+
+      toast.className = `pointer-events-auto liquid-glass px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 border text-xs font-semibold text-white transition-all duration-300 transform translate-y-4 opacity-0 ${
+        isSuccess ? 'border-emerald-500/40' : 'border-rose-500/40'
+      }`;
+
+      toast.innerHTML = `
+        <div class="w-5 h-5 rounded-lg ${isSuccess ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'} flex items-center justify-center text-[10px]">
+          <i class="fa-solid ${isSuccess ? 'fa-check' : 'fa-exclamation'}"></i>
+        </div>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // CONFIGURAÇÃO DO FIREBASE
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2NZ67Uh1biKo27WvRoT5B41GLMOUM0xo",
+      authDomain: "meu-cinema-931ad.firebaseapp.com",
+      databaseURL: "https://meu-cinema-931ad-default-rtdb.firebaseio.com",
+      projectId: "meu-cinema-931ad",
+      storageBucket: "meu-cinema-931ad.firebasestorage.app",
+      messagingSenderId: "217991334157",
+      appId: "1:217991334157:web:cba2f7f21f0a835d750844",
+      measurementId: "G-DRWSVHV215"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const catalogRef = db.ref('catalog');
+    const categoriesRef = db.ref('categories');
+
+    // TMDB API KEY
+    const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
+
+    // BASE DE CANAIS AO VIVO OFICIAIS DO REI DOS EMBEDS
+    const REI_DOS_EMBEDS_CHANNELS = [
+      { id: "globo-sp", name: "Globo SP", cat: "TV ao Vivo" },
+      { id: "globo-rj", name: "Globo RJ", cat: "TV ao Vivo" },
+      { id: "globo-mg", name: "Globo MG", cat: "TV ao Vivo" },
+      { id: "globo-rs", name: "Globo RS", cat: "TV ao Vivo" },
+      { id: "globonews", name: "GloboNews", cat: "TV ao Vivo" },
+      { id: "sportv", name: "SporTV 1", cat: "Esporte" },
+      { id: "sportv2", name: "SporTV 2", cat: "Esporte" },
+      { id: "sportv3", name: "SporTV 3", cat: "Esporte" },
+      { id: "premiere-clubes", name: "Premiere Clubes", cat: "Esporte" },
+      { id: "premiere2", name: "Premiere 2", cat: "Esporte" },
+      { id: "premiere3", name: "Premiere 3", cat: "Esporte" },
+      { id: "premiere4", name: "Premiere 4", cat: "Esporte" },
+      { id: "espn", name: "ESPN 1", cat: "Esporte" },
+      { id: "espn2", name: "ESPN 2", cat: "Esporte" },
+      { id: "espn3", name: "ESPN 3", cat: "Esporte" },
+      { id: "espn4", name: "ESPN 4", cat: "Esporte" },
+      { id: "combate", name: "Combate", cat: "Esporte" },
+      { id: "bandsports", name: "BandSports", cat: "Esporte" },
+      { id: "cazetv", name: "CazéTV", cat: "Esporte" },
+      { id: "sbt", name: "SBT", cat: "TV ao Vivo" },
+      { id: "record", name: "Record TV", cat: "TV ao Vivo" },
+      { id: "band", name: "Band", cat: "TV ao Vivo" },
+      { id: "tnt", name: "TNT", cat: "TV ao Vivo" },
+      { id: "space", name: "Space", cat: "TV ao Vivo" },
+      { id: "megapix", name: "Megapix", cat: "TV ao Vivo" },
+      { id: "telecine-pipoca", name: "Telecine Pipoca", cat: "TV ao Vivo" },
+      { id: "telecine-action", name: "Telecine Action", cat: "TV ao Vivo" },
+      { id: "telecine-premium", name: "Telecine Premium", cat: "TV ao Vivo" },
+      { id: "hbo", name: "HBO", cat: "TV ao Vivo" },
+      { id: "cartoon-network", name: "Cartoon Network", cat: "TV ao Vivo" }
+    ];
+
+    let catalog = [];
+    let categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
+    let currentFilter = 'ALL';
+    let globalSearchTimeout = null;
+    let currentPlayingUrl = '';
+
+    // ESCUTA CATEGORIAS
+    categoriesRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data && Array.isArray(data)) {
+        categories = data;
+        if (!categories.includes('TV ao Vivo')) {
+          categories.push('TV ao Vivo');
+          categoriesRef.set(categories);
+        }
+      } else {
+        categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
+        categoriesRef.set(categories);
+      }
+      renderCategoryUI();
+      renderCatalog();
+    });
+
+    // ESCUTA CATÁLOGO
+    catalogRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        catalog = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+      } else {
+        catalog = [];
+      }
+      renderCatalog();
+      if (document.getElementById('globalSearchInput').value.trim() !== '') {
+        handleGlobalSearch();
+      }
+    });
+
+    function renderCategoryUI() {
+      const container = document.getElementById('filterButtonsContainer');
+      container.innerHTML = '';
+
+      const allBtn = document.createElement('button');
+      allBtn.onclick = () => setFilter('ALL');
+      allBtn.id = 'filter-ALL';
+      allBtn.className = currentFilter === 'ALL'
+        ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 text-white shadow-lg shadow-brand-500/30 transition whitespace-nowrap"
+        : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white transition whitespace-nowrap";
+      allBtn.innerText = 'Todos';
+      container.appendChild(allBtn);
+
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.onclick = () => setFilter(cat);
+        btn.id = `filter-${cat}`;
+        btn.className = currentFilter === cat
+          ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 text-white shadow-lg shadow-brand-500/30 transition whitespace-nowrap"
+          : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white transition whitespace-nowrap";
+        btn.innerText = cat;
+        container.appendChild(btn);
+      });
+
+      const selectManual = document.getElementById('typeInput');
+      const selectEdit = document.getElementById('editTypeInput');
+      selectManual.innerHTML = '';
+      selectEdit.innerHTML = '';
+
+      categories.forEach(cat => {
+        const opt1 = document.createElement('option');
+        opt1.value = cat;
+        opt1.innerText = cat;
+        selectManual.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = cat;
+        opt2.innerText = cat;
+        selectEdit.appendChild(opt2);
+      });
+
+      const catList = document.getElementById('categoryList');
+      catList.innerHTML = '';
+      categories.forEach((cat, idx) => {
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between liquid-pill px-3.5 py-2 rounded-xl text-xs text-zinc-200";
+        item.innerHTML = `
+          <span class="font-medium">${cat}</span>
+          ${categories.length > 1 ? `
+            <button onclick="removeCategory(${idx})" class="text-zinc-400 hover:text-red-400 p-1 cursor-pointer">
+              <i class="fa-solid fa-trash text-[10px]"></i>
+            </button>
+          ` : ''}
+        `;
+        catList.appendChild(item);
+      });
+    }
+
+    function openCategoryModal() {
+      document.getElementById('newCategoryInput').value = '';
+      document.getElementById('categoryModal').classList.remove('hidden');
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('categoryModal').classList.add('hidden');
+    }
+
+    function addCategory() {
+      const input = document.getElementById('newCategoryInput');
+      const val = input.value.trim();
+      if (!val) return;
+
+      if (!categories.includes(val)) {
+        categories.push(val);
+        categoriesRef.set(categories);
+        input.value = '';
+        showToast('Categoria adicionada!');
+      } else {
+        showToast('Esta categoria já existe!', 'error');
+      }
+    }
+
+    function removeCategory(index) {
+      if (confirm(`Deseja remover a categoria "${categories[index]}"?`)) {
+        categories.splice(index, 1);
+        categoriesRef.set(categories);
+        if (!categories.includes(currentFilter)) {
+          currentFilter = 'ALL';
+        }
+        showToast('Categoria removida.');
+      }
+    }
+
+    function setFilter(type) {
+      currentFilter = type;
+      renderCategoryUI();
+      renderCatalog();
+    }
+
+    // BUSCA GLOBAL UNIFICADA
+    function handleGlobalSearch() {
+      clearTimeout(globalSearchTimeout);
+      const query = document.getElementById('globalSearchInput').value.trim();
+      const panel = document.getElementById('searchResultsPanel');
+      const clearBtn = document.getElementById('clearSearchBtn');
+
+      if (!query) {
+        panel.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+        renderCatalog();
+        return;
+      }
+
+      clearBtn.classList.remove('hidden');
+      panel.classList.remove('hidden');
+
+      // 1. FILTRAR ITENS JÁ SALVOS NO CATALOGO
+      const savedMatches = catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase()));
+      renderSavedSearchList(savedMatches);
+
+      // 2. FILTRAR CANAIS AO VIVO DO REI DOS EMBEDS
+      const liveMatches = REI_DOS_EMBEDS_CHANNELS.filter(c => 
+        c.name.toLowerCase().includes(query.toLowerCase()) || c.id.toLowerCase().includes(query.toLowerCase())
+      );
+      renderLiveSearchList(liveMatches);
+
+      // 3. BUSCAR FILMES/SÉRIES VIA TMDB
+      globalSearchTimeout = setTimeout(() => {
+        fetchTMDBSearch(query);
+      }, 350);
+
+      renderCatalog();
+    }
+
+    function clearGlobalSearch() {
+      document.getElementById('globalSearchInput').value = '';
+      document.getElementById('searchResultsPanel').classList.add('hidden');
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      renderCatalog();
+    }
+
+    function renderSavedSearchList(items) {
+      const section = document.getElementById('sectionSaved');
+      const container = document.getElementById('resultsSavedList');
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+        section.classList.add('hidden');
+        return;
+      }
+
+      section.classList.remove('hidden');
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between liquid-pill p-2 rounded-xl hover:border-emerald-500/50 transition";
+        div.innerHTML = `
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-8 h-8 rounded-lg bg-zinc-900/80 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0 border border-white/10">
+              <i class="fa-solid fa-play text-[10px]"></i>
+            </div>
+            <div class="min-w-0">
+              <h4 class="font-bold text-xs text-white truncate">${item.title}</h4>
+              <span class="text-[10px] text-emerald-400 font-semibold">${item.type} • No catálogo</span>
+            </div>
+          </div>
+          <button onclick="playItem('${item.id}')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex-shrink-0 cursor-pointer shadow-md">
+            Assistir
+          </button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderLiveSearchList(items) {
+      const section = document.getElementById('sectionLive');
+      const container = document.getElementById('resultsLiveList');
+      container.innerHTML = '';
+
+      if (items.length === 0) {
+        section.classList.add('hidden');
+        return;
+      }
+
+      section.classList.remove('hidden');
+      items.forEach(ch => {
+        const isSaved = catalog.some(i => i.title.toLowerCase() === ch.name.toLowerCase() || (i.apiUrl && i.apiUrl.includes(ch.id)));
+        
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between liquid-pill p-2 rounded-xl hover:border-emerald-500/50 transition";
+        
+        div.innerHTML = `
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-8 h-8 rounded-lg bg-zinc-900/80 border border-white/10 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
+              <i class="fa-solid fa-tv text-[10px]"></i>
+            </div>
+            <div class="min-w-0">
+              <h4 class="font-bold text-xs text-white truncate">${ch.name}</h4>
+              <span class="text-[10px] text-zinc-400 font-mono">ID: ${ch.id}</span>
+            </div>
+          </div>
+
+          ${isSaved ? `
+            <span class="text-[10px] px-2.5 py-1 liquid-pill text-emerald-400 font-bold rounded-xl border border-emerald-500/30">✓ Salvo</span>
+          ` : `
+            <button onclick="quickAddLive('${ch.id}', '${ch.name}', '${ch.cat}', this)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer shadow-md">
+              <i class="fa-solid fa-plus text-[10px]"></i>
+              <span>Adicionar</span>
+            </button>
+          `}
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function fetchTMDBSearch(query) {
+      const section = document.getElementById('sectionTMDB');
+      const container = document.getElementById('resultsTMDBList');
+      
+      try {
+        const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!data.results || data.results.length === 0) {
+          section.classList.add('hidden');
+          return;
+        }
+
+        container.innerHTML = '';
+        let count = 0;
+
+        data.results.forEach(item => {
+          if (item.media_type !== 'movie' && item.media_type !== 'tv') return;
+          if (count >= 6) return;
+          count++;
+
+          const title = item.title || item.name;
+          const isMovie = item.media_type === 'movie';
+          const typeLabel = isMovie ? 'Filme' : 'Série';
+          const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
+          const isSaved = catalog.some(i => i.tmdbId === String(item.id) || i.title.toLowerCase() === title.toLowerCase());
+
+          const div = document.createElement('div');
+          div.className = "flex items-center justify-between liquid-pill p-2 rounded-xl hover:border-brand-500/50 transition";
+          
+          div.innerHTML = `
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-11 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 relative border border-white/10">
+                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]"><i class="fa-solid fa-film"></i></div>`}
+              </div>
+              <div class="min-w-0">
+                <h4 class="font-bold text-xs text-white truncate">${title}</h4>
+                <span class="text-[10px] text-zinc-400">${typeLabel}</span>
+              </div>
+            </div>
+
+            ${isSaved ? `
+              <span class="text-[10px] px-2.5 py-1 liquid-pill text-brand-500 font-bold rounded-xl border border-brand-500/30">✓ Salvo</span>
+            ` : `
+              <button onclick="quickAddTMDB(${item.id}, '${encodeURIComponent(title)}', ${isMovie}, '${poster}', this)" class="px-3 py-1 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer shadow-md shadow-brand-500/20">
+                <i class="fa-solid fa-plus text-[10px]"></i>
+                <span>Adicionar</span>
+              </button>
+            `}
+          `;
+          container.appendChild(div);
+        });
+
+        if (count > 0) {
+          section.classList.remove('hidden');
+        } else {
+          section.classList.add('hidden');
+        }
+      } catch (err) {
+        section.classList.add('hidden');
+      }
+    }
+
+    // ADIÇÃO RÁPIDA DE CANAL AO VIVO
+    function quickAddLive(channelId, name, category, btnElement) {
+      const id = db.ref('catalog').push().key;
+      const apiUrl = `https://reidosembeds.online/embed/canal.php?id=${channelId}`;
+
+      const itemData = {
+        title: name,
+        type: category || 'TV ao Vivo',
+        banner: '',
+        apiUrl,
+        seasonNote: 'AO VIVO'
+      };
+
+      db.ref(`catalog/${id}`).set(itemData, (error) => {
+        if (!error) {
+          btnElement.outerHTML = `<span class="text-[10px] px-2.5 py-1 liquid-pill text-emerald-400 font-bold rounded-xl border border-emerald-500/30">✓ Salvo</span>`;
+          showToast(`'${name}' adicionado ao catálogo!`);
+        } else {
+          showToast('Erro ao salvar no banco.', 'error');
+        }
+      });
+    }
+
+    // ADIÇÃO RÁPIDA DE FILME / SÉRIE / ANIME (SUPERFLIX API)
+    function quickAddTMDB(tmdbId, encodedTitle, isMovie, banner, btnElement) {
+      const title = decodeURIComponent(encodedTitle);
+      const id = db.ref('catalog').push().key;
+      let category = isMovie ? 'Filme' : 'Série';
+      
+      const lowerTitle = title.toLowerCase();
+      if (!isMovie && (lowerTitle.includes('anime') || lowerTitle.includes('titan') || lowerTitle.includes('naruto') || lowerTitle.includes('piece') || lowerTitle.includes('dragon ball') || lowerTitle.includes('jujutsu'))) {
+        if (categories.includes('Anime')) category = 'Anime';
+      }
+
+      const apiUrl = isMovie 
+        ? `https://superflixapi.quest/filme/${tmdbId}`
+        : (category === 'Anime' ? `https://superflixapi.quest/anime/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`);
+
+      const itemData = {
+        title,
+        type: category,
+        banner: banner || '',
+        apiUrl,
+        tmdbId: String(tmdbId),
+        seasonNote: ''
+      };
+
+      db.ref(`catalog/${id}`).set(itemData, (error) => {
+        if (!error) {
+          btnElement.outerHTML = `<span class="text-[10px] px-2.5 py-1 liquid-pill text-brand-500 font-bold rounded-xl border border-brand-500/30">✓ Salvo</span>`;
+          showToast(`'${title}' adicionado ao catálogo!`);
+        } else {
+          showToast('Erro ao salvar no banco.', 'error');
+        }
+      });
+    }
+
+    // MODAL MANUAL
+    function openAddModal() {
+      document.getElementById('itemForm').reset();
+      document.getElementById('addModal').classList.remove('hidden');
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').classList.add('hidden');
+    }
+
+    function saveItemManual(e) {
+      e.preventDefault();
+      const id = db.ref('catalog').push().key;
+      const title = document.getElementById('titleInput').value.trim();
+      const type = document.getElementById('typeInput').value;
+      const banner = document.getElementById('bannerInput').value.trim();
+      let rawApi = document.getElementById('apiInput').value.trim();
+
+      const itemData = {
+        title,
+        type,
+        banner,
+        apiUrl: rawApi
+      };
+
+      db.ref(`catalog/${id}`).set(itemData, (error) => {
+        if (!error) {
+          closeAddModal();
+          showToast('Item salvo manualmente!');
+        } else {
+          showToast('Erro ao salvar no banco de dados.', 'error');
+        }
+      });
+    }
+
+    // MODAL DE EDIÇÃO
+    function editItem(id, e) {
+      if (e) e.stopPropagation();
+      const item = catalog.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('editItemId').value = item.id;
+      document.getElementById('editTitleInput').value = item.title;
+      document.getElementById('editTypeInput').value = item.type;
+      document.getElementById('editBannerInput').value = item.banner || '';
+      document.getElementById('editNoteInput').value = item.seasonNote || '';
+      
+      let currentApi = item.apiUrl || '';
+      if (!currentApi && item.episodes && item.episodes.length > 0) {
+        currentApi = item.episodes.join('\n');
+      }
+      document.getElementById('editApiInput').value = currentApi;
+
+      document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.add('hidden');
+    }
+
+    function saveEditDetails(e) {
+      e.preventDefault();
+      const id = document.getElementById('editItemId').value;
+      const title = document.getElementById('editTitleInput').value.trim();
+      const type = document.getElementById('editTypeInput').value;
+      const banner = document.getElementById('editBannerInput').value.trim();
+      const seasonNote = document.getElementById('editNoteInput').value.trim();
+      let apiUrl = document.getElementById('editApiInput').value.trim();
+
+      let updateData = { title, type, banner, seasonNote, apiUrl };
+
+      db.ref(`catalog/${id}`).update(updateData, (error) => {
+        if (!error) {
+          closeEditModal();
+          showToast('Alterações salvas com sucesso!');
+        } else {
+          showToast('Erro ao atualizar no banco de dados.', 'error');
+        }
+      });
+    }
+
+    function deleteItem(id, e) {
+      if (e) e.stopPropagation();
+      if (confirm('Deseja excluir este título do catálogo?')) {
+        db.ref(`catalog/${id}`).remove();
+        showToast('Item removido do catálogo.');
+      }
+    }
+
+    // RENDERIZAÇÃO DO CATÁLOGO (LIQUID GLASS CARDS)
+    function renderCatalog() {
+      const grid = document.getElementById('catalogGrid');
+      const empty = document.getElementById('emptyState');
+      const searchInput = document.getElementById('globalSearchInput');
+      const search = searchInput ? searchInput.value.toLowerCase() : '';
+
+      grid.innerHTML = '';
+
+      const filtered = catalog.filter(item => {
+        const matchesType = currentFilter === 'ALL' || item.type === currentFilter;
+        const matchesSearch = item.title.toLowerCase().includes(search);
+        return matchesType && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        empty.classList.remove('hidden');
+        empty.classList.add('flex');
+      } else {
+        empty.classList.add('hidden');
+        empty.classList.remove('flex');
+
+        filtered.forEach(item => {
+          const card = document.createElement('div');
+          card.className = "group relative liquid-glass-card rounded-2xl overflow-hidden flex flex-col cursor-pointer";
+          
+          let noteBadge = '';
+          const isLiveType = item.type === 'TV ao Vivo' || item.type === 'Esporte';
+          
+          if (isLiveType) {
+            noteBadge = `<span class="text-[9px] font-semibold px-2 py-0.5 rounded-lg liquid-pill text-emerald-400 border border-emerald-500/30 flex items-center gap-1"><span class="live-pulse"></span> AO VIVO</span>`;
+          } else if (item.seasonNote) {
+            noteBadge = `<span class="text-[9px] font-semibold px-2 py-0.5 rounded-lg liquid-pill text-emerald-400 border border-emerald-500/30">${item.seasonNote}</span>`;
+          }
+
+          const hasBanner = item.banner && item.banner.trim() !== '';
+
+          card.innerHTML = `
+            <div class="aspect-[2/3] w-full bg-zinc-950/60 relative overflow-hidden" onclick="playItem('${item.id}')">
+              
+              <div class="w-full h-full flex flex-col items-center justify-center p-3 text-center absolute inset-0">
+                <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
+                <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
+              </div>
+
+              ${hasBanner ? `
+                <img src="${item.banner}" alt="${item.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10" onerror="this.classList.add('hidden');">
+              ` : ''}
+
+              <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+                <div class="w-11 h-11 rounded-2xl liquid-glass text-white flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition duration-300 border border-white/30">
+                  <i class="fa-solid fa-play text-sm ml-0.5 text-brand-500"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 flex items-center justify-between gap-1.5 border-t border-white/5 bg-black/20">
+              <div onclick="playItem('${item.id}')" class="flex-1 min-w-0">
+                <h4 class="font-bold text-xs text-zinc-100 truncate group-hover:text-brand-500 transition">${item.title}</h4>
+                <div class="flex items-center gap-1.5 mt-1">
+                  <span class="text-[10px] text-zinc-400">${item.type}</span>
+                  ${noteBadge}
+                </div>
+              </div>
+              
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                <button onclick="editItem('${item.id}', event)" title="Editar" class="text-zinc-400 hover:text-white p-1 cursor-pointer">
+                  <i class="fa-solid fa-pen text-[10px]"></i>
+                </button>
+                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-400 hover:text-red-400 p-1 cursor-pointer">
+                  <i class="fa-solid fa-trash text-[10px]"></i>
+                </button>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+    }
+
+    // REPRODUTOR DE CONTEÚDO
+    function playItem(id) {
+      const item = catalog.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('playerTitle').innerText = item.title;
+      
+      let playerUrl = item.apiUrl || '';
+
+      if (playerUrl.includes('reidosembeds.online')) {
+        let channelId = '';
+        if (playerUrl.includes('id=')) {
+          channelId = playerUrl.split('id=')[1].split('&')[0];
+        } else {
+          const parts = playerUrl.split('/');
+          channelId = parts[parts.length - 1];
+        }
+        if (channelId) {
+          playerUrl = `https://reidosembeds.online/embed/canal.php?id=${channelId}`;
+        }
+      }
+
+      if (!playerUrl && item.episodes && item.episodes.length > 0) {
+        playerUrl = item.episodes[0];
+      }
+
+      if (!playerUrl && item.tmdbId) {
+        playerUrl = item.type === 'Filme' 
+          ? `https://superflixapi.quest/filme/${item.tmdbId}`
+          : (item.type === 'Anime' ? `https://superflixapi.quest/anime/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`);
+      }
+
+      currentPlayingUrl = playerUrl;
+      renderApiContent(playerUrl, item.type === 'Filme' ? 'Filme Completo' : (item.type === 'TV ao Vivo' ? 'Transmissão ao Vivo' : 'Player Principal'));
+      document.getElementById('playerOverlay').classList.remove('hidden');
+      document.getElementById('playerOverlay').classList.add('flex');
+    }
+
+    function renderApiContent(rawContent, subtitle) {
+      document.getElementById('playerSubtitle').innerText = subtitle;
+      const holder = document.getElementById('iframeHolder');
+      holder.innerHTML = '';
+
+      if (!rawContent) {
+        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-sm">URL da API não configurada.</div>`;
+        return;
+      }
+
+      if (rawContent.includes('<iframe') && rawContent.includes('</iframe>')) {
+        holder.innerHTML = rawContent;
+        const insertedIframe = holder.querySelector('iframe');
+        if (insertedIframe) {
+          insertedIframe.style.width = "100%";
+          insertedIframe.style.height = "100%";
+          insertedIframe.referrerPolicy = "no-referrer";
           insertedIframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
           insertedIframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *";
           insertedIframe.setAttribute('allowfullscreen', 'true');
