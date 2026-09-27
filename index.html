@@ -88,7 +88,7 @@
           <div id="resultsSavedList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
 
-        <!-- SEÇÃO: CANAIS AO VIVO (REI DOS EMBEDS) -->
+        <!-- SEÇÃO: CANAIS AO VIVO (REI DOS EMBEDS OTIMIZADO) -->
         <div id="sectionLive" class="hidden space-y-2">
           <h3 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
             <i class="fa-solid fa-tv text-emerald-400"></i> TV ao Vivo & Esportes (Rei dos Embeds)
@@ -96,10 +96,10 @@
           <div id="resultsLiveList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
 
-        <!-- SEÇÃO: FILMES & SÉRIES (TMDB) -->
+        <!-- SEÇÃO: FILMES & SÉRIES (SUPERFLIX API / TMDB) -->
         <div id="sectionTMDB" class="hidden space-y-2">
           <h3 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
-            <i class="fa-solid fa-film text-brand-500"></i> Filmes, Séries & Animes (Adicionar em 1 Clique)
+            <i class="fa-solid fa-film text-brand-500"></i> Filmes, Séries & Animes (SuperFlix API)
           </h3>
           <div id="resultsTMDBList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
@@ -141,8 +141,8 @@
         <input type="hidden" id="itemId">
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título</label>
-          <input type="text" id="titleInput" required placeholder="Ex: Canal Customizado" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título do Canal / Filme</label>
+          <input type="text" id="titleInput" required placeholder="Ex: SporTV HD, Canal Custom" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
@@ -158,8 +158,8 @@
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
-          <textarea id="apiInput" rows="3" placeholder="Cole o <iframe src='https://...'> ou a URL da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link do Player</label>
+          <textarea id="apiInput" rows="3" placeholder="Cole a URL inteira do Rei dos Embeds ou o <iframe src='...'>" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -179,7 +179,7 @@
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
         <i class="fa-solid fa-pen text-brand-500"></i>
-        <span>Editar Título & Configurações</span>
+        <span>Editar Título & Player</span>
       </h3>
 
       <form id="editForm" onsubmit="saveEditDetails(event)" class="space-y-3">
@@ -197,8 +197,8 @@
             </select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Anotação / Progresso</label>
-            <input type="text" id="editNoteInput" placeholder="Ex: T2 • Ep. 6" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Anotação / Status</label>
+            <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
           </div>
         </div>
 
@@ -209,7 +209,7 @@
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
-          <textarea id="editApiInput" rows="3" placeholder="Cole o <iframe src='https://...'> ou a URL da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <textarea id="editApiInput" rows="3" placeholder="Cole o <iframe src='...'> ou a URL da API" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -290,13 +290,12 @@
     // TMDB API KEY
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
-    // BASE DE CANAIS AO VIVO (REI DOS EMBEDS)
+    // BASE DE CANAIS AO VIVO OTIMIZADA (REI DOS EMBEDS)
     const REI_DOS_EMBEDS_CHANNELS = [
       { id: "globo-sp", name: "Globo SP", cat: "TV ao Vivo" },
       { id: "globo-rj", name: "Globo RJ", cat: "TV ao Vivo" },
       { id: "globo-mg", name: "Globo MG", cat: "TV ao Vivo" },
       { id: "globo-rs", name: "Globo RS", cat: "TV ao Vivo" },
-      { id: "globo-df", name: "Globo DF", cat: "TV ao Vivo" },
       { id: "globonews", name: "GloboNews", cat: "TV ao Vivo" },
       { id: "sportv", name: "SporTV 1", cat: "Esporte" },
       { id: "sportv2", name: "SporTV 2", cat: "Esporte" },
@@ -305,16 +304,10 @@
       { id: "premiere2", name: "Premiere 2", cat: "Esporte" },
       { id: "premiere3", name: "Premiere 3", cat: "Esporte" },
       { id: "premiere4", name: "Premiere 4", cat: "Esporte" },
-      { id: "premiere5", name: "Premiere 5", cat: "Esporte" },
-      { id: "premiere6", name: "Premiere 6", cat: "Esporte" },
-      { id: "premiere7", name: "Premiere 7", cat: "Esporte" },
-      { id: "premiere8", name: "Premiere 8", cat: "Esporte" },
       { id: "espn", name: "ESPN 1", cat: "Esporte" },
       { id: "espn2", name: "ESPN 2", cat: "Esporte" },
       { id: "espn3", name: "ESPN 3", cat: "Esporte" },
       { id: "espn4", name: "ESPN 4", cat: "Esporte" },
-      { id: "espn5", name: "ESPN 5", cat: "Esporte" },
-      { id: "espn6", name: "ESPN 6", cat: "Esporte" },
       { id: "combate", name: "Combate", cat: "Esporte" },
       { id: "bandsports", name: "BandSports", cat: "Esporte" },
       { id: "cazetv", name: "CazéTV", cat: "Esporte" },
@@ -491,7 +484,7 @@
       );
       renderLiveSearchList(liveMatches);
 
-      // 3. BUSCAR TMDB (FILMES/SÉRIES) COM DEBOUNCE
+      // 3. BUSCAR TMDB (SUPERFLIX API) COM DEBOUNCE
       globalSearchTimeout = setTimeout(() => {
         fetchTMDBSearch(query);
       }, 350);
@@ -642,10 +635,10 @@
       }
     }
 
-    // ADIÇÃO RÁPIDA DE CANAL AO VIVO
+    // ADIÇÃO RÁPIDA DE CANAL (FORMATO ATUALIZADO REI DOS EMBEDS)
     function quickAddLive(channelId, name, category, btnElement) {
       const id = db.ref('catalog').push().key;
-      const apiUrl = `https://reidosembeds.online/embed/${channelId}`;
+      const apiUrl = `https://reidosembeds.online/embed/canal/${channelId}`;
 
       const itemData = {
         title: name,
@@ -664,7 +657,7 @@
       });
     }
 
-    // ADIÇÃO RÁPIDA DE FILME / SÉRIE / ANIME
+    // ADIÇÃO RÁPIDA DE FILME / SÉRIE / ANIME (SUPERFLIX)
     function quickAddTMDB(tmdbId, encodedTitle, isMovie, banner, btnElement) {
       const title = decodeURIComponent(encodedTitle);
       const id = db.ref('catalog').push().key;
@@ -859,7 +852,7 @@
       }
     }
 
-    // REPRODUTOR DE CONTEÚDO MULTI-API
+    // REPRODUTOR DE CONTEÚDO OTIMIZADO MULTI-API
     function playItem(id) {
       const item = catalog.find(i => i.id === id);
       if (!item) return;
@@ -876,6 +869,15 @@
         playerUrl = item.type === 'Filme' 
           ? `https://superflixapi.quest/filme/${item.tmdbId}`
           : (item.type === 'Anime' ? `https://superflixapi.quest/anime/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`);
+      }
+
+      // TRATAMENTO DE ADAPTAÇÃO DINÂMICA DE ROTA PARA O REI DOS EMBEDS
+      if (playerUrl.includes('reidosembeds.online') && !playerUrl.includes('<iframe')) {
+        if (!playerUrl.includes('/embed/canal/') && playerUrl.includes('/embed/')) {
+          playerUrl = playerUrl.replace('/embed/', '/embed/canal/');
+        } else if (playerUrl.includes('/canal/')) {
+          playerUrl = playerUrl.replace('/canal/', '/embed/canal/');
+        }
       }
 
       renderApiContent(playerUrl, item.type === 'Filme' ? 'Filme Completo' : (item.type === 'TV ao Vivo' ? 'Transmissão ao Vivo' : 'Player Principal'));
