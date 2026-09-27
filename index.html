@@ -1045,6 +1045,7 @@
           insertedIframe.style.width = "100%";
           insertedIframe.style.height = "100%";
           insertedIframe.referrerPolicy = "no-referrer";
+          insertedIframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
           insertedIframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *";
           insertedIframe.setAttribute('allowfullscreen', 'true');
         }
@@ -1060,6 +1061,7 @@
         iframe.src = cleanUrl;
         iframe.className = "w-full h-full border-0";
         iframe.referrerPolicy = "no-referrer";
+        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
         iframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *; clipboard-write *; accelerometer *; gyroscope *";
         iframe.setAttribute('allowfullscreen', 'true');
         iframe.setAttribute('webkitallowfullscreen', 'true');
