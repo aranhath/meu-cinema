@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meu Cinema - Catalog & Live TV Player</title>
+  <title>Meu Cinema - Liquid Glass UI</title>
   
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -26,48 +26,119 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    body { background-color: #0d0d0f; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .glass { background: rgba(18, 18, 22, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    /* BASE LIQUID GLASS STYLING */
+    body {
+      background-color: #08080a;
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* MESH GRADIENT DYNANIMIC BACKGROUND */
+    .mesh-background {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(circle at 15% 20%, rgba(229, 9, 20, 0.25) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.2) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
+      filter: blur(80px);
+      animation: meshPulse 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes meshPulse {
+      0% { transform: scale(1) translate(0, 0); }
+      50% { transform: scale(1.1) translate(-20px, 15px); }
+      100% { transform: scale(1) translate(20px, -15px); }
+    }
+
+    /* LIQUID GLASS SURFACES */
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37),
+                  inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .liquid-glass-card {
+      background: rgba(22, 22, 28, 0.45);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.5),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .liquid-glass-card:hover {
+      background: rgba(35, 35, 45, 0.65);
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7),
+                  0 0 20px rgba(229, 9, 20, 0.25),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .liquid-pill {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .liquid-pill:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative">
 
-  <!-- TOP HEADER CLEAN -->
-  <header class="sticky top-0 z-40 border-b border-zinc-800/50 glass px-4 py-3.5 sm:px-8 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white font-black text-base shadow-md shadow-brand-500/20">
-        <i class="fa-solid fa-play text-xs"></i>
+  <!-- MESH GRADIENT DYNAMIC LIGHTING -->
+  <div class="mesh-background"></div>
+
+  <!-- TOP HEADER (FLOATING LIQUID GLASS BAR) -->
+  <div class="sticky top-4 z-40 px-4 sm:px-8 max-w-7xl w-full mx-auto">
+    <header class="liquid-glass rounded-2xl px-4 py-3 sm:px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/30 border border-white/20">
+          <i class="fa-solid fa-play"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-base leading-none tracking-tight text-white/90">Meu Cinema</h1>
+          <span class="text-[10px] font-semibold text-zinc-400 tracking-wider uppercase">Liquid Glass Edition</span>
+        </div>
       </div>
-      <div>
-        <h1 class="font-bold text-base leading-none tracking-tight text-white">Meu Cinema</h1>
+
+      <div class="flex items-center gap-2">
+        <button onclick="openCategoryModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-layer-group text-zinc-400"></i>
+          <span>Categorias</span>
+        </button>
+
+        <button onclick="openAddModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-code text-xs"></i>
+          <span>Link / Iframe</span>
+        </button>
       </div>
-    </div>
+    </header>
+  </div>
 
-    <div class="flex items-center gap-2">
-      <button onclick="openCategoryModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-zinc-800/60 hover:bg-zinc-800 text-zinc-300 border border-zinc-700/40 transition flex items-center gap-1.5 cursor-pointer">
-        <i class="fa-solid fa-layer-group text-zinc-400"></i>
-        <span>Categorias</span>
-      </button>
-
-      <button onclick="openAddModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition flex items-center gap-1.5 cursor-pointer">
-        <i class="fa-solid fa-code text-xs"></i>
-        <span>Link / Iframe Manual</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- MAIN CATALOG -->
+  <!-- MAIN CATALOG CONTENT -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
     
     <!-- BARRA DE BUSCA GLOBAL UNIFICADA -->
     <div class="relative z-30">
-      <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-zinc-800/40 pb-4">
+      <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
         <div class="relative flex-1">
-          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-          <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch()" placeholder="Digite para buscar filmes, séries ou canais ao vivo (ex: Globo, SporTV, Premiere, Batman)..." class="w-full bg-zinc-900/90 border border-zinc-700/80 focus:border-brand-500 rounded-xl pl-9 pr-10 py-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none transition shadow-inner">
-          <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 text-xs">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+          <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch()" placeholder="Buscar filmes, séries, animes ou canais ao vivo (ex: Globo, SporTV, Premiere)..." class="w-full liquid-glass rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/30 transition">
+          <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
@@ -78,57 +149,57 @@
       </div>
 
       <!-- PAINEL FLUTUANTE DE RESULTADOS DA BUSCA GLOBAL -->
-      <div id="searchResultsPanel" class="hidden absolute left-0 right-0 top-full mt-2 bg-zinc-900/95 border border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
+      <div id="searchResultsPanel" class="hidden absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
         
         <!-- SEÇÃO: JÁ SALVOS NO SEU CATÁLOGO -->
         <div id="sectionSaved" class="hidden space-y-2">
-          <h3 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
-            <i class="fa-solid fa-bookmark text-emerald-400"></i> No Seu Catálogo
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+            <i class="fa-solid fa-bookmark"></i> No Seu Catálogo
           </h3>
           <div id="resultsSavedList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
 
-        <!-- SEÇÃO: CANAIS AO VIVO (REI DOS EMBEDS OFICIAL) -->
+        <!-- SEÇÃO: CANAIS AO VIVO -->
         <div id="sectionLive" class="hidden space-y-2">
-          <h3 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
-            <i class="fa-solid fa-tv text-emerald-400"></i> TV ao Vivo & Esportes (Rei dos Embeds)
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+            <i class="fa-solid fa-tv"></i> TV ao Vivo & Esportes (Rei dos Embeds)
           </h3>
           <div id="resultsLiveList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
 
         <!-- SEÇÃO: FILMES & SÉRIES (TMDB) -->
         <div id="sectionTMDB" class="hidden space-y-2">
-          <h3 class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
-            <i class="fa-solid fa-film text-brand-500"></i> Filmes, Séries & Animes
+          <h3 class="text-[11px] font-bold uppercase tracking-wider text-brand-500 flex items-center gap-1.5 border-b border-white/10 pb-1">
+            <i class="fa-solid fa-film"></i> Filmes, Séries & Animes
           </h3>
           <div id="resultsTMDBList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
         </div>
 
         <!-- BUSCA VAZIA -->
-        <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-500">
+        <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-400">
           Nenhum resultado encontrado para a busca.
         </div>
       </div>
     </div>
 
-    <!-- CARDS GRID CLEAN -->
-    <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5">
+    <!-- CARDS GRID GLASS -->
+    <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
       <!-- Generated Dynamically -->
     </div>
 
     <!-- EMPTY STATE -->
     <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-2">
-      <div class="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-600 text-lg">
+      <div class="w-14 h-14 rounded-2xl liquid-glass flex items-center justify-center text-zinc-500 text-xl mb-2">
         <i class="fa-solid fa-film"></i>
       </div>
-      <p class="text-zinc-400 font-medium text-xs">Nenhum título ou canal no seu catálogo.</p>
+      <p class="text-zinc-300 font-medium text-xs">Nenhum título ou canal no seu catálogo.</p>
     </div>
   </main>
 
   <!-- MANUAL ITEM MODAL -->
-  <div id="addModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl relative">
-      <button onclick="closeAddModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer">
+  <div id="addModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeAddModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
@@ -141,39 +212,39 @@
         <input type="hidden" id="itemId">
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título do Canal / Filme</label>
-          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título do Canal / Filme</label>
+          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Categoria</label>
-            <select id="typeInput" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
+            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40">
             </select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">URL da Capa (Opcional)</label>
-            <input type="url" id="bannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa (Opcional)</label>
+            <input type="url" id="bannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
           </div>
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Link do Rei dos Embeds OU Código iframe</label>
-          <textarea id="apiInput" rows="3" placeholder="Ex: https://reidosembeds.online/embed/canal.php?id=globo-rj ou id do canal" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Rei dos Embeds OU Código iframe</label>
+          <textarea id="apiInput" rows="3" placeholder="Ex: https://reidosembeds.online/embed/canal.php?id=globo-rj ou id do canal" class="w-full liquid-pill rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeAddModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 cursor-pointer">Salvar na Nuvem</button>
+          <button type="button" onclick="closeAddModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar na Nuvem</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- EDIT DETAILS MODAL -->
-  <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closeEditModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer">
+  <div id="editModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
@@ -186,44 +257,44 @@
         <input type="hidden" id="editItemId">
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Título</label>
-          <input type="text" id="editTitleInput" required class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
+          <input type="text" id="editTitleInput" required class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Categoria</label>
-            <select id="editTypeInput" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
+            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40">
             </select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Anotação / Status</label>
-            <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Anotação / Status</label>
+            <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
           </div>
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">URL da Capa</label>
-          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa</label>
+          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Código iframe OU Link da API</label>
-          <textarea id="editApiInput" rows="3" placeholder="Cole a URL do Rei dos Embeds" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Código iframe OU Link da API</label>
+          <textarea id="editApiInput" rows="3" placeholder="Cole a URL do Rei dos Embeds" class="w-full liquid-pill rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeEditModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/20 cursor-pointer">Salvar Alterações</button>
+          <button type="button" onclick="closeEditModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Alterações</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- CATEGORY MANAGEMENT MODAL -->
-  <div id="categoryModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl relative">
-      <button onclick="closeCategoryModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 text-sm cursor-pointer">
+  <div id="categoryModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeCategoryModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
@@ -233,39 +304,39 @@
       </h3>
 
       <div class="flex gap-2">
-        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: TV ao Vivo, Desenho)" class="flex-1 bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-        <button onclick="addCategory()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow transition cursor-pointer">
+        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: TV ao Vivo, Desenho)" class="flex-1 liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+        <button onclick="addCategory()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow transition cursor-pointer">
           Adicionar
         </button>
       </div>
 
       <div class="space-y-1.5 pt-1">
-        <label class="block text-[11px] font-semibold text-zinc-400">Categorias Atuais</label>
-        <div id="categoryList" class="max-h-48 overflow-y-auto space-y-1 pr-1">
+        <label class="block text-[11px] font-semibold text-zinc-300">Categorias Atuais</label>
+        <div id="categoryList" class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
           <!-- Dynamically populated -->
         </div>
       </div>
 
       <div class="flex justify-end pt-2">
-        <button onclick="closeCategoryModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Fechar</button>
+        <button onclick="closeCategoryModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Fechar</button>
       </div>
     </div>
   </div>
 
   <!-- PLAYER OVERLAY LAYER -->
-  <div id="playerOverlay" class="fixed inset-0 z-50 bg-black hidden flex-col">
-    <div id="playerHeader" class="absolute top-3 right-3 z-50 flex items-center gap-2 bg-zinc-900/90 border border-zinc-800 p-1.5 rounded-xl backdrop-blur-md shadow-2xl">
-      <div class="hidden sm:block px-2 text-left">
-        <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[180px]">...</h2>
+  <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex-col">
+    <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 liquid-glass p-2 rounded-2xl shadow-2xl">
+      <div class="hidden sm:block px-3 text-left">
+        <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[200px]">...</h2>
         <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
       </div>
 
-      <button id="openExternalBtn" onclick="openExternalPlayer()" title="Abrir Player em Nova Aba" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer">
-        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      <button id="openExternalBtn" onclick="openExternalPlayer()" title="Abrir Player em Nova Aba" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
         <span>Nova Aba</span>
       </button>
 
-      <button onclick="closePlayer()" title="Fechar Player" class="px-3 py-1 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer">
+      <button onclick="closePlayer()" title="Fechar Player" class="px-3.5 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-xl shadow-lg shadow-brand-500/30 transition flex items-center gap-1.5 cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
         <span>Sair</span>
       </button>
@@ -374,8 +445,8 @@
       allBtn.onclick = () => setFilter('ALL');
       allBtn.id = 'filter-ALL';
       allBtn.className = currentFilter === 'ALL'
-        ? "px-3 py-1 rounded-lg text-xs font-semibold bg-brand-500 text-white shadow-sm transition whitespace-nowrap"
-        : "px-3 py-1 rounded-lg text-xs font-medium bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 border border-zinc-800/60 transition whitespace-nowrap";
+        ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 text-white shadow-lg shadow-brand-500/30 transition whitespace-nowrap"
+        : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white transition whitespace-nowrap";
       allBtn.innerText = 'Todos';
       container.appendChild(allBtn);
 
@@ -384,8 +455,8 @@
         btn.onclick = () => setFilter(cat);
         btn.id = `filter-${cat}`;
         btn.className = currentFilter === cat
-          ? "px-3 py-1 rounded-lg text-xs font-semibold bg-brand-500 text-white shadow-sm transition whitespace-nowrap"
-          : "px-3 py-1 rounded-lg text-xs font-medium bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 border border-zinc-800/60 transition whitespace-nowrap";
+          ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 text-white shadow-lg shadow-brand-500/30 transition whitespace-nowrap"
+          : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white transition whitespace-nowrap";
         btn.innerText = cat;
         container.appendChild(btn);
       });
@@ -411,11 +482,11 @@
       catList.innerHTML = '';
       categories.forEach((cat, idx) => {
         const item = document.createElement('div');
-        item.className = "flex items-center justify-between bg-zinc-800/80 px-3 py-1.5 rounded-lg text-xs text-zinc-200 border border-zinc-700/40";
+        item.className = "flex items-center justify-between liquid-pill px-3.5 py-2 rounded-xl text-xs text-zinc-200";
         item.innerHTML = `
           <span class="font-medium">${cat}</span>
           ${categories.length > 1 ? `
-            <button onclick="removeCategory(${idx})" class="text-zinc-500 hover:text-red-400 p-1 cursor-pointer">
+            <button onclick="removeCategory(${idx})" class="text-zinc-400 hover:text-red-400 p-1 cursor-pointer">
               <i class="fa-solid fa-trash text-[10px]"></i>
             </button>
           ` : ''}
@@ -518,18 +589,18 @@
       section.classList.remove('hidden');
       items.forEach(item => {
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between bg-zinc-800/80 p-2 rounded-xl border border-zinc-700/50 hover:border-emerald-500/80 transition";
+        div.className = "flex items-center justify-between liquid-pill p-2 rounded-xl hover:border-emerald-500/50 transition";
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-zinc-900/80 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0 border border-white/10">
               <i class="fa-solid fa-play text-[10px]"></i>
             </div>
             <div class="min-w-0">
-              <h4 class="font-bold text-xs text-zinc-100 truncate">${item.title}</h4>
+              <h4 class="font-bold text-xs text-white truncate">${item.title}</h4>
               <span class="text-[10px] text-emerald-400 font-semibold">${item.type} • No catálogo</span>
             </div>
           </div>
-          <button onclick="playItem('${item.id}')" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex-shrink-0 cursor-pointer">
+          <button onclick="playItem('${item.id}')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex-shrink-0 cursor-pointer shadow-md">
             Assistir
           </button>
         `;
@@ -552,23 +623,23 @@
         const isSaved = catalog.some(i => i.title.toLowerCase() === ch.name.toLowerCase() || (i.apiUrl && i.apiUrl.includes(ch.id)));
         
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between bg-zinc-800/60 p-2 rounded-xl border border-zinc-700/40 hover:border-emerald-500 transition";
+        div.className = "flex items-center justify-between liquid-pill p-2 rounded-xl hover:border-emerald-500/50 transition";
         
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-700/60 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-zinc-900/80 border border-white/10 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
               <i class="fa-solid fa-tv text-[10px]"></i>
             </div>
             <div class="min-w-0">
-              <h4 class="font-bold text-xs text-zinc-200 truncate">${ch.name}</h4>
-              <span class="text-[10px] text-zinc-500 font-mono">ID: ${ch.id}</span>
+              <h4 class="font-bold text-xs text-white truncate">${ch.name}</h4>
+              <span class="text-[10px] text-zinc-400 font-mono">ID: ${ch.id}</span>
             </div>
           </div>
 
           ${isSaved ? `
-            <span class="text-[10px] px-2 py-1 bg-zinc-900 text-emerald-400 font-bold rounded-lg border border-zinc-700/50">✓ Salvo</span>
+            <span class="text-[10px] px-2.5 py-1 liquid-pill text-emerald-400 font-bold rounded-xl border border-emerald-500/30">✓ Salvo</span>
           ` : `
-            <button onclick="quickAddLive('${ch.id}', '${ch.name}', '${ch.cat}', this)" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer">
+            <button onclick="quickAddLive('${ch.id}', '${ch.name}', '${ch.cat}', this)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer shadow-md">
               <i class="fa-solid fa-plus text-[10px]"></i>
               <span>Adicionar</span>
             </button>
@@ -606,23 +677,23 @@
           const isSaved = catalog.some(i => i.tmdbId === String(item.id) || i.title.toLowerCase() === title.toLowerCase());
 
           const div = document.createElement('div');
-          div.className = "flex items-center justify-between bg-zinc-800/60 p-2 rounded-xl border border-zinc-700/40 hover:border-brand-500 transition";
+          div.className = "flex items-center justify-between liquid-pill p-2 rounded-xl hover:border-brand-500/50 transition";
           
           div.innerHTML = `
             <div class="flex items-center gap-2.5 min-w-0">
-              <div class="w-8 h-11 bg-zinc-900 rounded overflow-hidden flex-shrink-0 relative">
-                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-700 text-[10px]"><i class="fa-solid fa-film"></i></div>`}
+              <div class="w-8 h-11 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 relative border border-white/10">
+                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]"><i class="fa-solid fa-film"></i></div>`}
               </div>
               <div class="min-w-0">
-                <h4 class="font-bold text-xs text-zinc-200 truncate">${title}</h4>
-                <span class="text-[10px] text-zinc-500">${typeLabel}</span>
+                <h4 class="font-bold text-xs text-white truncate">${title}</h4>
+                <span class="text-[10px] text-zinc-400">${typeLabel}</span>
               </div>
             </div>
 
             ${isSaved ? `
-              <span class="text-[10px] px-2 py-1 bg-zinc-900 text-brand-500 font-bold rounded-lg border border-zinc-700/50">✓ Salvo</span>
+              <span class="text-[10px] px-2.5 py-1 liquid-pill text-brand-500 font-bold rounded-xl border border-brand-500/30">✓ Salvo</span>
             ` : `
-              <button onclick="quickAddTMDB(${item.id}, '${encodeURIComponent(title)}', ${isMovie}, '${poster}', this)" class="px-3 py-1 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer">
+              <button onclick="quickAddTMDB(${item.id}, '${encodeURIComponent(title)}', ${isMovie}, '${poster}', this)" class="px-3 py-1 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer shadow-md shadow-brand-500/20">
                 <i class="fa-solid fa-plus text-[10px]"></i>
                 <span>Adicionar</span>
               </button>
@@ -641,7 +712,7 @@
       }
     }
 
-    // ADIÇÃO RÁPIDA DE CANAL AO VIVO (ENDPOIND OFICIAL REI DOS EMBEDS)
+    // ADIÇÃO RÁPIDA DE CANAL AO VIVO
     function quickAddLive(channelId, name, category, btnElement) {
       const id = db.ref('catalog').push().key;
       const apiUrl = `https://reidosembeds.online/embed/canal.php?id=${channelId}`;
@@ -656,7 +727,7 @@
 
       db.ref(`catalog/${id}`).set(itemData, (error) => {
         if (!error) {
-          btnElement.outerHTML = `<span class="text-[10px] px-2 py-1 bg-zinc-900 text-emerald-400 font-bold rounded-lg border border-zinc-700/50">✓ Salvo</span>`;
+          btnElement.outerHTML = `<span class="text-[10px] px-2.5 py-1 liquid-pill text-emerald-400 font-bold rounded-xl border border-emerald-500/30">✓ Salvo</span>`;
         } else {
           alert('Erro ao salvar no banco.');
         }
@@ -689,7 +760,7 @@
 
       db.ref(`catalog/${id}`).set(itemData, (error) => {
         if (!error) {
-          btnElement.outerHTML = `<span class="text-[10px] px-2 py-1 bg-zinc-900 text-brand-500 font-bold rounded-lg border border-zinc-700/50">✓ Salvo</span>`;
+          btnElement.outerHTML = `<span class="text-[10px] px-2.5 py-1 liquid-pill text-brand-500 font-bold rounded-xl border border-brand-500/30">✓ Salvo</span>`;
         } else {
           alert('Erro ao salvar no banco.');
         }
@@ -782,7 +853,7 @@
       }
     }
 
-    // RENDERIZAÇÃO DO CATÁLOGO
+    // RENDERIZAÇÃO DO CATÁLOGO (LIQUID GLASS CARDS)
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
       const empty = document.getElementById('emptyState');
@@ -806,19 +877,19 @@
 
         filtered.forEach(item => {
           const card = document.createElement('div');
-          card.className = "group relative bg-zinc-900/40 border border-zinc-800/60 hover:border-zinc-700/80 rounded-xl overflow-hidden transition-all duration-300 flex flex-col cursor-pointer";
+          card.className = "group relative liquid-glass-card rounded-2xl overflow-hidden transition-all duration-300 flex flex-col cursor-pointer";
           
           let noteBadge = '';
           if (item.seasonNote) {
-            noteBadge = `<span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-zinc-800/90 border border-zinc-700/60 text-emerald-400">${item.seasonNote}</span>`;
+            noteBadge = `<span class="text-[9px] font-semibold px-2 py-0.5 rounded-lg liquid-pill text-emerald-400 border border-emerald-500/30">${item.seasonNote}</span>`;
           }
 
           const hasBanner = item.banner && item.banner.trim() !== '';
 
           card.innerHTML = `
-            <div class="aspect-[2/3] w-full bg-zinc-950 relative overflow-hidden" onclick="playItem('${item.id}')">
+            <div class="aspect-[2/3] w-full bg-zinc-950/60 relative overflow-hidden" onclick="playItem('${item.id}')">
               
-              <div class="w-full h-full bg-gradient-to-br from-zinc-900 to-stone-900 flex flex-col items-center justify-center p-3 text-center absolute inset-0">
+              <div class="w-full h-full flex flex-col items-center justify-center p-3 text-center absolute inset-0">
                 <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
                 <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
               </div>
@@ -827,27 +898,27 @@
                 <img src="${item.banner}" alt="${item.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10" onerror="this.classList.add('hidden');">
               ` : ''}
 
-              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
-                <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-lg shadow-brand-500/40 transform scale-90 group-hover:scale-100 transition duration-300">
-                  <i class="fa-solid fa-play text-sm ml-0.5"></i>
+              <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+                <div class="w-11 h-11 rounded-2xl liquid-glass text-white flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition duration-300 border border-white/30">
+                  <i class="fa-solid fa-play text-sm ml-0.5 text-brand-500"></i>
                 </div>
               </div>
             </div>
 
-            <div class="p-2.5 flex items-center justify-between gap-1.5 bg-zinc-900/60 border-t border-zinc-800/40">
+            <div class="p-3 flex items-center justify-between gap-1.5 border-t border-white/5 bg-black/20">
               <div onclick="playItem('${item.id}')" class="flex-1 min-w-0">
-                <h4 class="font-medium text-xs text-zinc-200 truncate group-hover:text-brand-500 transition">${item.title}</h4>
-                <div class="flex items-center gap-1.5 mt-0.5">
-                  <span class="text-[10px] text-zinc-500">${item.type}</span>
+                <h4 class="font-bold text-xs text-zinc-100 truncate group-hover:text-brand-500 transition">${item.title}</h4>
+                <div class="flex items-center gap-1.5 mt-1">
+                  <span class="text-[10px] text-zinc-400">${item.type}</span>
                   ${noteBadge}
                 </div>
               </div>
               
               <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
-                <button onclick="editItem('${item.id}', event)" title="Editar" class="text-zinc-500 hover:text-zinc-200 p-1 cursor-pointer">
+                <button onclick="editItem('${item.id}', event)" title="Editar" class="text-zinc-400 hover:text-white p-1 cursor-pointer">
                   <i class="fa-solid fa-pen text-[10px]"></i>
                 </button>
-                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-500 hover:text-red-400 p-1 cursor-pointer">
+                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-400 hover:text-red-400 p-1 cursor-pointer">
                   <i class="fa-solid fa-trash text-[10px]"></i>
                 </button>
               </div>
@@ -903,7 +974,7 @@
       holder.innerHTML = '';
 
       if (!rawContent) {
-        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">URL da API não configurada.</div>`;
+        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-sm">URL da API não configurada.</div>`;
         return;
       }
 
