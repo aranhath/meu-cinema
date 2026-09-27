@@ -607,7 +607,7 @@
 
         data.results.forEach(item => {
           if (item.media_type !== 'movie' && item.media_type !== 'tv') return;
-          if (count >= 6) return; // Limita a 6 sugestões para ficar limpo
+          if (count >= 6) return;
           count++;
 
           const title = item.title || item.name;
@@ -652,10 +652,10 @@
       }
     }
 
-    // ADIÇÃO RÁPIDA DE CANAL AO VIVO
+    // ADIÇÃO RÁPIDA DE CANAL AO VIVO (ENDPOINT /embed/ CORRIGIDO)
     function quickAddLive(channelId, name, category, btnElement) {
       const id = db.ref('catalog').push().key;
-      const apiUrl = `https://reidosembeds.online/canal/${channelId}`;
+      const apiUrl = `https://reidosembeds.online/embed/${channelId}`;
 
       const itemData = {
         title: name,
@@ -723,7 +723,12 @@
       const title = document.getElementById('titleInput').value.trim();
       const type = document.getElementById('typeInput').value;
       const banner = document.getElementById('bannerInput').value.trim();
-      const rawApi = document.getElementById('apiInput').value.trim();
+      let rawApi = document.getElementById('apiInput').value.trim();
+
+      // Ajusta automaticamente caso a URL manual tenha sido colada com /canal/
+      if (rawApi.includes('reidosembeds.online/canal/')) {
+        rawApi = rawApi.replace('reidosembeds.online/canal/', 'reidosembeds.online/embed/');
+      }
 
       const itemData = {
         title,
@@ -773,8 +778,12 @@
       const type = document.getElementById('editTypeInput').value;
       const banner = document.getElementById('editBannerInput').value.trim();
       const seasonNote = document.getElementById('editNoteInput').value.trim();
-      const apiUrl = document.getElementById('editApiInput').value.trim();
+      let apiUrl = document.getElementById('editApiInput').value.trim();
       
+      if (apiUrl.includes('reidosembeds.online/canal/')) {
+        apiUrl = apiUrl.replace('reidosembeds.online/canal/', 'reidosembeds.online/embed/');
+      }
+
       let updateData = { title, type, banner, seasonNote, apiUrl };
 
       db.ref(`catalog/${id}`).update(updateData, (error) => {
@@ -869,7 +878,7 @@
       }
     }
 
-    // REPRODUTOR DE CONTEÚDO
+    // REPRODUTOR DE CONTEÚDO (COM CONVERSÃO AUTOMÁTICA DE ENDPOINT)
     function playItem(id) {
       const item = catalog.find(i => i.id === id);
       if (!item) return;
@@ -877,6 +886,11 @@
       document.getElementById('playerTitle').innerText = item.title;
       
       let playerUrl = item.apiUrl || '';
+
+      // Converte URLs antigas do Rei dos Embeds enviadas como /canal/ para /embed/
+      if (playerUrl.includes('reidosembeds.online/canal/')) {
+        playerUrl = playerUrl.replace('reidosembeds.online/canal/', 'reidosembeds.online/embed/');
+      }
       
       if (!playerUrl && item.episodes && item.episodes.length > 0) {
         playerUrl = item.episodes[0];
