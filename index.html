@@ -121,44 +121,16 @@
         </div>
       </div>
 
-      <!-- LIVE TV CONTENT (REI DOS EMBEDS) -->
-      <div id="liveTvTab" class="hidden space-y-3 overflow-y-auto pr-1">
-        <form onsubmit="saveLiveChannel(event)" class="space-y-3">
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Nome do Canal / Evento</label>
-            <input type="text" id="liveTitleInput" required placeholder="Ex: ESPN 1, SporTV, Premiere, Globo SP" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-          </div>
+      <!-- LIVE TV CONTENT (BUSCA INTELIGENTE REI DOS EMBEDS) -->
+      <div id="liveTvTab" class="hidden space-y-3 flex-1 flex flex-col overflow-hidden">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+          <input type="text" id="liveSearchInput" onkeyup="searchLiveChannels()" placeholder="Busque por Globo, Premiere, SporTV, ESPN, SBT..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-emerald-500">
+        </div>
 
-          <div class="grid grid-cols-2 gap-2.5">
-            <div>
-              <label class="block text-[11px] font-semibold text-zinc-400 mb-1">ID do Canal no Rei dos Embeds</label>
-              <input type="text" id="liveIdInput" placeholder="Ex: espn, sportv, premiere" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500">
-              <p class="text-[10px] text-zinc-500 mt-1">Gera a URL: <span class="text-zinc-400 font-mono">reidosembeds.online/canal/...</span></p>
-            </div>
-            <div>
-              <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Categoria</label>
-              <select id="liveCategoryInput" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-                <option value="TV ao Vivo">TV ao Vivo</option>
-                <option value="Esporte">Esporte</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">OU Cole o Código iframe / Link Completo do Rei dos Embeds</label>
-            <textarea id="liveIframeInput" rows="2" placeholder="Ex: <iframe src='https://reidosembeds.online/canal/espn' ...></iframe>" class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-brand-500"></textarea>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-400 mb-1">URL da Logo / Capa (Opcional)</label>
-            <input type="url" id="liveBannerInput" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700/60 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-          </div>
-
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="button" onclick="closeAddModal()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer">Cancelar</button>
-            <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-md cursor-pointer">Salvar Canal</button>
-          </div>
-        </form>
+        <div id="liveResults" class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[220px] max-h-[350px]">
+          <!-- Lista gerada dinamicamente com busca parcial -->
+        </div>
       </div>
 
       <!-- MANUAL CONTENT -->
@@ -317,6 +289,62 @@
 
     // TMDB API KEY
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
+
+    // BASE DE DADOS INTEGRADA DE CANAIS AO VIVO (REI DOS EMBEDS)
+    const REI_DOS_EMBEDS_CHANNELS = [
+      { id: "globo-sp", name: "Globo SP", cat: "TV ao Vivo", logo: "https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?auto=format&fit=crop&w=300&q=80" },
+      { id: "globo-rj", name: "Globo RJ", cat: "TV ao Vivo", logo: "https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?auto=format&fit=crop&w=300&q=80" },
+      { id: "globo-mg", name: "Globo MG", cat: "TV ao Vivo" },
+      { id: "globo-rs", name: "Globo RS", cat: "TV ao Vivo" },
+      { id: "globo-df", name: "Globo DF", cat: "TV ao Vivo" },
+      { id: "globo-news", name: "GloboNews", cat: "TV ao Vivo" },
+      { id: "sportv", name: "SporTV 1", cat: "Esporte" },
+      { id: "sportv-2", name: "SporTV 2", cat: "Esporte" },
+      { id: "sportv-3", name: "SporTV 3", cat: "Esporte" },
+      { id: "premiere-clubes", name: "Premiere Clubes", cat: "Esporte" },
+      { id: "premiere-2", name: "Premiere 2", cat: "Esporte" },
+      { id: "premiere-3", name: "Premiere 3", cat: "Esporte" },
+      { id: "premiere-4", name: "Premiere 4", cat: "Esporte" },
+      { id: "premiere-5", name: "Premiere 5", cat: "Esporte" },
+      { id: "premiere-6", name: "Premiere 6", cat: "Esporte" },
+      { id: "premiere-7", name: "Premiere 7", cat: "Esporte" },
+      { id: "premiere-8", name: "Premiere 8", cat: "Esporte" },
+      { id: "espn", name: "ESPN 1", cat: "Esporte" },
+      { id: "espn-2", name: "ESPN 2", cat: "Esporte" },
+      { id: "espn-3", name: "ESPN 3", cat: "Esporte" },
+      { id: "espn-4", name: "ESPN 4", cat: "Esporte" },
+      { id: "espn-5", name: "ESPN 5", cat: "Esporte" },
+      { id: "espn-6", name: "ESPN 6", cat: "Esporte" },
+      { id: "combate", name: "Combate", cat: "Esporte" },
+      { id: "band-sports", name: "BandSports", cat: "Esporte" },
+      { id: "cazetv", name: "CazéTV", cat: "Esporte" },
+      { id: "sbt", name: "SBT", cat: "TV ao Vivo" },
+      { id: "record", name: "Record TV", cat: "TV ao Vivo" },
+      { id: "band", name: "Band", cat: "TV ao Vivo" },
+      { id: "tnt", name: "TNT", cat: "TV ao Vivo" },
+      { id: "space", name: "Space", cat: "TV ao Vivo" },
+      { id: "megapix", name: "Megapix", cat: "TV ao Vivo" },
+      { id: "telecine-pipoca", name: "Telecine Pipoca", cat: "TV ao Vivo" },
+      { id: "telecine-action", name: "Telecine Action", cat: "TV ao Vivo" },
+      { id: "telecine-premium", name: "Telecine Premium", cat: "TV ao Vivo" },
+      { id: "telecine-fun", name: "Telecine Fun", cat: "TV ao Vivo" },
+      { id: "telecine-touch", name: "Telecine Touch", cat: "TV ao Vivo" },
+      { id: "telecine-cult", name: "Telecine Cult", cat: "TV ao Vivo" },
+      { id: "hbo", name: "HBO", cat: "TV ao Vivo" },
+      { id: "hbo-2", name: "HBO 2", cat: "TV ao Vivo" },
+      { id: "hbo-plus", name: "HBO Plus", cat: "TV ao Vivo" },
+      { id: "hbo-family", name: "HBO Family", cat: "TV ao Vivo" },
+      { id: "cartoon-network", name: "Cartoon Network", cat: "TV ao Vivo" },
+      { id: "discovery-kids", name: "Discovery Kids", cat: "TV ao Vivo" },
+      { id: "disney-channel", name: "Disney Channel", cat: "TV ao Vivo" },
+      { id: "paramount-network", name: "Paramount Network", cat: "TV ao Vivo" },
+      { id: "national-geographic", name: "National Geographic", cat: "TV ao Vivo" },
+      { id: "discovery-channel", name: "Discovery Channel", cat: "TV ao Vivo" },
+      { id: "history", name: "History Channel", cat: "TV ao Vivo" },
+      { id: "multishow", name: "Multishow", cat: "TV ao Vivo" },
+      { id: "gnt", name: "GNT", cat: "TV ao Vivo" },
+      { id: "viva", name: "VIVA", cat: "TV ao Vivo" }
+    ];
 
     let catalog = [];
     let categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
@@ -518,6 +546,85 @@
       }, 400);
     }
 
+    // BUSCA INTELIGENTE DE CANAIS AO VIVO (REI DOS EMBEDS)
+    function searchLiveChannels() {
+      const query = document.getElementById('liveSearchInput').value.trim().toLowerCase();
+      const resultsDiv = document.getElementById('liveResults');
+
+      const matches = REI_DOS_EMBEDS_CHANNELS.filter(c => 
+        c.name.toLowerCase().includes(query) || c.id.toLowerCase().includes(query)
+      );
+
+      resultsDiv.innerHTML = '';
+
+      if (matches.length === 0) {
+        resultsDiv.innerHTML = `
+          <div class="text-center py-8 text-xs text-zinc-500 space-y-2">
+            <p>Nenhum canal encontrado na busca rápida.</p>
+            <button onclick="promptCustomLiveChannel('${query}')" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-emerald-400 border border-zinc-700 rounded-lg text-xs transition">
+              + Adicionar "${query || 'Novo Canal'}" Manuais
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      matches.forEach(ch => {
+        const card = document.createElement('div');
+        card.className = "flex items-center justify-between bg-zinc-800/60 border border-zinc-700/40 p-2.5 rounded-xl hover:border-emerald-500 transition cursor-pointer group";
+        card.onclick = () => addLiveChannelPreset(ch);
+
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-700/60 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
+              <i class="fa-solid fa-tv"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs text-zinc-200 group-hover:text-emerald-400 transition">${ch.name}</h4>
+              <p class="text-[10px] text-zinc-500 font-mono">ID: ${ch.id}</p>
+            </div>
+          </div>
+
+          <button class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer">
+            <i class="fa-solid fa-plus text-[10px]"></i>
+            <span>Adicionar</span>
+          </button>
+        `;
+        resultsDiv.appendChild(card);
+      });
+    }
+
+    function addLiveChannelPreset(ch) {
+      const id = db.ref('catalog').push().key;
+      const apiUrl = `https://reidosembeds.online/canal/${ch.id}`;
+
+      const itemData = {
+        title: ch.name,
+        type: ch.cat || 'TV ao Vivo',
+        banner: ch.logo || '',
+        apiUrl,
+        seasonNote: 'AO VIVO'
+      };
+
+      db.ref(`catalog/${id}`).set(itemData, (error) => {
+        if (!error) {
+          closeAddModal();
+        } else {
+          alert('Erro ao salvar no banco de dados.');
+        }
+      });
+    }
+
+    function promptCustomLiveChannel(defaultName) {
+      const channelName = prompt("Nome do Canal:", defaultName);
+      if (!channelName) return;
+      
+      const channelId = prompt("ID do canal no Rei dos Embeds (ex: espn, sportv, globo):", channelName.toLowerCase().replace(/\s+/g, '-'));
+      if (!channelId) return;
+
+      addLiveChannelPreset({ name: channelName, id: channelId, cat: 'TV ao Vivo' });
+    }
+
     // SALVAR TÍTULO DA BUSCA AUTOMÁTICA (TMDB)
     function saveItemAuto(tmdbId, title, isMovie, banner) {
       const id = db.ref('catalog').push().key;
@@ -550,50 +657,18 @@
       });
     }
 
-    // SALVAR CANAL AO VIVO (REI DOS EMBEDS)
-    function saveLiveChannel(e) {
-      e.preventDefault();
-      const id = db.ref('catalog').push().key;
-      const title = document.getElementById('liveTitleInput').value.trim();
-      const channelId = document.getElementById('liveIdInput').value.trim();
-      const category = document.getElementById('liveCategoryInput').value;
-      const iframeRaw = document.getElementById('liveIframeInput').value.trim();
-      const banner = document.getElementById('liveBannerInput').value.trim();
-
-      let apiUrl = '';
-      if (iframeRaw) {
-        apiUrl = iframeRaw;
-      } else if (channelId) {
-        apiUrl = `https://reidosembeds.online/canal/${channelId}`;
-      }
-
-      const itemData = {
-        title,
-        type: category,
-        banner: banner || '',
-        apiUrl,
-        seasonNote: 'AO VIVO'
-      };
-
-      db.ref(`catalog/${id}`).set(itemData, (error) => {
-        if (!error) {
-          closeAddModal();
-        } else {
-          alert('Erro ao salvar no banco de dados.');
-        }
-      });
-    }
-
     // MODAL DE ADIÇÃO (TABS)
     function openAddModal() {
       document.getElementById('itemForm').reset();
       document.getElementById('tmdbSearchInput').value = '';
+      document.getElementById('liveSearchInput').value = '';
       document.getElementById('tmdbResults').innerHTML = `
         <div class="text-center py-10 text-xs text-zinc-500">
           <i class="fa-solid fa-tv text-2xl mb-2 text-zinc-700 block"></i>
           Pesquise por qualquer filme, série ou anime para adicionar automaticamente com capa.
         </div>
       `;
+      searchLiveChannels();
       switchAddTab('auto');
       document.getElementById('addModal').classList.remove('hidden');
     }
@@ -624,6 +699,7 @@
       } else if (tab === 'live') {
         liveTab.classList.remove('hidden');
         liveBtn.className = "pb-2 text-xs font-bold border-b-2 border-emerald-500 text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap";
+        searchLiveChannels();
       } else {
         manualTab.classList.remove('hidden');
         manualBtn.className = "pb-2 text-xs font-bold border-b-2 border-brand-500 text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap";
