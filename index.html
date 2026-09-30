@@ -2,7 +2,8 @@
 <html lang="pt-br" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- META TAG DE VIEWPORT ATUALIZADA PARA EVITAR ZOOM AUTOMÁTICO NO MOBILE -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Meu Cinema</title>
   
   <!-- Tailwind CSS & FontAwesome -->
@@ -33,6 +34,13 @@
       color: #f3f4f6;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
       overflow-x: hidden;
+    }
+
+    /* PREVENÇÃO DE ZOOM NATIVA PARA DISPOSITIVOS IOS */
+    @media screen and (max-width: 767px) {
+      input, select, textarea {
+        font-size: 16px !important;
+      }
     }
 
     /* MESH GRADIENT DYNAMIC BACKGROUND */
@@ -173,12 +181,12 @@
         <!-- CAMPO NOME (VISÍVEL APENAS NO CADASTRO) -->
         <div id="nameFieldContainer" class="hidden">
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
-          <input type="text" id="authName" placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="text" id="authName" placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail</label>
-          <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <div>
@@ -186,7 +194,7 @@
             <label class="block text-[11px] font-semibold text-zinc-300">Senha</label>
             <button type="button" id="forgotPasswordBtn" onclick="openResetPasswordModal()" class="text-[10px] text-brand-500 hover:underline cursor-pointer">Esqueceu a senha?</button>
           </div>
-          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <button type="submit" id="authSubmitBtn" class="w-full py-2.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer mt-2">
@@ -218,7 +226,7 @@
       <form onsubmit="handleSendResetEmail(event)" class="space-y-3">
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail Cadastrado</label>
-          <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -268,12 +276,12 @@
 
     <!-- MAIN CATALOG CONTENT -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
-      <!-- BARRA DE BUSCA GLOBAL UNIFICADA -->
+      <!-- BARRA DE BUSCA GLOBAL UNIFICADA (TAMANHO DA FONTE AJUSTADO PARA MOBILE) -->
       <div class="relative z-40">
         <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
           <div class="relative flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
-            <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais ao vivo (ex: Globo, SporTV, Premiere)..." class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/40 transition">
+            <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais..." class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base sm:text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/40 transition">
             
             <!-- BOTÃO "X" COM TRANSIÇÃO -->
             <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white flex items-center justify-center text-xs transition cursor-pointer">
@@ -361,7 +369,7 @@
         <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Nome</h4>
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
-          <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
         <div class="flex justify-end">
           <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Nome</button>
@@ -373,11 +381,11 @@
         <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Senha</h4>
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Nova Senha</label>
-          <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Confirmar Nova Senha</label>
-          <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
         <div class="flex justify-end gap-2 pt-1">
           <button type="button" onclick="closeProfileModal()" class="liquid-pill px-4 py-1.5 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Fechar</button>
@@ -402,23 +410,23 @@
       <form id="itemForm" onsubmit="saveItemManual(event)" class="space-y-3">
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título do Canal / Filme</label>
-          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40"></select>
+            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40"></select>
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa (Opcional)</label>
-            <input type="url" id="bannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+            <input type="url" id="bannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
           </div>
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Rei dos Embeds OU Código iframe</label>
-          <textarea id="apiInput" rows="3" placeholder="Ex: https://reidosembeds.online/embed/canal.php?id=globo-rj ou id do canal" class="w-full liquid-pill rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
+          <textarea id="apiInput" rows="3" placeholder="Ex: https://reidosembeds.online/embed/canal.php?id=globo-rj ou id do canal" class="w-full liquid-pill rounded-xl p-2.5 text-base sm:text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -446,28 +454,28 @@
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
-          <input type="text" id="editTitleInput" required class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="text" id="editTitleInput" required class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40"></select>
+            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40"></select>
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Anotação / Status</label>
-            <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+            <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
           </div>
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa</label>
-          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Código iframe OU Link da API</label>
-          <textarea id="editApiInput" rows="3" placeholder="Cole a URL do Rei dos Embeds" class="w-full liquid-pill rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
+          <textarea id="editApiInput" rows="3" placeholder="Cole a URL do Rei dos Embeds" class="w-full liquid-pill rounded-xl p-2.5 text-base sm:text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
