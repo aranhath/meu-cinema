@@ -28,9 +28,15 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    /* BASE STYLING */
+    /* BASE STYLING & FUNDO COM GRADIENTE DIVERSIFICADO */
     html, body {
-      background-color: #08080a;
+      min-height: 100vh;
+      background-color: #0d0e12;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(229, 9, 20, 0.35) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(16, 185, 129, 0.28) 0%, transparent 50%),
+        radial-gradient(circle at 50% 40%, rgba(99, 102, 241, 0.22) 0%, transparent 55%);
+      background-attachment: fixed;
       color: #f3f4f6;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
       overflow-x: hidden;
@@ -43,27 +49,9 @@
       -webkit-text-size-adjust: 100%;
     }
 
-    /* MESH GRADIENT DYNAMIC BACKGROUND RESTAURADO */
-    .mesh-background {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background: radial-gradient(circle at 15% 20%, rgba(229, 9, 20, 0.25) 0%, transparent 45%),
-                  radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.20) 0%, transparent 50%),
-                  radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
-      filter: blur(80px);
-      animation: meshPulse 12s ease-in-out infinite alternate;
-    }
-
-    @keyframes meshPulse {
-      0% { transform: scale(1) translate(0, 0); }
-      50% { transform: scale(1.1) translate(-20px, 15px); }
-      100% { transform: scale(1) translate(20px, -15px); }
-    }
-
     /* LIQUID GLASS SURFACES */
     .liquid-glass {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.07);
       backdrop-filter: blur(30px) saturate(200%);
       -webkit-backdrop-filter: blur(30px) saturate(200%);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -72,17 +60,17 @@
     }
 
     .liquid-glass-card {
-      background: rgba(22, 22, 28, 0.45);
+      background: rgba(22, 22, 28, 0.55);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.5),
                   inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .liquid-glass-card:hover {
-      background: rgba(35, 35, 45, 0.65);
+      background: rgba(35, 35, 45, 0.75);
       border-color: rgba(255, 255, 255, 0.25);
       transform: translateY(-3px);
       box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7),
@@ -94,13 +82,13 @@
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .liquid-pill:hover {
-      background: rgba(255, 255, 255, 0.16);
-      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.28);
       transform: translateY(-1px);
     }
 
@@ -155,9 +143,6 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative">
-
-  <!-- MESH GRADIENT DYNAMIC LIGHTING -->
-  <div class="mesh-background"></div>
 
   <!-- BACKDROP TRANSPARENTE PARA FECHAR BUSCA AO CLICAR FORA -->
   <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
