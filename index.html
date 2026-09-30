@@ -138,6 +138,12 @@
       </div>
 
       <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3 text-left">
+        <!-- CAMPO NOME (VISÍVEL APENAS NO CADASTRO) -->
+        <div id="nameFieldContainer" class="hidden">
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
+          <input type="text" id="authName" placeholder="Como quer ser chamado?" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40">
+        </div>
+
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail</label>
           <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40">
@@ -170,8 +176,9 @@
             <i class="fa-solid fa-play"></i>
           </div>
           <div>
-            <h1 class="font-bold text-base leading-none tracking-tight text-white/90">Meu Cinema</h1>
-            <p id="userEmailBadge" class="text-[10px] text-zinc-400 font-medium truncate max-w-[130px] sm:max-w-none mt-0.5"></p>
+            <!-- MENSAGEM COM O NOME DO USUÁRIO -->
+            <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white/90">Meu Cinema</h1>
+            <p id="userEmailBadge" class="text-[10px] text-zinc-400 font-medium truncate max-w-[130px] sm:max-w-none mt-1"></p>
           </div>
         </div>
 
@@ -494,6 +501,10 @@
         document.getElementById('authScreen').classList.add('hidden');
         document.getElementById('appScreen').classList.remove('hidden');
         document.getElementById('appScreen').classList.add('flex');
+
+        // EXIBE SAUDAÇÃO PERSONALIZADA OU "MEU CINEMA"
+        const displayName = user.displayName ? user.displayName.split(' ')[0] : '';
+        document.getElementById('userWelcomeHeader').innerText = displayName ? `Olá, ${displayName}` : 'Meu Cinema';
         document.getElementById('userEmailBadge').innerText = user.email;
 
         // BIND REFERÊNCIAS ISOLADAS DO USUÁRIO
@@ -509,9 +520,20 @@
       }
     });
 
-    // SISTEMA DE AUTH (LOGIN / CADASTRO)
+    // ALTERNA ENTRE LOGIN E CRIAÇÃO DE CONTA
     function toggleAuthMode() {
       isSignUpMode = !isSignUpMode;
+      const nameContainer = document.getElementById('nameFieldContainer');
+      const nameInput = document.getElementById('authName');
+
+      if (isSignUpMode) {
+        nameContainer.classList.remove('hidden');
+        nameInput.setAttribute('required', 'true');
+      } else {
+        nameContainer.classList.add('hidden');
+        nameInput.removeAttribute('required');
+      }
+
       document.getElementById('authTitle').innerText = isSignUpMode ? 'Criar Nova Conta' : 'Entrar no Meu Cinema';
       document.getElementById('authSubmitBtn').innerText = isSignUpMode ? 'Cadastrar' : 'Entrar';
       document.getElementById('authToggleText').innerText = isSignUpMode ? 'Já tem uma conta?' : 'Não tem uma conta?';
@@ -522,10 +544,16 @@
       e.preventDefault();
       const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value.trim();
+      const name = document.getElementById('authName').value.trim();
 
       try {
         if (isSignUpMode) {
-          await auth.createUserWithEmailAndPassword(email, password);
+          const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+          if (name) {
+            await userCredential.user.updateProfile({
+              displayName: name
+            });
+          }
           showToast('Conta criada com sucesso!');
         } else {
           await auth.signInWithEmailAndPassword(email, password);
@@ -1161,8 +1189,9 @@
     }
 
     function closePlayer() {
-      const holder = document.getElementById('iframeHolder');
-      holder.innerHTML = '';
+      const holder = document.innerHTML = '';
+      const holderEl = document.getElementById('iframeHolder');
+      holderEl.innerHTML = '';
       currentPlayingUrl = '';
       document.getElementById('playerOverlay').classList.add('hidden');
       document.getElementById('playerOverlay').classList.remove('flex');
