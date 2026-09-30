@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Meu Cinema</title>
   
-  <!-- FAVICON PNG EMBUTIDO (COMPATÍVEL COM SAFARI MAC, IOS E CHROME) -->
-  <link rel="icon" type="image/png" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zR1YAAAACXBIWXMAAAsTAAALEwEAmpwYAAACv0lEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAn2AABb2I9sQAAAAASUVORK5CYII=?v=3">
-  <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABJ0lEQVR4nO3XsUrDQBjA8V/L1mJBBJ1dM3RycBEEBwcnR3EQXAR3R/E1fAd3x04unQQHB2ddLDoI4uDiILjg4CBy0pY0xRZa3u/A4XDf33J333AIAAAAAAAAoGv21x3A143neWk8HqdxOIwqIooii2pVVUWj0Sjd3NwcxnEc3sJz1LKs9Hg8NltfX7f14jheCILA3/Ym94vneSkR3eO3L8uyfR3A233N53PxfjQa3eM3/sQ39wzg/f60Wp/45iOAR0AAnwC4AQRACIAQCIAQACECIARACIAQCIAQARACIAQCIAQCIAQgRACECIAQCIAQCIAIARACIAQCIAQACIEQACECIAQCIAQARDiACIEQACECIAQCIAQCIAQgRACECIAQCIAQARACIAQCIAQCIAQACIEQCIAACAEA4Qb9gQ3s29A/1wAAAABJRU5ErkJggg==">
-  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zR1YAAAACXBIWXMAAAsTAAALEwEAmpwYAAACv0lEQVR4nO3BMQEAAADCoPVPbQwfoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAn2AABb2I9sQAAAAASUVORK5CYII=">
+  <!-- FAVICON FÍSICO -->
+  <link rel="icon" href="./favicon.ico?v=4" type="image/x-icon">
+  <link rel="shortcut icon" href="./favicon.ico?v=4" type="image/x-icon">
+  <link rel="apple-touch-icon" href="./favicon.ico?v=4">
 
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -46,12 +46,21 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
       overflow-x: hidden;
       overscroll-behavior-y: none;
+      /* DIFICULTA SELEÇÃO DE TEXTO/ELEMENTOS */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
 
     /* REGRA GLOBAL ANTI-ZOOM PARA IOS/MOBILE EM INPUTS */
     input, select, textarea {
       font-size: 16px !important;
       -webkit-text-size-adjust: 100%;
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
     }
 
     /* LIQUID GLASS SURFACES */
@@ -452,6 +461,69 @@
   </div>
 
   <script>
+    // ==========================================
+    // SCRIPT DE PROTEÇÃO: BLOQUEIO DO INSPECIONAR (DEVTOOLS)
+    // ==========================================
+    
+    // 1. Bloquear Clique Direito (Menu de Contexto)
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    }, false);
+
+    // 2. Bloquear Atalhos de Teclado (F12, Ctrl+Shift+I, Cmd+Option+I, etc.)
+    document.addEventListener('keydown', (e) => {
+      // Tecla F12
+      if (e.keyCode === 123) {
+        e.preventDefault();
+        return false;
+      }
+
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+      if (ctrlOrCmd) {
+        // Shift + I / J / C (DevTools, Consola, Inspecionar Elemento)
+        if (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+          e.preventDefault();
+          return false;
+        }
+        // U (Ver Código Fonte)
+        if (e.keyCode === 85) {
+          e.preventDefault();
+          return false;
+        }
+        // S (Salvar Página)
+        if (e.keyCode === 83) {
+          e.preventDefault();
+          return false;
+        }
+      }
+      
+      // Atalhos específicos do Mac (Cmd + Option + I / J / C / U)
+      if (isMac && e.altKey && e.metaKey) {
+        if (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 85) {
+          e.preventDefault();
+          return false;
+        }
+      }
+    }, false);
+
+    // 3. Detetor Dinâmico de Abertura do DevTools via Loop de Debugger
+    (function antiDevTools() {
+      const startTime = performance.now();
+      debugger;
+      const endTime = performance.now();
+      if (endTime - startTime > 100) {
+        // Se a consola estive aberta e parar no debugger, limpa o ecrã
+        document.body.innerHTML = '<div style="display:flex;height:100vh;align-items:center;justify-center;background:#0d0e12;color:#fff;font-family:sans-serif;font-weight:bold;">Acesso negado.</div>';
+      }
+      setTimeout(antiDevTools, 1000);
+    })();
+
+    // ==========================================
+    // LÓGICA DA APLICAÇÃO
+    // ==========================================
+
     // HELPER PARA TRANSIÇÃO DE MODAIS
     function openModal(elementId) {
       const el = document.getElementById(elementId);
