@@ -150,7 +150,10 @@
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Senha</label>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-[11px] font-semibold text-zinc-300">Senha</label>
+            <button type="button" id="forgotPasswordBtn" onclick="openResetPasswordModal()" class="text-[10px] text-brand-500 hover:underline cursor-pointer">Esqueceu a senha?</button>
+          </div>
           <input type="password" id="authPassword" required placeholder="••••••••" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40">
         </div>
 
@@ -166,6 +169,34 @@
     </div>
   </div>
 
+  <!-- MODAL DE RESET DE SENHA (ESQUECEU A SENHA) -->
+  <div id="resetPasswordModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeResetPasswordModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 class="text-sm font-bold text-white flex items-center gap-2">
+        <i class="fa-solid fa-key text-brand-500"></i>
+        <span>Redefinir Senha</span>
+      </h3>
+
+      <p class="text-xs text-zinc-300">Digite seu e-mail para receber um link de redefinição de senha.</p>
+
+      <form onsubmit="handleSendResetEmail(event)" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail Cadastrado</label>
+          <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeResetPasswordModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Enviar E-mail</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- CONTEÚDO PRINCIPAL DO APP -->
   <div id="appScreen" class="hidden flex-col min-h-screen">
     <!-- TOP HEADER -->
@@ -176,15 +207,10 @@
             <i class="fa-solid fa-play"></i>
           </div>
           <div>
-            <!-- MENSAGEM SAUDAÇÃO + BOTÃO EDIÇÃO DE NOME (SKELETON DE CARREGAMENTO) -->
-            <div class="flex items-center gap-1.5">
-              <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white/90">
-                <span class="inline-block w-20 h-4 bg-white/10 animate-pulse rounded"></span>
-              </h1>
-              <button id="editNameBtn" onclick="openProfileModal()" title="Editar Nome" class="hidden text-zinc-400 hover:text-white text-[10px] p-0.5 cursor-pointer">
-                <i class="fa-solid fa-pen"></i>
-              </button>
-            </div>
+            <!-- MENSAGEM DE SAUDAÇÃO -->
+            <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white/90">
+              <span class="inline-block w-20 h-4 bg-white/10 animate-pulse rounded"></span>
+            </h1>
             <p id="userEmailBadge" class="text-[10px] text-zinc-400 font-medium truncate max-w-[130px] sm:max-w-none mt-1">
               <span class="inline-block w-32 h-3 bg-white/5 animate-pulse rounded"></span>
             </p>
@@ -192,6 +218,12 @@
         </div>
 
         <div class="flex items-center gap-2">
+          <!-- BOTÃO ÁREA DE PERFIL -->
+          <button onclick="openProfileModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-user-gear text-zinc-400"></i>
+            <span class="hidden sm:inline">Perfil</span>
+          </button>
+
           <button onclick="openCategoryModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-layer-group text-zinc-400"></i>
             <span class="hidden sm:inline">Categorias</span>
@@ -273,27 +305,44 @@
     </main>
   </div>
 
-  <!-- PROFILE MODAL (EDITAR NOME) -->
+  <!-- PROFILE MODAL (EDITAR NOME E TROCAR SENHA) -->
   <div id="profileModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-user text-brand-500"></i>
-        <span>Editar Perfil</span>
+        <i class="fa-solid fa-user-gear text-brand-500"></i>
+        <span>Minha Conta & Perfil</span>
       </h3>
 
-      <form onsubmit="saveUserProfileName(event)" class="space-y-3">
+      <!-- SEÇÃO 1: NOME DO USUÁRIO -->
+      <form onsubmit="saveUserProfileName(event)" class="space-y-3 border-b border-white/10 pb-4">
+        <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Nome</h4>
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
           <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
         </div>
+        <div class="flex justify-end">
+          <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Nome</button>
+        </div>
+      </form>
 
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeProfileModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Nome</button>
+      <!-- SEÇÃO 2: TROCAR SENHA -->
+      <form onsubmit="handleChangePassword(event)" class="space-y-3">
+        <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Senha</h4>
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Nova Senha</label>
+          <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Confirmar Nova Senha</label>
+          <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
+        </div>
+        <div class="flex justify-end gap-2 pt-1">
+          <button type="button" onclick="closeProfileModal()" class="liquid-pill px-4 py-1.5 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Fechar</button>
+          <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg transition cursor-pointer">Atualizar Senha</button>
         </div>
       </form>
     </div>
@@ -568,26 +617,24 @@
     // ATUALIZA NOME NA TELA (MENSAGEM OLÁ [NOME])
     function setWelcomeHeaderName(name) {
       const headerEl = document.getElementById('userWelcomeHeader');
-      const editBtn = document.getElementById('editNameBtn');
 
       if (name && name.trim() !== '') {
         const firstName = name.trim().split(' ')[0];
         headerEl.innerText = `Olá, ${firstName}`;
-        editBtn.classList.remove('hidden');
       } else if (currentUser && currentUser.displayName) {
         const firstName = currentUser.displayName.trim().split(' ')[0];
         headerEl.innerText = `Olá, ${firstName}`;
-        editBtn.classList.remove('hidden');
       } else {
         headerEl.innerText = 'Meu Cinema';
-        editBtn.classList.remove('hidden');
       }
     }
 
-    // MODAL EDITAR NOME DE PERFIL
+    // MODAL EDITAR NOME E TROCAR SENHA
     function openProfileModal() {
       const currentName = currentUser && currentUser.displayName ? currentUser.displayName : '';
       document.getElementById('editProfileNameInput').value = currentName;
+      document.getElementById('newPasswordInput').value = '';
+      document.getElementById('confirmPasswordInput').value = '';
       document.getElementById('profileModal').classList.remove('hidden');
     }
 
@@ -606,10 +653,59 @@
           await userProfileRef.update({ name: newName });
         }
         setWelcomeHeaderName(newName);
-        closeProfileModal();
-        showToast('Nome atualizado com sucesso!');
+        showToast('Nome de exibição atualizado!');
       } catch (err) {
         showToast('Erro ao atualizar nome.', 'error');
+      }
+    }
+
+    async function handleChangePassword(e) {
+      e.preventDefault();
+      const newPass = document.getElementById('newPasswordInput').value;
+      const confirmPass = document.getElementById('confirmPasswordInput').value;
+
+      if (newPass.length < 6) {
+        showToast('A senha deve ter no mínimo 6 caracteres.', 'error');
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        showToast('As senhas não coincidem.', 'error');
+        return;
+      }
+
+      try {
+        await currentUser.updatePassword(newPass);
+        document.getElementById('newPasswordInput').value = '';
+        document.getElementById('confirmPasswordInput').value = '';
+        showToast('Senha alterada com sucesso!');
+      } catch (err) {
+        showToast('Erro ao alterar a senha. Faça login novamente se persistir.', 'error');
+      }
+    }
+
+    // REDEFINIÇÃO DE SENHA (ESQUECEU A SENHA)
+    function openResetPasswordModal() {
+      const currentEmail = document.getElementById('authEmail').value;
+      document.getElementById('resetEmailInput').value = currentEmail;
+      document.getElementById('resetPasswordModal').classList.remove('hidden');
+    }
+
+    function closeResetPasswordModal() {
+      document.getElementById('resetPasswordModal').classList.add('hidden');
+    }
+
+    async function handleSendResetEmail(e) {
+      e.preventDefault();
+      const email = document.getElementById('resetEmailInput').value.trim();
+      if (!email) return;
+
+      try {
+        await auth.sendPasswordResetEmail(email);
+        closeResetPasswordModal();
+        showToast('E-mail de redefinição enviado com sucesso!');
+      } catch (err) {
+        showToast('Erro ao enviar e-mail. Verifique o endereço digitado.', 'error');
       }
     }
 
@@ -618,13 +714,16 @@
       isSignUpMode = !isSignUpMode;
       const nameContainer = document.getElementById('nameFieldContainer');
       const nameInput = document.getElementById('authName');
+      const forgotBtn = document.getElementById('forgotPasswordBtn');
 
       if (isSignUpMode) {
         nameContainer.classList.remove('hidden');
         nameInput.setAttribute('required', 'true');
+        forgotBtn.classList.add('hidden');
       } else {
         nameContainer.classList.add('hidden');
         nameInput.removeAttribute('required');
+        forgotBtn.classList.remove('hidden');
       }
 
       document.getElementById('authTitle').innerText = isSignUpMode ? 'Criar Nova Conta' : 'Entrar no Meu Cinema';
