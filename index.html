@@ -96,6 +96,35 @@
       transform: translateY(-1px);
     }
 
+    /* TRANSIÇÕES E ANIMAÇÕES DE MODAIS/PAINÉIS */
+    .modal-backdrop {
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-card {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-closed {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    .modal-closed .modal-card {
+      transform: scale(0.95) translateY(8px) !important;
+      opacity: 0 !important;
+    }
+
+    .modal-open {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    .modal-open .modal-card {
+      transform: scale(1) translateY(0) !important;
+      opacity: 1 !important;
+    }
+
     /* LIVE PULSE BADGE */
     .live-pulse {
       display: inline-block;
@@ -123,14 +152,14 @@
   <div class="mesh-background"></div>
 
   <!-- BACKDROP TRANSPARENTE PARA FECHAR BUSCA AO CLICAR FORA -->
-  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden transition-opacity duration-300"></div>
+  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- TELA DE AUTHENTICATION / LOGIN -->
-  <div id="authScreen" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl hidden flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center">
+  <div id="authScreen" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl modal-backdrop modal-closed flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center modal-card">
       <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/30 border border-white/20 mx-auto">
         <i class="fa-solid fa-play"></i>
       </div>
@@ -173,8 +202,8 @@
   </div>
 
   <!-- MODAL DE RESET DE SENHA (ESQUECEU A SENHA) -->
-  <div id="resetPasswordModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+  <div id="resetPasswordModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative modal-card">
       <button onclick="closeResetPasswordModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -210,7 +239,7 @@
             <i class="fa-solid fa-play"></i>
           </div>
           <div>
-            <!-- MENSAGEM DE SAUDAÇÃO (SEM E-MAIL ABAIXO) -->
+            <!-- MENSAGEM DE SAUDAÇÃO -->
             <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white/90">
               <span class="inline-block w-20 h-4 bg-white/10 animate-pulse rounded"></span>
             </h1>
@@ -239,14 +268,14 @@
 
     <!-- MAIN CATALOG CONTENT -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
-      <!-- BARRA DE BUSCA GLOBAL UNIFICADA COM ACESSIBILIDADE AUMENTADA -->
+      <!-- BARRA DE BUSCA GLOBAL UNIFICADA -->
       <div class="relative z-40">
         <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
           <div class="relative flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
             <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais ao vivo (ex: Globo, SporTV, Premiere)..." class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/40 transition">
             
-            <!-- BOTÃO "X" AMPLIADO E MAIS FÁCIL DE CLICAR -->
+            <!-- BOTÃO "X" COM TRANSIÇÃO -->
             <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white flex items-center justify-center text-xs transition cursor-pointer">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -255,10 +284,10 @@
           <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5"></div>
         </div>
 
-        <!-- PAINEL FLUTUANTE DE RESULTADOS DA BUSCA GLOBAL -->
-        <div id="searchResultsPanel" class="hidden absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
+        <!-- PAINEL FLUTUANTE DE RESULTADOS COM TRANSIÇÃO SUAVE -->
+        <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-300 absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
           
-          <!-- CABEÇALHO DO PAINEL DE BUSCA COM BOTÃO DEDICADO DE FECHAR -->
+          <!-- CABEÇALHO DO PAINEL DE BUSCA -->
           <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
             <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
               <i class="fa-solid fa-magnifying-glass text-brand-500"></i> Resultados Encontrados
@@ -316,8 +345,8 @@
   </div>
 
   <!-- PROFILE MODAL (EDITAR NOME E TROCAR SENHA) -->
-  <div id="profileModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+  <div id="profileModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto modal-card">
       <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -359,8 +388,8 @@
   </div>
 
   <!-- MANUAL ITEM MODAL -->
-  <div id="addModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+  <div id="addModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative modal-card">
       <button onclick="closeAddModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -401,8 +430,8 @@
   </div>
 
   <!-- EDIT DETAILS MODAL -->
-  <div id="editModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+  <div id="editModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto modal-card">
       <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -450,7 +479,7 @@
   </div>
 
   <!-- PLAYER OVERLAY LAYER -->
-  <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex-col">
+  <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
     <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 liquid-glass p-2 rounded-2xl shadow-2xl">
       <div class="hidden sm:block px-3 text-left">
         <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[200px]">...</h2>
@@ -472,6 +501,19 @@
   </div>
 
   <script>
+    // HELPER PARA TRANSIÇÃO DE MODAIS
+    function openModal(elementId) {
+      const el = document.getElementById(elementId);
+      el.classList.remove('modal-closed');
+      el.classList.add('modal-open');
+    }
+
+    function closeModal(elementId) {
+      const el = document.getElementById(elementId);
+      el.classList.remove('modal-open');
+      el.classList.add('modal-closed');
+    }
+
     // SISTEMA DE NOTIFICAÇÕES TOAST
     function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
@@ -570,8 +612,7 @@
     auth.onAuthStateChanged((user) => {
       if (user) {
         currentUser = user;
-        document.getElementById('authScreen').classList.add('hidden');
-        document.getElementById('authScreen').classList.remove('flex');
+        closeModal('authScreen');
 
         document.getElementById('appScreen').classList.remove('hidden');
         document.getElementById('appScreen').classList.add('flex');
@@ -584,8 +625,7 @@
         listenToUserData();
       } else {
         currentUser = null;
-        document.getElementById('authScreen').classList.remove('hidden');
-        document.getElementById('authScreen').classList.add('flex');
+        openModal('authScreen');
 
         document.getElementById('appScreen').classList.add('hidden');
         document.getElementById('appScreen').classList.remove('flex');
@@ -613,11 +653,11 @@
       document.getElementById('editProfileNameInput').value = currentName;
       document.getElementById('newPasswordInput').value = '';
       document.getElementById('confirmPasswordInput').value = '';
-      document.getElementById('profileModal').classList.remove('hidden');
+      openModal('profileModal');
     }
 
     function closeProfileModal() {
-      document.getElementById('profileModal').classList.add('hidden');
+      closeModal('profileModal');
     }
 
     async function saveUserProfileName(e) {
@@ -666,11 +706,11 @@
     function openResetPasswordModal() {
       const currentEmail = document.getElementById('authEmail').value;
       document.getElementById('resetEmailInput').value = currentEmail;
-      document.getElementById('resetPasswordModal').classList.remove('hidden');
+      openModal('resetPasswordModal');
     }
 
     function closeResetPasswordModal() {
-      document.getElementById('resetPasswordModal').classList.add('hidden');
+      closeModal('resetPasswordModal');
     }
 
     async function handleSendResetEmail(e) {
@@ -834,7 +874,7 @@
       renderCatalog();
     }
 
-    // BUSCA GLOBAL COM DIVERSAS FORMAS DE FECHAR
+    // BUSCA GLOBAL COM TRANSIÇÕES SUAVES DE ENTRADA E SAÍDA
     function handleGlobalSearch(e) {
       if (e && e.key === "Escape") {
         clearGlobalSearch();
@@ -848,16 +888,17 @@
       const clearBtn = document.getElementById('clearSearchBtn');
 
       if (!query) {
-        panel.classList.add('hidden');
-        backdrop.classList.add('hidden');
-        clearBtn.classList.add('hidden');
-        renderCatalog();
+        clearGlobalSearch();
         return;
       }
 
       clearBtn.classList.remove('hidden');
-      panel.classList.remove('hidden');
-      backdrop.classList.remove('hidden');
+
+      panel.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+      panel.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+
+      backdrop.classList.remove('opacity-0', 'pointer-events-none');
+      backdrop.classList.add('opacity-100', 'pointer-events-auto');
 
       const savedMatches = catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase()));
       renderSavedSearchList(savedMatches);
@@ -876,9 +917,18 @@
 
     function clearGlobalSearch() {
       document.getElementById('globalSearchInput').value = '';
-      document.getElementById('searchResultsPanel').classList.add('hidden');
-      document.getElementById('searchBackdrop').classList.add('hidden');
-      document.getElementById('clearSearchBtn').classList.add('hidden');
+      const panel = document.getElementById('searchResultsPanel');
+      const backdrop = document.getElementById('searchBackdrop');
+      const clearBtn = document.getElementById('clearSearchBtn');
+
+      clearBtn.classList.add('hidden');
+
+      panel.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+      panel.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+
+      backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+
       renderCatalog();
     }
 
@@ -1077,11 +1127,11 @@
 
     function openAddModal() {
       document.getElementById('itemForm').reset();
-      document.getElementById('addModal').classList.remove('hidden');
+      openModal('addModal');
     }
 
     function closeAddModal() {
-      document.getElementById('addModal').classList.add('hidden');
+      closeModal('addModal');
     }
 
     function saveItemManual(e) {
@@ -1127,11 +1177,11 @@
       }
       document.getElementById('editApiInput').value = currentApi;
 
-      document.getElementById('editModal').classList.remove('hidden');
+      openModal('editModal');
     }
 
     function closeEditModal() {
-      document.getElementById('editModal').classList.add('hidden');
+      closeModal('editModal');
     }
 
     function saveEditDetails(e) {
@@ -1199,7 +1249,7 @@
 
         filtered.forEach(item => {
           const card = document.createElement('div');
-          card.className = "group relative liquid-glass-card rounded-2xl overflow-hidden flex flex-col cursor-pointer";
+          card.className = "group relative liquid-glass-card rounded-2xl overflow-hidden flex flex-col cursor-pointer transition-all duration-300";
           
           let noteBadge = '';
           const isLiveType = item.type === 'TV ao Vivo' || item.type === 'Esporte';
@@ -1287,8 +1337,10 @@
 
       currentPlayingUrl = playerUrl;
       renderApiContent(playerUrl, item.type === 'Filme' ? 'Filme Completo' : (item.type === 'TV ao Vivo' ? 'Transmissão ao Vivo' : 'Player Principal'));
-      document.getElementById('playerOverlay').classList.remove('hidden');
-      document.getElementById('playerOverlay').classList.add('flex');
+      
+      const overlay = document.getElementById('playerOverlay');
+      overlay.classList.remove('opacity-0', 'pointer-events-none');
+      overlay.classList.add('opacity-100', 'pointer-events-auto');
     }
 
     function renderApiContent(rawContent, subtitle) {
@@ -1348,8 +1400,10 @@
       const holderEl = document.getElementById('iframeHolder');
       holderEl.innerHTML = '';
       currentPlayingUrl = '';
-      document.getElementById('playerOverlay').classList.add('hidden');
-      document.getElementById('playerOverlay').classList.remove('flex');
+
+      const overlay = document.getElementById('playerOverlay');
+      overlay.classList.remove('opacity-100', 'pointer-events-auto');
+      overlay.classList.add('opacity-0', 'pointer-events-none');
     }
   </script>
 </body>
