@@ -2,7 +2,7 @@
 <html lang="pt-br" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <!-- META TAG DE VIEWPORT ATUALIZADA PARA EVITAR ZOOM AUTOMÁTICO NO MOBILE -->
+  <!-- META TAG DE VIEWPORT RÍGIDA CONTRA ZOOM NO MOBILE -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Meu Cinema</title>
   
@@ -36,11 +36,10 @@
       overflow-x: hidden;
     }
 
-    /* PREVENÇÃO DE ZOOM NATIVA PARA DISPOSITIVOS IOS */
-    @media screen and (max-width: 767px) {
-      input, select, textarea {
-        font-size: 16px !important;
-      }
+    /* REGRA GLOBAL ANTI-ZOOM PARA IOS/MOBILE EM INPUTS */
+    input, select, textarea {
+      font-size: 16px !important;
+      -webkit-text-size-adjust: 100%;
     }
 
     /* MESH GRADIENT DYNAMIC BACKGROUND */
@@ -104,7 +103,7 @@
       transform: translateY(-1px);
     }
 
-    /* TRANSIÇÕES E ANIMAÇÕES DE MODAIS/PAINÉIS */
+    /* TRANSIÇÕES DE MODAIS */
     .modal-backdrop {
       transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -165,51 +164,10 @@
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- TELA DE AUTHENTICATION / LOGIN -->
-  <div id="authScreen" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl modal-backdrop modal-closed flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center modal-card">
-      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/30 border border-white/20 mx-auto">
-        <i class="fa-solid fa-play"></i>
-      </div>
-      
-      <div>
-        <h2 id="authTitle" class="text-xl font-bold text-white leading-tight">Entrar no Meu Cinema</h2>
-        <p class="text-xs text-zinc-400 mt-1">Acesse seu painel privado de filmes e canais</p>
-      </div>
+  <!-- CONTAINER DINÂMICO DE AUTENTICAÇÃO (LOGIN SÓ É CARREGADO SE NÃO ESTIVER LOGADO) -->
+  <div id="authScreenContainer"></div>
 
-      <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3 text-left">
-        <!-- CAMPO NOME (VISÍVEL APENAS NO CADASTRO) -->
-        <div id="nameFieldContainer" class="hidden">
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
-          <input type="text" id="authName" placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
-        </div>
-
-        <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail</label>
-          <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
-        </div>
-
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="block text-[11px] font-semibold text-zinc-300">Senha</label>
-            <button type="button" id="forgotPasswordBtn" onclick="openResetPasswordModal()" class="text-[10px] text-brand-500 hover:underline cursor-pointer">Esqueceu a senha?</button>
-          </div>
-          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
-        </div>
-
-        <button type="submit" id="authSubmitBtn" class="w-full py-2.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer mt-2">
-          Entrar
-        </button>
-      </form>
-
-      <div class="text-xs text-zinc-400 pt-2 border-t border-white/10">
-        <span id="authToggleText">Não tem uma conta?</span>
-        <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-brand-500 font-semibold hover:underline ml-1 cursor-pointer">Criar Conta</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL DE RESET DE SENHA (ESQUECEU A SENHA) -->
+  <!-- MODAL DE RESET DE SENHA -->
   <div id="resetPasswordModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
     <div class="liquid-glass rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative modal-card">
       <button onclick="closeResetPasswordModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
@@ -223,10 +181,10 @@
 
       <p class="text-xs text-zinc-300">Digite seu e-mail para receber um link de redefinição de senha.</p>
 
-      <form onsubmit="handleSendResetEmail(event)" class="space-y-3">
+      <form onsubmit="handleSendResetEmail(event)" class="space-y-3" autocomplete="off">
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail Cadastrado</label>
-          <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -247,7 +205,6 @@
             <i class="fa-solid fa-play"></i>
           </div>
           <div>
-            <!-- MENSAGEM DE SAUDAÇÃO -->
             <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white/90">
               <span class="inline-block w-20 h-4 bg-white/10 animate-pulse rounded"></span>
             </h1>
@@ -255,13 +212,11 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <!-- BOTÃO ÁREA DE PERFIL -->
           <button onclick="openProfileModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-user-gear text-zinc-400"></i>
             <span class="hidden sm:inline">Perfil</span>
           </button>
 
-          <!-- BOTÃO RENOMEADO PARA API -->
           <button onclick="openAddModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-code text-xs"></i>
             <span class="hidden sm:inline">API</span>
@@ -276,14 +231,13 @@
 
     <!-- MAIN CATALOG CONTENT -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
-      <!-- BARRA DE BUSCA GLOBAL UNIFICADA (TAMANHO DA FONTE AJUSTADO PARA MOBILE) -->
+      <!-- BARRA DE BUSCA COM TAMANHO 16PX E ATRIBUTOS QUE BLOQUEIAM AUTOFILL/ZOOM -->
       <div class="relative z-40">
         <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
           <div class="relative flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
-            <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais..." class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base sm:text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/40 transition">
+            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais..." autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base text-white placeholder-zinc-400 focus:outline-none focus:border-white/40 transition" style="font-size: 16px !important;">
             
-            <!-- BOTÃO "X" COM TRANSIÇÃO -->
             <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white flex items-center justify-center text-xs transition cursor-pointer">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -292,10 +246,8 @@
           <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5"></div>
         </div>
 
-        <!-- PAINEL FLUTUANTE DE RESULTADOS COM TRANSIÇÃO SUAVE -->
+        <!-- PAINEL FLUTUANTE DE RESULTADOS -->
         <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-300 absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
-          
-          <!-- CABEÇALHO DO PAINEL DE BUSCA -->
           <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
             <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
               <i class="fa-solid fa-magnifying-glass text-brand-500"></i> Resultados Encontrados
@@ -335,7 +287,6 @@
 
       <!-- CARDS GRID GLASS -->
       <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <!-- SKELETON LOADERS INICIAIS -->
         <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
         <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
         <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
@@ -352,7 +303,7 @@
     </main>
   </div>
 
-  <!-- PROFILE MODAL (EDITAR NOME E TROCAR SENHA) -->
+  <!-- PROFILE MODAL -->
   <div id="profileModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
     <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto modal-card">
       <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
@@ -364,28 +315,26 @@
         <span>Minha Conta & Perfil</span>
       </h3>
 
-      <!-- SEÇÃO 1: NOME DO USUÁRIO -->
-      <form onsubmit="saveUserProfileName(event)" class="space-y-3 border-b border-white/10 pb-4">
+      <form onsubmit="saveUserProfileName(event)" class="space-y-3 border-b border-white/10 pb-4" autocomplete="off">
         <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Nome</h4>
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
-          <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
         <div class="flex justify-end">
           <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Nome</button>
         </div>
       </form>
 
-      <!-- SEÇÃO 2: TROCAR SENHA -->
-      <form onsubmit="handleChangePassword(event)" class="space-y-3">
+      <form onsubmit="handleChangePassword(event)" class="space-y-3" autocomplete="new-password">
         <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Senha</h4>
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Nova Senha</label>
-          <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;" autocomplete="new-password">
         </div>
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Confirmar Nova Senha</label>
-          <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;" autocomplete="new-password">
         </div>
         <div class="flex justify-end gap-2 pt-1">
           <button type="button" onclick="closeProfileModal()" class="liquid-pill px-4 py-1.5 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Fechar</button>
@@ -407,26 +356,26 @@
         <span>Cadastro Manual / Rei dos Embeds</span>
       </h3>
 
-      <form id="itemForm" onsubmit="saveItemManual(event)" class="space-y-3">
+      <form id="itemForm" onsubmit="saveItemManual(event)" class="space-y-3" autocomplete="off">
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título do Canal / Filme</label>
-          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40"></select>
+            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white bg-zinc-900/80 focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></select>
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa (Opcional)</label>
-            <input type="url" id="bannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
+            <input type="url" id="bannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
           </div>
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Rei dos Embeds OU Código iframe</label>
-          <textarea id="apiInput" rows="3" placeholder="Ex: https://reidosembeds.online/embed/canal.php?id=globo-rj ou id do canal" class="w-full liquid-pill rounded-xl p-2.5 text-base sm:text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
+          <textarea id="apiInput" rows="3" placeholder="Ex: https://reidosembeds.online/embed/canal.php?id=globo-rj ou id do canal" class="w-full liquid-pill rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -449,33 +398,33 @@
         <span>Editar Título & Player</span>
       </h3>
 
-      <form id="editForm" onsubmit="saveEditDetails(event)" class="space-y-3">
+      <form id="editForm" onsubmit="saveEditDetails(event)" class="space-y-3" autocomplete="off">
         <input type="hidden" id="editItemId">
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
-          <input type="text" id="editTitleInput" required class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="text" id="editTitleInput" required class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40"></select>
+            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white bg-zinc-900/80 focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></select>
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Anotação / Status</label>
-            <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
+            <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
           </div>
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa</label>
-          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-white/40">
+          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Código iframe OU Link da API</label>
-          <textarea id="editApiInput" rows="3" placeholder="Cole a URL do Rei dos Embeds" class="w-full liquid-pill rounded-xl p-2.5 text-base sm:text-xs text-white font-mono focus:outline-none focus:border-white/40"></textarea>
+          <textarea id="editApiInput" rows="3" placeholder="Cole a URL do Rei dos Embeds" class="w-full liquid-pill rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -512,14 +461,71 @@
     // HELPER PARA TRANSIÇÃO DE MODAIS
     function openModal(elementId) {
       const el = document.getElementById(elementId);
-      el.classList.remove('modal-closed');
-      el.classList.add('modal-open');
+      if (el) {
+        el.classList.remove('modal-closed');
+        el.classList.add('modal-open');
+      }
     }
 
     function closeModal(elementId) {
       const el = document.getElementById(elementId);
-      el.classList.remove('modal-open');
-      el.classList.add('modal-closed');
+      if (el) {
+        el.classList.remove('modal-open');
+        el.classList.add('modal-closed');
+      }
+    }
+
+    // INJEÇÃO DINÂMICA DA TELA DE LOGIN (EVITA QUE NAVEGADORES DETECTEM INPUTS DE SENHA NO LOAD)
+    function renderAuthScreen() {
+      const container = document.getElementById('authScreenContainer');
+      container.innerHTML = `
+        <div id="authScreen" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl modal-backdrop modal-open flex items-center justify-center p-4">
+          <div class="liquid-glass rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center modal-card">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/30 border border-white/20 mx-auto">
+              <i class="fa-solid fa-play"></i>
+            </div>
+            
+            <div>
+              <h2 id="authTitle" class="text-xl font-bold text-white leading-tight">Entrar no Meu Cinema</h2>
+              <p class="text-xs text-zinc-400 mt-1">Acesse seu painel privado de filmes e canais</p>
+            </div>
+
+            <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3 text-left">
+              <div id="nameFieldContainer" class="hidden">
+                <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
+                <input type="text" id="authName" placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail</label>
+                <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+              </div>
+
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label class="block text-[11px] font-semibold text-zinc-300">Senha</label>
+                  <button type="button" id="forgotPasswordBtn" onclick="openResetPasswordModal()" class="text-[10px] text-brand-500 hover:underline cursor-pointer">Esqueceu a senha?</button>
+                </div>
+                <input type="password" id="authPassword" required placeholder="••••••••" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+              </div>
+
+              <button type="submit" id="authSubmitBtn" class="w-full py-2.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer mt-2">
+                Entrar
+              </button>
+            </form>
+
+            <div class="text-xs text-zinc-400 pt-2 border-t border-white/10">
+              <span id="authToggleText">Não tem uma conta?</span>
+              <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-brand-500 font-semibold hover:underline ml-1 cursor-pointer">Criar Conta</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function removeAuthScreen() {
+      const container = document.getElementById('authScreenContainer');
+      container.innerHTML = '';
     }
 
     // SISTEMA DE NOTIFICAÇÕES TOAST
@@ -620,7 +626,7 @@
     auth.onAuthStateChanged((user) => {
       if (user) {
         currentUser = user;
-        closeModal('authScreen');
+        removeAuthScreen();
 
         document.getElementById('appScreen').classList.remove('hidden');
         document.getElementById('appScreen').classList.add('flex');
@@ -633,7 +639,7 @@
         listenToUserData();
       } else {
         currentUser = null;
-        openModal('authScreen');
+        renderAuthScreen();
 
         document.getElementById('appScreen').classList.add('hidden');
         document.getElementById('appScreen').classList.remove('flex');
@@ -712,7 +718,7 @@
 
     // REDEFINIÇÃO DE SENHA (ESQUECEU A SENHA)
     function openResetPasswordModal() {
-      const currentEmail = document.getElementById('authEmail').value;
+      const currentEmail = document.getElementById('authEmail') ? document.getElementById('authEmail').value : '';
       document.getElementById('resetEmailInput').value = currentEmail;
       openModal('resetPasswordModal');
     }
@@ -762,7 +768,7 @@
       e.preventDefault();
       const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value.trim();
-      const name = document.getElementById('authName').value.trim();
+      const name = document.getElementById('authName') ? document.getElementById('authName').value.trim() : '';
 
       try {
         if (isSignUpMode) {
@@ -791,7 +797,6 @@
 
     // LISTENER DE DADOS ISOLADOS DO USUÁRIO
     function listenToUserData() {
-      // PERFIL (NOME)
       userProfileRef.on('value', (snapshot) => {
         const val = snapshot.val();
         if (val && val.name) {
@@ -801,7 +806,6 @@
         }
       });
 
-      // CATEGORIAS
       userCategoriesRef.on('value', (snapshot) => {
         const data = snapshot.val();
         if (data && Array.isArray(data)) {
@@ -818,7 +822,6 @@
         renderCatalog();
       });
 
-      // CATÁLOGO
       userCatalogRef.on('value', (snapshot) => {
         isCatalogLoaded = true;
         const data = snapshot.val();
@@ -882,7 +885,7 @@
       renderCatalog();
     }
 
-    // BUSCA GLOBAL COM TRANSIÇÕES SUAVES DE ENTRADA E SAÍDA
+    // BUSCA GLOBAL
     function handleGlobalSearch(e) {
       if (e && e.key === "Escape") {
         clearGlobalSearch();
