@@ -63,25 +63,12 @@
       user-select: text;
     }
 
-    /* PLACEHOLDER DINÂMICO E HARMÔNICO POR DISPOSITIVO */
+    /* FORMATAÇÃO COMPATÍVEL DO PLACEHOLDER COM RETICÊNCIAS */
     #globalSearchInput::placeholder {
-      content: "Buscar...";
+      color: rgba(212, 212, 216, 0.65);
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-      color: rgba(212, 212, 216, 0.8);
-    }
-
-    @media (min-width: 480px) {
-      #globalSearchInput::placeholder {
-        content: "Buscar títulos ou canais...";
-      }
-    }
-
-    @media (min-width: 768px) {
-      #globalSearchInput::placeholder {
-        content: "Buscar filmes, séries, animes ou canais...";
-      }
     }
 
     /* LIQUID GLASS SURFACES */
@@ -254,12 +241,12 @@
         </header>
       </div>
 
-      <!-- BARRA DE BUSCA COM INPUT DINÂMICO -->
+      <!-- BARRA DE BUSCA COM PLACEHOLDER SEGURO -->
       <div class="relative z-30">
         <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
           <div class="relative flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-xs"></i>
-            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base text-white focus:outline-none focus:border-white/50 transition font-medium" style="font-size: 16px !important;">
+            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar..." autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base text-white focus:outline-none focus:border-white/50 transition font-medium" style="font-size: 16px !important;">
             
             <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xs transition cursor-pointer">
               <i class="fa-solid fa-xmark"></i>
@@ -482,6 +469,25 @@
   </div>
 
   <script>
+    // ==========================================
+    // AJUSTA PLACEHOLDER SEGUNDO O TAMANHO DA TELA
+    // ==========================================
+    function updateSearchPlaceholder() {
+      const input = document.getElementById('globalSearchInput');
+      if (!input) return;
+
+      if (window.innerWidth < 480) {
+        input.placeholder = "Buscar...";
+      } else if (window.innerWidth < 768) {
+        input.placeholder = "Buscar títulos ou canais...";
+      } else {
+        input.placeholder = "Buscar filmes, séries, animes ou canais...";
+      }
+    }
+
+    window.addEventListener('resize', updateSearchPlaceholder);
+    document.addEventListener('DOMContentLoaded', updateSearchPlaceholder);
+
     // ==========================================
     // SCRIPT DE PROTEÇÃO: BLOQUEIO DO INSPECIONAR (DEVTOOLS)
     // ==========================================
@@ -716,6 +722,7 @@
         userCategoriesRef = db.ref(`users/${user.uid}/categories`);
         userProfileRef = db.ref(`users/${user.uid}/profile`);
 
+        updateSearchPlaceholder();
         listenToUserData();
       } else {
         currentUser = null;
