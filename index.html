@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Meu Cinema • SuperFlix Edition</title>
+  <title>RJ FLIX • Plataforma de Streaming</title>
   
   <link rel="icon" href="./favicon.ico?v=4" type="image/x-icon">
   <link rel="shortcut icon" href="./favicon.ico?v=4" type="image/x-icon">
@@ -58,7 +58,7 @@
       overflow: hidden;
     }
 
-    /* CARD STYLE SUPERFLIX */
+    /* CARD STYLE */
     .supercard {
       background-color: #14151c;
       border: 1px solid #222430;
@@ -147,17 +147,17 @@
   <!-- MAIN APP CONTAINER -->
   <div id="appScreen" class="hidden flex-col min-h-screen">
     
-    <!-- NAVBAR SUPERFLIX STYLE -->
+    <!-- NAVBAR RJ FLIX -->
     <header class="sticky top-0 z-40 bg-[#0b0c10]/95 border-b border-[#222430] backdrop-blur-md px-4 py-3 sm:px-8 flex items-center justify-between shadow-xl">
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('home')">
           <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/30 border border-white/20">
             <i class="fa-solid fa-play"></i>
           </div>
-          <span class="font-black text-lg tracking-wider text-white">SUPER<span class="text-brand-500">FLIX</span></span>
+          <span class="font-black text-lg tracking-wider text-white">RJ<span class="text-brand-500"> FLIX</span></span>
         </div>
 
-        <!-- MENU DE NAVEGAÇÃO / ABAS COM "MEU CATÁLOGO" EM DESTAQUE EVIDENTE -->
+        <!-- MENU DE NAVEGAÇÃO -->
         <nav class="hidden md:flex items-center gap-1.5 ml-4">
           <button onclick="switchTab('home')" id="tab-home" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-brand-500/20 text-brand-500 border border-brand-500/40 transition">Início</button>
           <button onclick="switchTab('movies')" id="tab-movies" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Filmes</button>
@@ -165,7 +165,6 @@
           <button onclick="switchTab('animes')" id="tab-animes" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Animes</button>
           <button onclick="switchTab('tv')" id="tab-tv" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">TV ao Vivo</button>
           
-          <!-- BOTÃO MEU CATÁLOGO DESTAQUE -->
           <button onclick="switchTab('mycatalog')" id="tab-mycatalog" class="nav-tab px-3.5 py-1.5 rounded-xl text-xs font-extrabold text-emerald-300 bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/50 shadow-lg shadow-emerald-500/20 transition flex items-center gap-1.5 cursor-pointer ml-2">
             <i class="fa-solid fa-bookmark text-emerald-400"></i>
             <span>MEU CATÁLOGO</span>
@@ -192,7 +191,7 @@
       </div>
     </header>
 
-    <!-- NAVEGAÇÃO MOBILE (MENU INFERIOR COM CATÁLOGO EM DESTAQUE) -->
+    <!-- NAVEGAÇÃO MOBILE -->
     <div class="md:hidden flex items-center justify-between bg-[#14151c] border-b border-[#222430] px-3 py-2 overflow-x-auto hide-scrollbar">
       <button onclick="switchTab('home')" class="px-2.5 py-1 text-xs font-bold text-white whitespace-nowrap">Início</button>
       <button onclick="switchTab('movies')" class="px-2.5 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Filmes</button>
@@ -317,7 +316,7 @@
         <div id="gridAnimes" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
       </section>
 
-      <!-- SEÇÃO 5: TV AO VIVO (REI DOS EMBEDS) -->
+      <!-- SEÇÃO 5: TV AO VIVO -->
       <section id="sectionTV" class="space-y-3">
         <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
           <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -334,7 +333,7 @@
             <h2 class="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
               <i class="fa-solid fa-bookmark text-emerald-400"></i> Meu Catálogo Salvo
             </h2>
-            <p class="text-xs text-zinc-400 mt-0.5">Defina notas de onde você parou (temporada/episódio) no ícone de lápis ✏️</p>
+            <p class="text-xs text-zinc-400 mt-0.5">Clique no ícone de lápis ✏️ para anotar onde você parou.</p>
           </div>
           <button onclick="openAddModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition cursor-pointer shadow-lg shadow-emerald-600/30">
             + Adicionar Manual
@@ -421,7 +420,7 @@
             </select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Nota / Temp / Ep</label>
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Lembrete / Temp / Ep</label>
             <input type="text" id="noteInput" placeholder="Ex: T2:E5 ou ★ 8.5" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
           </div>
         </div>
@@ -444,55 +443,35 @@
     </div>
   </div>
 
-  <!-- EDIT DETAILS MODAL (PARA TEMPORADA / EPISÓDIO / LEMBRETE) -->
+  <!-- MODAL DE LEMBRETE UNIFICADO E PROTEGIDO (SEM API, CAPA OU TITULO EDITÁVEL) -->
   <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-[#14151c] border border-[#222430] rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+    <div class="bg-[#14151c] border border-[#222430] rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
       <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-pen text-brand-500"></i>
-        <span>Editar Lembrete & Detalhes</span>
-      </h3>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+          <i class="fa-solid fa-bookmark"></i>
+        </div>
+        <div>
+          <h3 id="editItemTitleDisplay" class="text-sm font-bold text-white truncate max-w-[200px]">...</h3>
+          <p id="editItemTypeDisplay" class="text-[10px] text-zinc-400 font-medium">Definir lembrete de reprodução</p>
+        </div>
+      </div>
 
-      <form id="editForm" onsubmit="saveEditDetails(event)" class="space-y-3" autocomplete="off">
+      <form id="editForm" onsubmit="saveEditDetails(event)" class="space-y-4" autocomplete="off">
         <input type="hidden" id="editItemId">
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
-          <input type="text" id="editTitleInput" required class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
+          <label class="block text-[11px] font-semibold text-emerald-400 mb-1.5">Lembrete / Temporada / Episódio</label>
+          <input type="text" id="editNoteInput" placeholder="Ex: T2:E5, Ep 12 ou Parou em 14:20" required class="w-full bg-[#0b0c10] border border-emerald-500/60 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400 font-bold shadow-inner">
+          <p class="text-[10px] text-zinc-500 mt-1">Essa anotação aparecerá na capa do título no seu catálogo.</p>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="editTypeInput" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
-              <option value="Filme">Filme</option>
-              <option value="Série">Série</option>
-              <option value="Anime">Anime</option>
-              <option value="TV ao Vivo">TV ao Vivo</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-emerald-400 mb-1">Lembrete / Temp / Ep</label>
-            <input type="text" id="editNoteInput" placeholder="Ex: T2:E5 ou Parou em 14:20" class="w-full bg-[#0b0c10] border border-emerald-500/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-emerald-400 font-bold">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa</label>
-          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
-        </div>
-
-        <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Player / Embed / API</label>
-          <textarea id="editApiInput" rows="3" placeholder="Cole a URL do player" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-brand-500"></textarea>
-        </div>
-
-        <div class="flex justify-end gap-2 pt-2">
+        <div class="flex justify-end gap-2 pt-2 border-t border-zinc-800">
           <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white bg-zinc-800 cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Alterações</button>
+          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition cursor-pointer">Salvar Lembrete</button>
         </div>
       </form>
     </div>
@@ -552,8 +531,8 @@
             </div>
             
             <div>
-              <h2 id="authTitle" class="text-xl font-bold text-white leading-tight">Entrar no Meu Cinema</h2>
-              <p class="text-xs text-zinc-400 mt-1">SuperFlix Private Edition</p>
+              <h2 id="authTitle" class="text-xl font-bold text-white leading-tight">Entrar no RJ FLIX</h2>
+              <p class="text-xs text-zinc-400 mt-1">Plataforma Privada de Streaming</p>
             </div>
 
             <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3 text-left">
@@ -685,7 +664,7 @@
       } else if (currentUser && currentUser.displayName) {
         headerEl.innerText = `Olá, ${currentUser.displayName.trim().split(' ')[0]}`;
       } else {
-        headerEl.innerText = 'Meu Cinema';
+        headerEl.innerText = 'RJ FLIX';
       }
     }
 
@@ -761,7 +740,7 @@
         forgotBtn.classList.remove('hidden');
       }
 
-      document.getElementById('authTitle').innerText = isSignUpMode ? 'Criar Nova Conta' : 'Entrar no Meu Cinema';
+      document.getElementById('authTitle').innerText = isSignUpMode ? 'Criar Nova Conta' : 'Entrar no RJ FLIX';
       document.getElementById('authSubmitBtn').innerText = isSignUpMode ? 'Cadastrar' : 'Entrar';
       document.getElementById('authToggleText').innerText = isSignUpMode ? 'Já tem uma conta?' : 'Não tem uma conta?';
       document.getElementById('authToggleBtn').innerText = isSignUpMode ? 'Fazer Login' : 'Criar Conta';
@@ -808,7 +787,7 @@
       });
     }
 
-    // ALTERNAR ABAS DA INTERFACE
+    // ALTERNAR ABAS
     function switchTab(tabName) {
       activeTab = tabName;
       
@@ -831,7 +810,7 @@
       }
     }
 
-    // CARREGAR CONTEÚDO SUPERFLIX
+    // CARREGAR CONTEÚDO RJ FLIX
     async function loadSuperFlixHomeData() {
       try {
         const resTrend = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}&language=pt-BR`);
@@ -954,7 +933,7 @@
       });
     }
 
-    // RENDERIZAÇÃO DA ABA "MEU CATÁLOGO" COM BOTÃO DE EDITAR (SÉRIE/EPISÓDIO)
+    // RENDERIZAÇÃO ABA "MEU CATÁLOGO"
     function renderMyCatalogSection() {
       const container = document.getElementById('gridMyCatalog');
       const emptyState = document.getElementById('emptyCatalogState');
@@ -995,9 +974,9 @@
                 <p class="text-[10px] text-zinc-400 font-medium mt-0.5">${item.type}</p>
               </div>
               
-              <!-- BOTÕES DE EDITAR LEMBRETE E EXCLUIR -->
+              <!-- APENAS O BOTÃO DE EDITAR LEMBRETE E EXCLUIR -->
               <div class="flex items-center gap-1.5">
-                <button onclick="editItem('${item.id}', event)" title="Editar Lembrete/Episódio" class="text-zinc-400 hover:text-emerald-400 p-1 cursor-pointer transition">
+                <button onclick="editItem('${item.id}', event)" title="Editar Lembrete" class="text-zinc-400 hover:text-emerald-400 p-1 cursor-pointer transition">
                   <i class="fa-solid fa-pen text-xs"></i>
                 </button>
                 <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-400 hover:text-rose-500 p-1 cursor-pointer transition">
@@ -1011,17 +990,16 @@
       }
     }
 
+    // EXIBE APENAS O FORMULÁRIO DE LEMBRETE (PROTEGENDO API, NOME E CATEGORIA)
     function editItem(id, e) {
       if (e) e.stopPropagation();
       const item = catalog.find(i => i.id === id);
       if (!item) return;
 
       document.getElementById('editItemId').value = item.id;
-      document.getElementById('editTitleInput').value = item.title;
-      document.getElementById('editTypeInput').value = item.type;
-      document.getElementById('editBannerInput').value = item.banner || '';
+      document.getElementById('editItemTitleDisplay').innerText = item.title;
+      document.getElementById('editItemTypeDisplay').innerText = `${item.type} • Defina o lembrete de reprodução`;
       document.getElementById('editNoteInput').value = item.seasonNote || '';
-      document.getElementById('editApiInput').value = item.apiUrl || '';
 
       openModal('editModal');
     }
@@ -1035,15 +1013,9 @@
       if (!userCatalogRef) return;
       const id = document.getElementById('editItemId').value;
 
-      const updateData = {
-        title: document.getElementById('editTitleInput').value.trim(),
-        type: document.getElementById('editTypeInput').value,
-        banner: document.getElementById('editBannerInput').value.trim(),
-        seasonNote: document.getElementById('editNoteInput').value.trim() || 'HD',
-        apiUrl: document.getElementById('editApiInput').value.trim()
-      };
+      const newNote = document.getElementById('editNoteInput').value.trim() || 'HD';
 
-      userCatalogRef.child(id).update(updateData, (err) => {
+      userCatalogRef.child(id).update({ seasonNote: newNote }, (err) => {
         if (!err) {
           closeEditModal();
           showToast('Lembrete atualizado com sucesso!');
