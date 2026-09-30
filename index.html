@@ -29,11 +29,12 @@
 
   <style>
     /* BASE LIQUID GLASS STYLING */
-    body {
+    html, body {
       background-color: #08080a;
       color: #f3f4f6;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
       overflow-x: hidden;
+      overscroll-behavior-y: none; /* EVITA BUG DE SCROLL ELASTICO NO IOS/CHROME MOBILE */
     }
 
     /* REGRA GLOBAL ANTI-ZOOM PARA IOS/MOBILE EM INPUTS */
@@ -60,46 +61,46 @@
       100% { transform: scale(1) translate(20px, -15px); }
     }
 
-    /* LIQUID GLASS SURFACES */
+    /* LIQUID GLASS SURFACES COM ALTO CONTRASTE */
     .liquid-glass {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(18, 18, 24, 0.82);
       backdrop-filter: blur(30px) saturate(200%);
       -webkit-backdrop-filter: blur(30px) saturate(200%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37),
-                  inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5),
+                  inset 0 1px 1px 0 rgba(255, 255, 255, 0.25);
     }
 
     .liquid-glass-card {
-      background: rgba(22, 22, 28, 0.45);
+      background: rgba(22, 22, 30, 0.7);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.5),
-                  inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.6),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .liquid-glass-card:hover {
-      background: rgba(35, 35, 45, 0.65);
-      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(35, 35, 48, 0.85);
+      border-color: rgba(255, 255, 255, 0.3);
       transform: translateY(-3px);
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7),
-                  0 0 20px rgba(229, 9, 20, 0.2),
-                  inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8),
+                  0 0 20px rgba(229, 9, 20, 0.25),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
     }
 
     .liquid-pill {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .liquid-pill:hover {
-      background: rgba(255, 255, 255, 0.16);
-      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.35);
       transform: translateY(-1px);
     }
 
@@ -159,36 +160,36 @@
   <div class="mesh-background"></div>
 
   <!-- BACKDROP TRANSPARENTE PARA FECHAR BUSCA AO CLICAR FORA -->
-  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- CONTAINER DINÂMICO DE AUTENTICAÇÃO (LOGIN SÓ É CARREGADO SE NÃO ESTIVER LOGADO) -->
+  <!-- CONTAINER DINÂMICO DE AUTENTICAÇÃO -->
   <div id="authScreenContainer"></div>
 
   <!-- MODAL DE RESET DE SENHA -->
   <div id="resetPasswordModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
     <div class="liquid-glass rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative modal-card">
-      <button onclick="closeResetPasswordModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
+      <button onclick="closeResetPasswordModal()" class="absolute top-5 right-5 text-zinc-300 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-key text-brand-500"></i>
+        <i class="fa-solid fa-key text-rose-500"></i>
         <span>Redefinir Senha</span>
       </h3>
 
-      <p class="text-xs text-zinc-300">Digite seu e-mail para receber um link de redefinição de senha.</p>
+      <p class="text-xs text-zinc-200">Digite seu e-mail para receber um link de redefinição de senha.</p>
 
       <form onsubmit="handleSendResetEmail(event)" class="space-y-3" autocomplete="off">
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail Cadastrado</label>
+          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">E-mail Cadastrado</label>
           <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeResetPasswordModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="button" onclick="closeResetPasswordModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-200 hover:text-white cursor-pointer">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Enviar E-mail</button>
         </div>
       </form>
@@ -197,48 +198,50 @@
 
   <!-- CONTEÚDO PRINCIPAL DO APP -->
   <div id="appScreen" class="hidden flex-col min-h-screen">
-    <!-- TOP HEADER -->
-    <div class="sticky top-4 z-40 px-4 sm:px-8 max-w-7xl w-full mx-auto">
-      <header class="liquid-glass rounded-2xl px-4 py-3 sm:px-6 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/30 border border-white/20">
-            <i class="fa-solid fa-play"></i>
+    
+    <!-- MAIN CATALOG CONTENT CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-4 sm:px-8 space-y-5">
+
+      <!-- TOP HEADER (SEM STICKY PARA ELIMINAR O BUG VISUAL NO MOBILE) -->
+      <div class="relative z-20">
+        <header class="liquid-glass rounded-2xl px-4 py-3 sm:px-6 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/30 border border-white/20">
+              <i class="fa-solid fa-play"></i>
+            </div>
+            <div>
+              <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white">
+                <span class="inline-block w-20 h-4 bg-white/20 animate-pulse rounded"></span>
+              </h1>
+            </div>
           </div>
-          <div>
-            <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white/90">
-              <span class="inline-block w-20 h-4 bg-white/10 animate-pulse rounded"></span>
-            </h1>
+
+          <div class="flex items-center gap-2">
+            <button onclick="openProfileModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-white transition flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-user-gear text-zinc-300"></i>
+              <span class="hidden sm:inline">Perfil</span>
+            </button>
+
+            <button onclick="openAddModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-white transition flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-code text-xs"></i>
+              <span class="hidden sm:inline">API</span>
+            </button>
+
+            <button onclick="logout()" title="Sair da Conta" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-zinc-300 hover:text-rose-400 transition cursor-pointer ml-1">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
           </div>
-        </div>
+        </header>
+      </div>
 
-        <div class="flex items-center gap-2">
-          <button onclick="openProfileModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
-            <i class="fa-solid fa-user-gear text-zinc-400"></i>
-            <span class="hidden sm:inline">Perfil</span>
-          </button>
-
-          <button onclick="openAddModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
-            <i class="fa-solid fa-code text-xs"></i>
-            <span class="hidden sm:inline">API</span>
-          </button>
-
-          <button onclick="logout()" title="Sair da Conta" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-zinc-400 hover:text-rose-400 transition cursor-pointer ml-1">
-            <i class="fa-solid fa-right-from-bracket"></i>
-          </button>
-        </div>
-      </header>
-    </div>
-
-    <!-- MAIN CATALOG CONTENT -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
-      <!-- BARRA DE BUSCA COM TAMANHO 16PX E ATRIBUTOS QUE BLOQUEIAM AUTOFILL/ZOOM -->
-      <div class="relative z-40">
+      <!-- BARRA DE BUSCA -->
+      <div class="relative z-30">
         <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
           <div class="relative flex-1">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
-            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais..." autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base text-white placeholder-zinc-400 focus:outline-none focus:border-white/40 transition" style="font-size: 16px !important;">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-xs"></i>
+            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais..." autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base text-white placeholder-zinc-300 focus:outline-none focus:border-white/50 transition font-medium" style="font-size: 16px !important;">
             
-            <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white flex items-center justify-center text-xs transition cursor-pointer">
+            <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xs transition cursor-pointer">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
@@ -247,39 +250,40 @@
         </div>
 
         <!-- PAINEL FLUTUANTE DE RESULTADOS -->
-        <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-300 absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
-          <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-              <i class="fa-solid fa-magnifying-glass text-brand-500"></i> Resultados Encontrados
+        <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-300 absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-5 z-50">
+          
+          <div class="flex items-center justify-between border-b border-white/15 pb-3">
+            <span class="text-[12px] font-extrabold uppercase tracking-wider text-zinc-100 flex items-center gap-1.5">
+              <i class="fa-solid fa-magnifying-glass text-rose-500"></i> Resultados Encontrados
             </span>
-            <button onclick="clearGlobalSearch()" class="liquid-pill px-3 py-1 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/15 transition flex items-center gap-1.5 cursor-pointer">
-              <i class="fa-solid fa-xmark text-brand-500"></i>
+            <button onclick="clearGlobalSearch()" class="liquid-pill px-3 py-1 rounded-xl text-xs font-semibold text-white hover:bg-white/20 transition flex items-center gap-1.5 cursor-pointer border border-white/20">
+              <i class="fa-solid fa-xmark text-rose-500"></i>
               <span>Fechar Busca</span>
             </button>
           </div>
 
-          <div id="sectionSaved" class="hidden space-y-2">
-            <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+          <div id="sectionSaved" class="hidden space-y-2.5">
+            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
               <i class="fa-solid fa-bookmark"></i> No Seu Catálogo
             </h3>
             <div id="resultsSavedList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
           </div>
 
-          <div id="sectionLive" class="hidden space-y-2">
-            <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+          <div id="sectionLive" class="hidden space-y-2.5">
+            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
               <i class="fa-solid fa-tv"></i> TV ao Vivo & Esportes (Rei dos Embeds)
             </h3>
             <div id="resultsLiveList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
           </div>
 
-          <div id="sectionTMDB" class="hidden space-y-2">
-            <h3 class="text-[11px] font-bold uppercase tracking-wider text-brand-500 flex items-center gap-1.5 border-b border-white/10 pb-1">
+          <div id="sectionTMDB" class="hidden space-y-2.5">
+            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-rose-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
               <i class="fa-solid fa-film"></i> Filmes, Séries & Animes
             </h3>
             <div id="resultsTMDBList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
           </div>
 
-          <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-400">
+          <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-300 font-medium">
             Nenhum resultado encontrado para a busca.
           </div>
         </div>
@@ -295,30 +299,30 @@
 
       <!-- EMPTY STATE -->
       <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-2">
-        <div class="w-14 h-14 rounded-2xl liquid-glass flex items-center justify-center text-zinc-500 text-xl mb-2">
+        <div class="w-14 h-14 rounded-2xl liquid-glass flex items-center justify-center text-zinc-400 text-xl mb-2">
           <i class="fa-solid fa-film"></i>
         </div>
-        <p class="text-zinc-300 font-medium text-xs">Nenhum título ou canal no seu catálogo privado.</p>
+        <p class="text-zinc-200 font-medium text-xs">Nenhum título ou canal no seu catálogo privado.</p>
       </div>
     </main>
   </div>
 
   <!-- PROFILE MODAL -->
-  <div id="profileModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
+  <div id="profileModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
     <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto modal-card">
-      <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
+      <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-zinc-300 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-user-gear text-brand-500"></i>
+        <i class="fa-solid fa-user-gear text-rose-500"></i>
         <span>Minha Conta & Perfil</span>
       </h3>
 
       <form onsubmit="saveUserProfileName(event)" class="space-y-3 border-b border-white/10 pb-4" autocomplete="off">
-        <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Nome</h4>
+        <h4 class="text-xs font-bold text-zinc-100 uppercase tracking-wider">Alterar Nome</h4>
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
+          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Seu Nome</label>
           <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
         <div class="flex justify-end">
@@ -327,17 +331,17 @@
       </form>
 
       <form onsubmit="handleChangePassword(event)" class="space-y-3" autocomplete="new-password">
-        <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Senha</h4>
+        <h4 class="text-xs font-bold text-zinc-100 uppercase tracking-wider">Alterar Senha</h4>
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Nova Senha</label>
+          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Nova Senha</label>
           <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;" autocomplete="new-password">
         </div>
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Confirmar Nova Senha</label>
+          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Confirmar Nova Senha</label>
           <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;" autocomplete="new-password">
         </div>
         <div class="flex justify-end gap-2 pt-1">
-          <button type="button" onclick="closeProfileModal()" class="liquid-pill px-4 py-1.5 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Fechar</button>
+          <button type="button" onclick="closeProfileModal()" class="liquid-pill px-4 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 hover:text-white cursor-pointer">Fechar</button>
           <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg transition cursor-pointer">Atualizar Senha</button>
         </div>
       </form>
@@ -345,41 +349,41 @@
   </div>
 
   <!-- MANUAL ITEM MODAL -->
-  <div id="addModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
+  <div id="addModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
     <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative modal-card">
-      <button onclick="closeAddModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
+      <button onclick="closeAddModal()" class="absolute top-5 right-5 text-zinc-300 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-code text-brand-500"></i>
+        <i class="fa-solid fa-code text-rose-500"></i>
         <span>Cadastro Manual / Rei dos Embeds</span>
       </h3>
 
       <form id="itemForm" onsubmit="saveItemManual(event)" class="space-y-3" autocomplete="off">
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título do Canal / Filme</label>
+          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Título do Canal / Filme</label>
           <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white bg-zinc-900/80 focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></select>
+            <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Categoria</label>
+            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white bg-zinc-900/90 focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa (Opcional)</label>
+            <label class="block text-[11px] font-semibold text-zinc-200 mb-1">URL da Capa (Opcional)</label>
             <input type="url" id="bannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
           </div>
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Rei dos Embeds OU Código iframe</label>
+          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Link do Rei dos Embeds OU Código iframe</label>
           <textarea id="apiInput" rows="3" placeholder="Ex: https://reidosembeds.online/embed/canal.php?id=globo-rj ou id do canal" class="w-full liquid-pill rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeAddModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="button" onclick="closeAddModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-200 hover:text-white cursor-pointer">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar na Nuvem</button>
         </div>
       </form>
@@ -387,14 +391,14 @@
   </div>
 
   <!-- EDIT DETAILS MODAL -->
-  <div id="editModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
+  <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
     <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto modal-card">
-      <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
+      <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-300 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-pen text-brand-500"></i>
+        <i class="fa-solid fa-pen text-rose-500"></i>
         <span>Editar Título & Player</span>
       </h3>
 
@@ -402,33 +406,33 @@
         <input type="hidden" id="editItemId">
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
+          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Título</label>
           <input type="text" id="editTitleInput" required class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white bg-zinc-900/80 focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></select>
+            <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Categoria</label>
+            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white bg-zinc-900/90 focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Anotação / Status</label>
+            <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Anotação / Status</label>
             <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
           </div>
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa</label>
+          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">URL da Capa</label>
           <input type="url" id="editBannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Código iframe OU Link da API</label>
+          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Código iframe OU Link da API</label>
           <textarea id="editApiInput" rows="3" placeholder="Cole a URL do Rei dos Embeds" class="w-full liquid-pill rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeEditModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="button" onclick="closeEditModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-200 hover:text-white cursor-pointer">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Alterações</button>
         </div>
       </form>
@@ -436,14 +440,14 @@
   </div>
 
   <!-- PLAYER OVERLAY LAYER -->
-  <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
-    <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 liquid-glass p-2 rounded-2xl shadow-2xl">
+  <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
+    <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 liquid-glass p-2 rounded-2xl shadow-2xl border border-white/20">
       <div class="hidden sm:block px-3 text-left">
         <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[200px]">...</h2>
-        <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
+        <p id="playerSubtitle" class="text-[10px] text-zinc-300 font-medium"></p>
       </div>
 
-      <button id="openExternalBtn" onclick="openExternalPlayer()" title="Abrir Player em Nova Aba" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+      <button id="openExternalBtn" onclick="openExternalPlayer()" title="Abrir Player em Nova Aba" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-white transition flex items-center gap-1.5 cursor-pointer">
         <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
         <span>Nova Aba</span>
       </button>
@@ -475,11 +479,11 @@
       }
     }
 
-    // INJEÇÃO DINÂMICA DA TELA DE LOGIN (EVITA QUE NAVEGADORES DETECTEM INPUTS DE SENHA NO LOAD)
+    // INJEÇÃO DINÂMICA DA TELA DE LOGIN
     function renderAuthScreen() {
       const container = document.getElementById('authScreenContainer');
       container.innerHTML = `
-        <div id="authScreen" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl modal-backdrop modal-open flex items-center justify-center p-4">
+        <div id="authScreen" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl modal-backdrop modal-open flex items-center justify-center p-4">
           <div class="liquid-glass rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center modal-card">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/30 border border-white/20 mx-auto">
               <i class="fa-solid fa-play"></i>
@@ -487,24 +491,24 @@
             
             <div>
               <h2 id="authTitle" class="text-xl font-bold text-white leading-tight">Entrar no Meu Cinema</h2>
-              <p class="text-xs text-zinc-400 mt-1">Acesse seu painel privado de filmes e canais</p>
+              <p class="text-xs text-zinc-300 mt-1">Acesse seu painel privado de filmes e canais</p>
             </div>
 
             <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3 text-left">
               <div id="nameFieldContainer" class="hidden">
-                <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
+                <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Seu Nome</label>
                 <input type="text" id="authName" placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
               </div>
 
               <div>
-                <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail</label>
+                <label class="block text-[11px] font-semibold text-zinc-200 mb-1">E-mail</label>
                 <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
               </div>
 
               <div>
                 <div class="flex justify-between items-center mb-1">
-                  <label class="block text-[11px] font-semibold text-zinc-300">Senha</label>
-                  <button type="button" id="forgotPasswordBtn" onclick="openResetPasswordModal()" class="text-[10px] text-brand-500 hover:underline cursor-pointer">Esqueceu a senha?</button>
+                  <label class="block text-[11px] font-semibold text-zinc-200">Senha</label>
+                  <button type="button" id="forgotPasswordBtn" onclick="openResetPasswordModal()" class="text-[10px] text-rose-400 hover:underline cursor-pointer">Esqueceu a senha?</button>
                 </div>
                 <input type="password" id="authPassword" required placeholder="••••••••" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
               </div>
@@ -514,9 +518,9 @@
               </button>
             </form>
 
-            <div class="text-xs text-zinc-400 pt-2 border-t border-white/10">
+            <div class="text-xs text-zinc-300 pt-2 border-t border-white/10">
               <span id="authToggleText">Não tem uma conta?</span>
-              <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-brand-500 font-semibold hover:underline ml-1 cursor-pointer">Criar Conta</button>
+              <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-rose-400 font-semibold hover:underline ml-1 cursor-pointer">Criar Conta</button>
             </div>
           </div>
         </div>
@@ -535,11 +539,11 @@
       const isSuccess = type === 'success';
 
       toast.className = `pointer-events-auto liquid-glass px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 border text-xs font-semibold text-white transition-all duration-300 transform translate-y-4 opacity-0 ${
-        isSuccess ? 'border-emerald-500/40' : 'border-rose-500/40'
+        isSuccess ? 'border-emerald-500/50' : 'border-rose-500/50'
       }`;
 
       toast.innerHTML = `
-        <div class="w-5 h-5 rounded-lg ${isSuccess ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'} flex items-center justify-center text-[10px]">
+        <div class="w-5 h-5 rounded-lg ${isSuccess ? 'bg-emerald-500/30 text-emerald-300' : 'bg-rose-500/30 text-rose-300'} flex items-center justify-center text-[10px]">
           <i class="fa-solid ${isSuccess ? 'fa-check' : 'fa-exclamation'}"></i>
         </div>
         <span>${message}</span>
@@ -631,7 +635,6 @@
         document.getElementById('appScreen').classList.remove('hidden');
         document.getElementById('appScreen').classList.add('flex');
 
-        // BIND REFERÊNCIAS ISOLADAS DO USUÁRIO
         userCatalogRef = db.ref(`users/${user.uid}/catalog`);
         userCategoriesRef = db.ref(`users/${user.uid}/categories`);
         userProfileRef = db.ref(`users/${user.uid}/profile`);
@@ -646,7 +649,7 @@
       }
     });
 
-    // ATUALIZA NOME NA TELA (MENSAGEM OLÁ [NOME])
+    // ATUALIZA NOME NA TELA
     function setWelcomeHeaderName(name) {
       const headerEl = document.getElementById('userWelcomeHeader');
 
@@ -712,11 +715,11 @@
         document.getElementById('confirmPasswordInput').value = '';
         showToast('Senha alterada com sucesso!');
       } catch (err) {
-        showToast('Erro ao alterar a senha. Faça login novamente se persistir.', 'error');
+        showToast('Erro ao alterar a senha.', 'error');
       }
     }
 
-    // REDEFINIÇÃO DE SENHA (ESQUECEU A SENHA)
+    // REDEFINIÇÃO DE SENHA
     function openResetPasswordModal() {
       const currentEmail = document.getElementById('authEmail') ? document.getElementById('authEmail').value : '';
       document.getElementById('resetEmailInput').value = currentEmail;
@@ -737,11 +740,10 @@
         closeResetPasswordModal();
         showToast('E-mail de redefinição enviado com sucesso!');
       } catch (err) {
-        showToast('Erro ao enviar e-mail. Verifique o endereço digitado.', 'error');
+        showToast('Erro ao enviar e-mail.', 'error');
       }
     }
 
-    // ALTERNA ENTRE LOGIN E CRIAÇÃO DE CONTA
     function toggleAuthMode() {
       isSignUpMode = !isSignUpMode;
       const nameContainer = document.getElementById('nameFieldContainer');
@@ -795,7 +797,6 @@
       showToast('Sessão encerrada.');
     }
 
-    // LISTENER DE DADOS ISOLADOS DO USUÁRIO
     function listenToUserData() {
       userProfileRef.on('value', (snapshot) => {
         const val = snapshot.val();
@@ -846,7 +847,7 @@
       allBtn.id = 'filter-ALL';
       allBtn.className = currentFilter === 'ALL'
         ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 text-white shadow-lg shadow-brand-500/30 transition whitespace-nowrap"
-        : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white transition whitespace-nowrap";
+        : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition whitespace-nowrap";
       allBtn.innerText = 'Todos';
       container.appendChild(allBtn);
 
@@ -856,7 +857,7 @@
         btn.id = `filter-${cat}`;
         btn.className = currentFilter === cat
           ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 text-white shadow-lg shadow-brand-500/30 transition whitespace-nowrap"
-          : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white transition whitespace-nowrap";
+          : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition whitespace-nowrap";
         btn.innerText = cat;
         container.appendChild(btn);
       });
@@ -956,18 +957,18 @@
       section.classList.remove('hidden');
       items.forEach(item => {
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between liquid-pill p-2 rounded-xl hover:border-emerald-500/50 transition";
+        div.className = "flex items-center justify-between liquid-pill p-2.5 rounded-xl border border-white/15 hover:border-emerald-400 transition bg-zinc-900/80";
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-zinc-900/80 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0 border border-white/10">
+            <div class="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0 border border-white/20">
               <i class="fa-solid fa-play text-[10px]"></i>
             </div>
             <div class="min-w-0">
               <h4 class="font-bold text-xs text-white truncate">${item.title}</h4>
-              <span class="text-[10px] text-emerald-400 font-semibold">${item.type} • No catálogo</span>
+              <span class="text-[11px] text-emerald-300 font-semibold">${item.type} • No catálogo</span>
             </div>
           </div>
-          <button onclick="playItem('${item.id}')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex-shrink-0 cursor-pointer shadow-md">
+          <button onclick="playItem('${item.id}')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex-shrink-0 cursor-pointer shadow-md">
             Assistir
           </button>
         `;
@@ -990,23 +991,23 @@
         const isSaved = catalog.some(i => i.title.toLowerCase() === ch.name.toLowerCase() || (i.apiUrl && i.apiUrl.includes(ch.id)));
         
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between liquid-pill p-2 rounded-xl hover:border-emerald-500/50 transition";
+        div.className = "flex items-center justify-between liquid-pill p-2.5 rounded-xl border border-white/15 hover:border-emerald-400 transition bg-zinc-900/80";
         
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-zinc-900/80 border border-white/10 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-zinc-950 border border-white/20 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
               <i class="fa-solid fa-tv text-[10px]"></i>
             </div>
             <div class="min-w-0">
               <h4 class="font-bold text-xs text-white truncate">${ch.name}</h4>
-              <span class="text-[10px] text-zinc-400 font-mono">ID: ${ch.id}</span>
+              <span class="text-[11px] text-zinc-300 font-mono">ID: ${ch.id}</span>
             </div>
           </div>
 
           ${isSaved ? `
-            <span class="text-[10px] px-2.5 py-1 liquid-pill text-emerald-400 font-bold rounded-xl border border-emerald-500/30">✓ Salvo</span>
+            <span class="text-[11px] px-2.5 py-1 liquid-pill text-emerald-300 font-bold rounded-xl border border-emerald-500/50 bg-emerald-950/40">✓ Salvo</span>
           ` : `
-            <button onclick="quickAddLive('${ch.id}', '${ch.name}', '${ch.cat}', this)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer shadow-md">
+            <button onclick="quickAddLive('${ch.id}', '${ch.name}', '${ch.cat}', this)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-md">
               <i class="fa-solid fa-plus text-[10px]"></i>
               <span>Adicionar</span>
             </button>
@@ -1044,23 +1045,23 @@
           const isSaved = catalog.some(i => i.tmdbId === String(item.id) || i.title.toLowerCase() === title.toLowerCase());
 
           const div = document.createElement('div');
-          div.className = "flex items-center justify-between liquid-pill p-2 rounded-xl hover:border-brand-500/50 transition";
+          div.className = "flex items-center justify-between liquid-pill p-2.5 rounded-xl border border-white/15 hover:border-rose-500/50 transition bg-zinc-900/80";
           
           div.innerHTML = `
             <div class="flex items-center gap-2.5 min-w-0">
-              <div class="w-8 h-11 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 relative border border-white/10">
-                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]"><i class="fa-solid fa-film"></i></div>`}
+              <div class="w-8 h-11 bg-zinc-950 rounded-lg overflow-hidden flex-shrink-0 relative border border-white/20">
+                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-500 text-[10px]"><i class="fa-solid fa-film"></i></div>`}
               </div>
               <div class="min-w-0">
                 <h4 class="font-bold text-xs text-white truncate">${title}</h4>
-                <span class="text-[10px] text-zinc-400">${typeLabel}</span>
+                <span class="text-[11px] text-zinc-200 font-medium">${typeLabel}</span>
               </div>
             </div>
 
             ${isSaved ? `
-              <span class="text-[10px] px-2.5 py-1 liquid-pill text-brand-500 font-bold rounded-xl border border-brand-500/30">✓ Salvo</span>
+              <span class="text-[11px] px-2.5 py-1 liquid-pill text-rose-400 font-bold rounded-xl border border-rose-500/50 bg-rose-950/40">✓ Salvo</span>
             ` : `
-              <button onclick="quickAddTMDB(${item.id}, '${encodeURIComponent(title)}', ${isMovie}, '${poster}', this)" class="px-3 py-1 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold transition flex items-center gap-1 cursor-pointer shadow-md shadow-brand-500/20">
+              <button onclick="quickAddTMDB(${item.id}, '${encodeURIComponent(title)}', ${isMovie}, '${poster}', this)" class="px-3 py-1 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-md shadow-brand-500/20">
                 <i class="fa-solid fa-plus text-[10px]"></i>
                 <span>Adicionar</span>
               </button>
@@ -1094,7 +1095,7 @@
 
       userCatalogRef.child(id).set(itemData, (error) => {
         if (!error) {
-          btnElement.outerHTML = `<span class="text-[10px] px-2.5 py-1 liquid-pill text-emerald-400 font-bold rounded-xl border border-emerald-500/30">✓ Salvo</span>`;
+          btnElement.outerHTML = `<span class="text-[11px] px-2.5 py-1 liquid-pill text-emerald-300 font-bold rounded-xl border border-emerald-500/50 bg-emerald-950/40">✓ Salvo</span>`;
           showToast(`'${name}' adicionado ao seu catálogo!`);
         } else {
           showToast('Erro ao salvar no banco.', 'error');
@@ -1128,7 +1129,7 @@
 
       userCatalogRef.child(id).set(itemData, (error) => {
         if (!error) {
-          btnElement.outerHTML = `<span class="text-[10px] px-2.5 py-1 liquid-pill text-brand-500 font-bold rounded-xl border border-brand-500/30">✓ Salvo</span>`;
+          btnElement.outerHTML = `<span class="text-[11px] px-2.5 py-1 liquid-pill text-rose-400 font-bold rounded-xl border border-rose-500/50 bg-rose-950/40">✓ Salvo</span>`;
           showToast(`'${title}' adicionado ao seu catálogo!`);
         } else {
           showToast('Erro ao salvar no banco.', 'error');
@@ -1154,19 +1155,14 @@
       const banner = document.getElementById('bannerInput').value.trim();
       let rawApi = document.getElementById('apiInput').value.trim();
 
-      const itemData = {
-        title,
-        type,
-        banner,
-        apiUrl: rawApi
-      };
+      const itemData = { title, type, banner, apiUrl: rawApi };
 
       userCatalogRef.child(id).set(itemData, (error) => {
         if (!error) {
           closeAddModal();
           showToast('Item salvo manualmente!');
         } else {
-          showToast('Erro ao salvar no banco de dados.', 'error');
+          showToast('Erro ao salvar no banco.', 'error');
         }
       });
     }
@@ -1210,9 +1206,9 @@
       userCatalogRef.child(id).update(updateData, (error) => {
         if (!error) {
           closeEditModal();
-          showToast('Alterações salvas com sucesso!');
+          showToast('Alterações salvas!');
         } else {
-          showToast('Erro ao atualizar no banco de dados.', 'error');
+          showToast('Erro ao atualizar.', 'error');
         }
       });
     }
@@ -1221,7 +1217,7 @@
       if (e) e.stopPropagation();
       if (confirm('Deseja excluir este título do seu catálogo?')) {
         userCatalogRef.child(id).remove();
-        showToast('Item removido do seu catálogo.');
+        showToast('Item removido.');
       }
     }
 
@@ -1266,18 +1262,18 @@
           const isLiveType = item.type === 'TV ao Vivo' || item.type === 'Esporte';
           
           if (isLiveType) {
-            noteBadge = `<span class="text-[9px] font-semibold px-2 py-0.5 rounded-lg liquid-pill text-emerald-400 border border-emerald-500/30 flex items-center gap-1"><span class="live-pulse"></span> AO VIVO</span>`;
+            noteBadge = `<span class="text-[9px] font-bold px-2 py-0.5 rounded-lg liquid-pill text-emerald-300 border border-emerald-500/50 bg-emerald-950/40 flex items-center gap-1"><span class="live-pulse"></span> AO VIVO</span>`;
           } else if (item.seasonNote) {
-            noteBadge = `<span class="text-[9px] font-semibold px-2 py-0.5 rounded-lg liquid-pill text-emerald-400 border border-emerald-500/30">${item.seasonNote}</span>`;
+            noteBadge = `<span class="text-[9px] font-bold px-2 py-0.5 rounded-lg liquid-pill text-emerald-300 border border-emerald-500/50 bg-emerald-950/40">${item.seasonNote}</span>`;
           }
 
           const hasBanner = item.banner && item.banner.trim() !== '';
 
           card.innerHTML = `
-            <div class="aspect-[2/3] w-full bg-zinc-950/60 relative overflow-hidden" onclick="playItem('${item.id}')">
+            <div class="aspect-[2/3] w-full bg-zinc-950/80 relative overflow-hidden" onclick="playItem('${item.id}')">
               <div class="w-full h-full flex flex-col items-center justify-center p-3 text-center absolute inset-0">
-                <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
-                <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
+                <i class="fa-solid fa-play text-zinc-500 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
+                <span class="font-bold text-xs text-white line-clamp-2 leading-tight">${item.title}</span>
               </div>
 
               ${hasBanner ? `
@@ -1291,20 +1287,20 @@
               </div>
             </div>
 
-            <div class="p-3 flex items-center justify-between gap-1.5 border-t border-white/5 bg-black/20">
+            <div class="p-3 flex items-center justify-between gap-1.5 border-t border-white/10 bg-black/40">
               <div onclick="playItem('${item.id}')" class="flex-1 min-w-0">
-                <h4 class="font-bold text-xs text-zinc-100 truncate group-hover:text-brand-500 transition">${item.title}</h4>
+                <h4 class="font-bold text-xs text-white truncate group-hover:text-rose-400 transition">${item.title}</h4>
                 <div class="flex items-center gap-1.5 mt-1">
-                  <span class="text-[10px] text-zinc-400">${item.type}</span>
+                  <span class="text-[11px] text-zinc-300 font-medium">${item.type}</span>
                   ${noteBadge}
                 </div>
               </div>
               
               <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
-                <button onclick="editItem('${item.id}', event)" title="Editar" class="text-zinc-400 hover:text-white p-1 cursor-pointer">
+                <button onclick="editItem('${item.id}', event)" title="Editar" class="text-zinc-300 hover:text-white p-1 cursor-pointer">
                   <i class="fa-solid fa-pen text-[10px]"></i>
                 </button>
-                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-400 hover:text-red-400 p-1 cursor-pointer">
+                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-300 hover:text-rose-400 p-1 cursor-pointer">
                   <i class="fa-solid fa-trash text-[10px]"></i>
                 </button>
               </div>
@@ -1360,7 +1356,7 @@
       holder.innerHTML = '';
 
       if (!rawContent) {
-        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-sm">URL da API não configurada.</div>`;
+        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-300 text-sm font-semibold">URL da API não configurada.</div>`;
         return;
       }
 
