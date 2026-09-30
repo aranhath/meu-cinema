@@ -489,7 +489,7 @@
     document.addEventListener('DOMContentLoaded', updateSearchPlaceholder);
 
     // ==========================================
-    // SCRIPT DE PROTEÇÃO: BLOQUEIO DO INSPECIONAR (DEVTOOLS)
+    // BLOQUEIO AMIGÁVEL DO INSPECIONAR (SEM CRASH/TRAVAMENTO)
     // ==========================================
     
     // 1. Bloquear Clique Direito (Menu de Contexto)
@@ -512,11 +512,7 @@
           e.preventDefault();
           return false;
         }
-        if (e.keyCode === 85) {
-          e.preventDefault();
-          return false;
-        }
-        if (e.keyCode === 83) {
+        if (e.keyCode === 85 || e.keyCode === 83) {
           e.preventDefault();
           return false;
         }
@@ -529,17 +525,6 @@
         }
       }
     }, false);
-
-    // 3. Detetor Dinâmico de Abertura do DevTools via Loop de Debugger
-    (function antiDevTools() {
-      const startTime = performance.now();
-      debugger;
-      const endTime = performance.now();
-      if (endTime - startTime > 100) {
-        document.body.innerHTML = '<div style="display:flex;height:100vh;align-items:center;justify-content:center;background:#0d0e12;color:#fff;font-family:sans-serif;font-weight:bold;">Acesso negado.</div>';
-      }
-      setTimeout(antiDevTools, 1000);
-    })();
 
     // ==========================================
     // LÓGICA DA APLICAÇÃO
@@ -1451,7 +1436,7 @@
           insertedIframe.style.width = "100%";
           insertedIframe.style.height = "100%";
           insertedIframe.referrerPolicy = "no-referrer";
-          insertedIframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *";
+          insertedIframe.allow = "autoplay; encrypted-media; fullscreen";
           insertedIframe.setAttribute('allowfullscreen', 'true');
         }
       } else {
@@ -1466,7 +1451,7 @@
         iframe.src = cleanUrl;
         iframe.className = "w-full h-full border-0";
         iframe.referrerPolicy = "no-referrer";
-        iframe.allow = "autoplay *; encrypted-media *; picture-in-picture *; fullscreen *; clipboard-write *; accelerometer *; gyroscope *";
+        iframe.allow = "autoplay; encrypted-media; fullscreen";
         iframe.setAttribute('allowfullscreen', 'true');
         iframe.setAttribute('webkitallowfullscreen', 'true');
         iframe.setAttribute('mozallowfullscreen', 'true');
