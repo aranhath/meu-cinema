@@ -207,13 +207,10 @@
             <i class="fa-solid fa-play"></i>
           </div>
           <div>
-            <!-- MENSAGEM DE SAUDAÇÃO -->
+            <!-- MENSAGEM DE SAUDAÇÃO (SEM E-MAIL ABAIXO) -->
             <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white/90">
               <span class="inline-block w-20 h-4 bg-white/10 animate-pulse rounded"></span>
             </h1>
-            <p id="userEmailBadge" class="text-[10px] text-zinc-400 font-medium truncate max-w-[130px] sm:max-w-none mt-1">
-              <span class="inline-block w-32 h-3 bg-white/5 animate-pulse rounded"></span>
-            </p>
           </div>
         </div>
 
@@ -224,14 +221,10 @@
             <span class="hidden sm:inline">Perfil</span>
           </button>
 
-          <button onclick="openCategoryModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
-            <i class="fa-solid fa-layer-group text-zinc-400"></i>
-            <span class="hidden sm:inline">Categorias</span>
-          </button>
-
+          <!-- BOTÃO RENOMEADO PARA API -->
           <button onclick="openAddModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-code text-xs"></i>
-            <span class="hidden sm:inline">Link / Iframe</span>
+            <span class="hidden sm:inline">API</span>
           </button>
 
           <button onclick="logout()" title="Sair da Conta" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-zinc-400 hover:text-rose-400 transition cursor-pointer ml-1">
@@ -439,36 +432,6 @@
     </div>
   </div>
 
-  <!-- CATEGORY MANAGEMENT MODAL -->
-  <div id="categoryModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
-      <button onclick="closeCategoryModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-layer-group text-brand-500"></i>
-        <span>Gerenciar Categorias</span>
-      </h3>
-
-      <div class="flex gap-2">
-        <input type="text" id="newCategoryInput" placeholder="Nova Categoria (ex: TV ao Vivo, Desenho)" class="flex-1 liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
-        <button onclick="addCategory()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow transition cursor-pointer">
-          Adicionar
-        </button>
-      </div>
-
-      <div class="space-y-1.5 pt-1">
-        <label class="block text-[11px] font-semibold text-zinc-300">Categorias Atuais</label>
-        <div id="categoryList" class="max-h-48 overflow-y-auto space-y-1.5 pr-1"></div>
-      </div>
-
-      <div class="flex justify-end pt-2">
-        <button onclick="closeCategoryModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white cursor-pointer">Fechar</button>
-      </div>
-    </div>
-  </div>
-
   <!-- PLAYER OVERLAY LAYER -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden flex-col">
     <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 liquid-glass p-2 rounded-2xl shadow-2xl">
@@ -595,8 +558,6 @@
 
         document.getElementById('appScreen').classList.remove('hidden');
         document.getElementById('appScreen').classList.add('flex');
-
-        document.getElementById('userEmailBadge').innerText = user.email;
 
         // BIND REFERÊNCIAS ISOLADAS DO USUÁRIO
         userCatalogRef = db.ref(`users/${user.uid}/catalog`);
@@ -848,57 +809,6 @@
         opt2.innerText = cat;
         selectEdit.appendChild(opt2);
       });
-
-      const catList = document.getElementById('categoryList');
-      catList.innerHTML = '';
-      categories.forEach((cat, idx) => {
-        const item = document.createElement('div');
-        item.className = "flex items-center justify-between liquid-pill px-3.5 py-2 rounded-xl text-xs text-zinc-200";
-        item.innerHTML = `
-          <span class="font-medium">${cat}</span>
-          ${categories.length > 1 ? `
-            <button onclick="removeCategory(${idx})" class="text-zinc-400 hover:text-red-400 p-1 cursor-pointer">
-              <i class="fa-solid fa-trash text-[10px]"></i>
-            </button>
-          ` : ''}
-        `;
-        catList.appendChild(item);
-      });
-    }
-
-    function openCategoryModal() {
-      document.getElementById('newCategoryInput').value = '';
-      document.getElementById('categoryModal').classList.remove('hidden');
-    }
-
-    function closeCategoryModal() {
-      document.getElementById('categoryModal').classList.add('hidden');
-    }
-
-    function addCategory() {
-      const input = document.getElementById('newCategoryInput');
-      const val = input.value.trim();
-      if (!val) return;
-
-      if (!categories.includes(val)) {
-        categories.push(val);
-        userCategoriesRef.set(categories);
-        input.value = '';
-        showToast('Categoria adicionada!');
-      } else {
-        showToast('Esta categoria já existe!', 'error');
-      }
-    }
-
-    function removeCategory(index) {
-      if (confirm(`Deseja remover a categoria "${categories[index]}"?`)) {
-        categories.splice(index, 1);
-        userCategoriesRef.set(categories);
-        if (!categories.includes(currentFilter)) {
-          currentFilter = 'ALL';
-        }
-        showToast('Categoria removida.');
-      }
     }
 
     function setFilter(type) {
