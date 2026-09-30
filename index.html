@@ -122,6 +122,9 @@
   <!-- MESH GRADIENT DYNAMIC LIGHTING -->
   <div class="mesh-background"></div>
 
+  <!-- BACKDROP TRANSPARENTE PARA FECHAR BUSCA AO CLICAR FORA -->
+  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 hidden transition-opacity duration-300"></div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -236,13 +239,15 @@
 
     <!-- MAIN CATALOG CONTENT -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
-      <!-- BARRA DE BUSCA GLOBAL UNIFICADA -->
-      <div class="relative z-30">
+      <!-- BARRA DE BUSCA GLOBAL UNIFICADA COM ACESSIBILIDADE AUMENTADA -->
+      <div class="relative z-40">
         <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
           <div class="relative flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
-            <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch()" placeholder="Buscar filmes, séries, animes ou canais ao vivo (ex: Globo, SporTV, Premiere)..." class="w-full liquid-glass rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/30 transition">
-            <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs">
+            <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais ao vivo (ex: Globo, SporTV, Premiere)..." class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/40 transition">
+            
+            <!-- BOTÃO "X" AMPLIADO E MAIS FÁCIL DE CLICAR -->
+            <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white flex items-center justify-center text-xs transition cursor-pointer">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
@@ -252,6 +257,18 @@
 
         <!-- PAINEL FLUTUANTE DE RESULTADOS DA BUSCA GLOBAL -->
         <div id="searchResultsPanel" class="hidden absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
+          
+          <!-- CABEÇALHO DO PAINEL DE BUSCA COM BOTÃO DEDICADO DE FECHAR -->
+          <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-magnifying-glass text-brand-500"></i> Resultados Encontrados
+            </span>
+            <button onclick="clearGlobalSearch()" class="liquid-pill px-3 py-1 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/15 transition flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-xmark text-brand-500"></i>
+              <span>Fechar Busca</span>
+            </button>
+          </div>
+
           <div id="sectionSaved" class="hidden space-y-2">
             <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
               <i class="fa-solid fa-bookmark"></i> No Seu Catálogo
@@ -817,14 +834,22 @@
       renderCatalog();
     }
 
-    function handleGlobalSearch() {
+    // BUSCA GLOBAL COM DIVERSAS FORMAS DE FECHAR
+    function handleGlobalSearch(e) {
+      if (e && e.key === "Escape") {
+        clearGlobalSearch();
+        return;
+      }
+
       clearTimeout(globalSearchTimeout);
       const query = document.getElementById('globalSearchInput').value.trim();
       const panel = document.getElementById('searchResultsPanel');
+      const backdrop = document.getElementById('searchBackdrop');
       const clearBtn = document.getElementById('clearSearchBtn');
 
       if (!query) {
         panel.classList.add('hidden');
+        backdrop.classList.add('hidden');
         clearBtn.classList.add('hidden');
         renderCatalog();
         return;
@@ -832,6 +857,7 @@
 
       clearBtn.classList.remove('hidden');
       panel.classList.remove('hidden');
+      backdrop.classList.remove('hidden');
 
       const savedMatches = catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase()));
       renderSavedSearchList(savedMatches);
@@ -851,6 +877,7 @@
     function clearGlobalSearch() {
       document.getElementById('globalSearchInput').value = '';
       document.getElementById('searchResultsPanel').classList.add('hidden');
+      document.getElementById('searchBackdrop').classList.add('hidden');
       document.getElementById('clearSearchBtn').classList.add('hidden');
       renderCatalog();
     }
