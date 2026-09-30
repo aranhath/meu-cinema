@@ -23,6 +23,7 @@
   
   <!-- Firebase SDK (v9 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
@@ -124,98 +125,131 @@
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- TOP HEADER (FLOATING LIQUID GLASS BAR) -->
-  <div class="sticky top-4 z-40 px-4 sm:px-8 max-w-7xl w-full mx-auto">
-    <header class="liquid-glass rounded-2xl px-4 py-3 sm:px-6 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/30 border border-white/20">
-          <i class="fa-solid fa-play"></i>
-        </div>
+  <!-- TELA DE AUTHENTICATION / LOGIN -->
+  <div id="authScreen" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4">
+    <div class="liquid-glass rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/30 border border-white/20 mx-auto">
+        <i class="fa-solid fa-play"></i>
+      </div>
+      
+      <div>
+        <h2 id="authTitle" class="text-xl font-bold text-white leading-tight">Entrar no Meu Cinema</h2>
+        <p class="text-xs text-zinc-400 mt-1">Acesse seu painel privado de filmes e canais</p>
+      </div>
+
+      <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3 text-left">
         <div>
-          <h1 class="font-bold text-base leading-none tracking-tight text-white/90">Meu Cinema</h1>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail</label>
+          <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40">
         </div>
-      </div>
 
-      <div class="flex items-center gap-2">
-        <button onclick="openCategoryModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-layer-group text-zinc-400"></i>
-          <span>Categorias</span>
-        </button>
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Senha</label>
+          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/40">
+        </div>
 
-        <button onclick="openAddModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-code text-xs"></i>
-          <span>Link / Iframe</span>
+        <button type="submit" id="authSubmitBtn" class="w-full py-2.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer mt-2">
+          Entrar
         </button>
+      </form>
+
+      <div class="text-xs text-zinc-400 pt-2 border-t border-white/10">
+        <span id="authToggleText">Não tem uma conta?</span>
+        <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-brand-500 font-semibold hover:underline ml-1 cursor-pointer">Criar Conta</button>
       </div>
-    </header>
+    </div>
   </div>
 
-  <!-- MAIN CATALOG CONTENT -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
-    
-    <!-- BARRA DE BUSCA GLOBAL UNIFICADA -->
-    <div class="relative z-30">
-      <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
-        <div class="relative flex-1">
-          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
-          <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch()" placeholder="Buscar filmes, séries, animes ou canais ao vivo (ex: Globo, SporTV, Premiere)..." class="w-full liquid-glass rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/30 transition">
-          <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs">
-            <i class="fa-solid fa-xmark"></i>
+  <!-- CONTEÚDO PRINCIPAL DO APP -->
+  <div id="appScreen" class="hidden flex-col min-h-screen">
+    <!-- TOP HEADER -->
+    <div class="sticky top-4 z-40 px-4 sm:px-8 max-w-7xl w-full mx-auto">
+      <header class="liquid-glass rounded-2xl px-4 py-3 sm:px-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/30 border border-white/20">
+            <i class="fa-solid fa-play"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-base leading-none tracking-tight text-white/90">Meu Cinema</h1>
+            <p id="userEmailBadge" class="text-[10px] text-zinc-400 font-medium truncate max-w-[130px] sm:max-w-none mt-0.5"></p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="openCategoryModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-layer-group text-zinc-400"></i>
+            <span class="hidden sm:inline">Categorias</span>
+          </button>
+
+          <button onclick="openAddModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-code text-xs"></i>
+            <span class="hidden sm:inline">Link / Iframe</span>
+          </button>
+
+          <button onclick="logout()" title="Sair da Conta" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-zinc-400 hover:text-rose-400 transition cursor-pointer ml-1">
+            <i class="fa-solid fa-right-from-bracket"></i>
           </button>
         </div>
+      </header>
+    </div>
 
-        <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5">
-          <!-- Generated Dynamically -->
+    <!-- MAIN CATALOG CONTENT -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-6">
+      <!-- BARRA DE BUSCA GLOBAL UNIFICADA -->
+      <div class="relative z-30">
+        <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+            <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch()" placeholder="Buscar filmes, séries, animes ou canais ao vivo (ex: Globo, SporTV, Premiere)..." class="w-full liquid-glass rounded-xl pl-10 pr-10 py-2.5 text-xs text-white placeholder-zinc-400 focus:outline-none focus:border-white/30 transition">
+            <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5"></div>
+        </div>
+
+        <!-- PAINEL FLUTUANTE DE RESULTADOS DA BUSCA GLOBAL -->
+        <div id="searchResultsPanel" class="hidden absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
+          <div id="sectionSaved" class="hidden space-y-2">
+            <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+              <i class="fa-solid fa-bookmark"></i> No Seu Catálogo
+            </h3>
+            <div id="resultsSavedList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+          </div>
+
+          <div id="sectionLive" class="hidden space-y-2">
+            <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+              <i class="fa-solid fa-tv"></i> TV ao Vivo & Esportes (Rei dos Embeds)
+            </h3>
+            <div id="resultsLiveList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+          </div>
+
+          <div id="sectionTMDB" class="hidden space-y-2">
+            <h3 class="text-[11px] font-bold uppercase tracking-wider text-brand-500 flex items-center gap-1.5 border-b border-white/10 pb-1">
+              <i class="fa-solid fa-film"></i> Filmes, Séries & Animes
+            </h3>
+            <div id="resultsTMDBList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+          </div>
+
+          <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-400">
+            Nenhum resultado encontrado para a busca.
+          </div>
         </div>
       </div>
 
-      <!-- PAINEL FLUTUANTE DE RESULTADOS DA BUSCA GLOBAL -->
-      <div id="searchResultsPanel" class="hidden absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-4 z-50">
-        
-        <!-- SEÇÃO: JÁ SALVOS NO SEU CATÁLOGO -->
-        <div id="sectionSaved" class="hidden space-y-2">
-          <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
-            <i class="fa-solid fa-bookmark"></i> No Seu Catálogo
-          </h3>
-          <div id="resultsSavedList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-        </div>
+      <!-- CARDS GRID GLASS -->
+      <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
 
-        <!-- SEÇÃO: CANAIS AO VIVO -->
-        <div id="sectionLive" class="hidden space-y-2">
-          <h3 class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
-            <i class="fa-solid fa-tv"></i> TV ao Vivo & Esportes (Rei dos Embeds)
-          </h3>
-          <div id="resultsLiveList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+      <!-- EMPTY STATE -->
+      <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-2">
+        <div class="w-14 h-14 rounded-2xl liquid-glass flex items-center justify-center text-zinc-500 text-xl mb-2">
+          <i class="fa-solid fa-film"></i>
         </div>
-
-        <!-- SEÇÃO: FILMES & SÉRIES (TMDB) -->
-        <div id="sectionTMDB" class="hidden space-y-2">
-          <h3 class="text-[11px] font-bold uppercase tracking-wider text-brand-500 flex items-center gap-1.5 border-b border-white/10 pb-1">
-            <i class="fa-solid fa-film"></i> Filmes, Séries & Animes
-          </h3>
-          <div id="resultsTMDBList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-        </div>
-
-        <!-- BUSCA VAZIA -->
-        <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-400">
-          Nenhum resultado encontrado para a busca.
-        </div>
+        <p class="text-zinc-300 font-medium text-xs">Nenhum título ou canal no seu catálogo privado.</p>
       </div>
-    </div>
-
-    <!-- CARDS GRID GLASS -->
-    <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-      <!-- Generated Dynamically -->
-    </div>
-
-    <!-- EMPTY STATE -->
-    <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-2">
-      <div class="w-14 h-14 rounded-2xl liquid-glass flex items-center justify-center text-zinc-500 text-xl mb-2">
-        <i class="fa-solid fa-film"></i>
-      </div>
-      <p class="text-zinc-300 font-medium text-xs">Nenhum título ou canal no seu catálogo.</p>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <!-- MANUAL ITEM MODAL -->
   <div id="addModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md hidden flex items-center justify-center p-4">
@@ -230,8 +264,6 @@
       </h3>
 
       <form id="itemForm" onsubmit="saveItemManual(event)" class="space-y-3">
-        <input type="hidden" id="itemId">
-
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título do Canal / Filme</label>
           <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/40">
@@ -240,8 +272,7 @@
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40">
-            </select>
+            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40"></select>
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa (Opcional)</label>
@@ -285,8 +316,7 @@
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40">
-            </select>
+            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-xs text-white bg-zinc-900/80 focus:outline-none focus:border-white/40"></select>
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Anotação / Status</label>
@@ -333,9 +363,7 @@
 
       <div class="space-y-1.5 pt-1">
         <label class="block text-[11px] font-semibold text-zinc-300">Categorias Atuais</label>
-        <div id="categoryList" class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
-          <!-- Dynamically populated -->
-        </div>
+        <div id="categoryList" class="max-h-48 overflow-y-auto space-y-1.5 pr-1"></div>
       </div>
 
       <div class="flex justify-end pt-2">
@@ -409,14 +437,23 @@
     };
 
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.database();
-    const catalogRef = db.ref('catalog');
-    const categoriesRef = db.ref('categories');
 
-    // TMDB API KEY
+    // VARIÁVEIS DE ESTADO
+    let currentUser = null;
+    let userCatalogRef = null;
+    let userCategoriesRef = null;
+
+    let catalog = [];
+    let categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
+    let currentFilter = 'ALL';
+    let isSignUpMode = false;
+    let globalSearchTimeout = null;
+    let currentPlayingUrl = '';
+
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
-    // BASE DE CANAIS AO VIVO OFICIAIS DO REI DOS EMBEDS
     const REI_DOS_EMBEDS_CHANNELS = [
       { id: "globo-sp", name: "Globo SP", cat: "TV ao Vivo" },
       { id: "globo-rj", name: "Globo RJ", cat: "TV ao Vivo" },
@@ -450,42 +487,91 @@
       { id: "cartoon-network", name: "Cartoon Network", cat: "TV ao Vivo" }
     ];
 
-    let catalog = [];
-    let categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
-    let currentFilter = 'ALL';
-    let globalSearchTimeout = null;
-    let currentPlayingUrl = '';
+    // MONITOR DE AUTENTICAÇÃO DO FIREBASE
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('authScreen').classList.add('hidden');
+        document.getElementById('appScreen').classList.remove('hidden');
+        document.getElementById('appScreen').classList.add('flex');
+        document.getElementById('userEmailBadge').innerText = user.email;
 
-    // ESCUTA CATEGORIAS
-    categoriesRef.on('value', (snapshot) => {
-      const data = snapshot.val();
-      if (data && Array.isArray(data)) {
-        categories = data;
-        if (!categories.includes('TV ao Vivo')) {
-          categories.push('TV ao Vivo');
-          categoriesRef.set(categories);
+        // BIND REFERÊNCIAS ISOLADAS DO USUÁRIO
+        userCatalogRef = db.ref(`users/${user.uid}/catalog`);
+        userCategoriesRef = db.ref(`users/${user.uid}/categories`);
+
+        listenToUserData();
+      } else {
+        currentUser = null;
+        document.getElementById('authScreen').classList.remove('hidden');
+        document.getElementById('appScreen').classList.add('hidden');
+        document.getElementById('appScreen').classList.remove('flex');
+      }
+    });
+
+    // SISTEMA DE AUTH (LOGIN / CADASTRO)
+    function toggleAuthMode() {
+      isSignUpMode = !isSignUpMode;
+      document.getElementById('authTitle').innerText = isSignUpMode ? 'Criar Nova Conta' : 'Entrar no Meu Cinema';
+      document.getElementById('authSubmitBtn').innerText = isSignUpMode ? 'Cadastrar' : 'Entrar';
+      document.getElementById('authToggleText').innerText = isSignUpMode ? 'Já tem uma conta?' : 'Não tem uma conta?';
+      document.getElementById('authToggleBtn').innerText = isSignUpMode ? 'Fazer Login' : 'Criar Conta';
+    }
+
+    async function handleAuth(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+
+      try {
+        if (isSignUpMode) {
+          await auth.createUserWithEmailAndPassword(email, password);
+          showToast('Conta criada com sucesso!');
+        } else {
+          await auth.signInWithEmailAndPassword(email, password);
+          showToast('Login efetuado!');
         }
-      } else {
-        categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
-        categoriesRef.set(categories);
+      } catch (err) {
+        showToast(err.message || 'Erro na autenticação.', 'error');
       }
-      renderCategoryUI();
-      renderCatalog();
-    });
+    }
 
-    // ESCUTA CATÁLOGO
-    catalogRef.on('value', (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        catalog = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-      } else {
-        catalog = [];
-      }
-      renderCatalog();
-      if (document.getElementById('globalSearchInput').value.trim() !== '') {
-        handleGlobalSearch();
-      }
-    });
+    function logout() {
+      auth.signOut();
+      showToast('Sessão encerrada.');
+    }
+
+    // LISTENER DE DADOS ISOLADOS DO USUÁRIO
+    function listenToUserData() {
+      userCategoriesRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && Array.isArray(data)) {
+          categories = data;
+          if (!categories.includes('TV ao Vivo')) {
+            categories.push('TV ao Vivo');
+            userCategoriesRef.set(categories);
+          }
+        } else {
+          categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
+          userCategoriesRef.set(categories);
+        }
+        renderCategoryUI();
+        renderCatalog();
+      });
+
+      userCatalogRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          catalog = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+        } else {
+          catalog = [];
+        }
+        renderCatalog();
+        if (document.getElementById('globalSearchInput').value.trim() !== '') {
+          handleGlobalSearch();
+        }
+      });
+    }
 
     function renderCategoryUI() {
       const container = document.getElementById('filterButtonsContainer');
@@ -561,7 +647,7 @@
 
       if (!categories.includes(val)) {
         categories.push(val);
-        categoriesRef.set(categories);
+        userCategoriesRef.set(categories);
         input.value = '';
         showToast('Categoria adicionada!');
       } else {
@@ -572,7 +658,7 @@
     function removeCategory(index) {
       if (confirm(`Deseja remover a categoria "${categories[index]}"?`)) {
         categories.splice(index, 1);
-        categoriesRef.set(categories);
+        userCategoriesRef.set(categories);
         if (!categories.includes(currentFilter)) {
           currentFilter = 'ALL';
         }
@@ -586,7 +672,6 @@
       renderCatalog();
     }
 
-    // BUSCA GLOBAL UNIFICADA
     function handleGlobalSearch() {
       clearTimeout(globalSearchTimeout);
       const query = document.getElementById('globalSearchInput').value.trim();
@@ -603,17 +688,14 @@
       clearBtn.classList.remove('hidden');
       panel.classList.remove('hidden');
 
-      // 1. FILTRAR ITENS JÁ SALVOS NO CATALOGO
       const savedMatches = catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase()));
       renderSavedSearchList(savedMatches);
 
-      // 2. FILTRAR CANAIS AO VIVO DO REI DOS EMBEDS
       const liveMatches = REI_DOS_EMBEDS_CHANNELS.filter(c => 
         c.name.toLowerCase().includes(query.toLowerCase()) || c.id.toLowerCase().includes(query.toLowerCase())
       );
       renderLiveSearchList(liveMatches);
 
-      // 3. BUSCAR FILMES/SÉRIES VIA TMDB
       globalSearchTimeout = setTimeout(() => {
         fetchTMDBSearch(query);
       }, 350);
@@ -764,9 +846,9 @@
       }
     }
 
-    // ADIÇÃO RÁPIDA DE CANAL AO VIVO
     function quickAddLive(channelId, name, category, btnElement) {
-      const id = db.ref('catalog').push().key;
+      if (!userCatalogRef) return;
+      const id = userCatalogRef.push().key;
       const apiUrl = `https://reidosembeds.online/embed/canal.php?id=${channelId}`;
 
       const itemData = {
@@ -777,20 +859,20 @@
         seasonNote: 'AO VIVO'
       };
 
-      db.ref(`catalog/${id}`).set(itemData, (error) => {
+      userCatalogRef.child(id).set(itemData, (error) => {
         if (!error) {
           btnElement.outerHTML = `<span class="text-[10px] px-2.5 py-1 liquid-pill text-emerald-400 font-bold rounded-xl border border-emerald-500/30">✓ Salvo</span>`;
-          showToast(`'${name}' adicionado ao catálogo!`);
+          showToast(`'${name}' adicionado ao seu catálogo!`);
         } else {
           showToast('Erro ao salvar no banco.', 'error');
         }
       });
     }
 
-    // ADIÇÃO RÁPIDA DE FILME / SÉRIE / ANIME (SUPERFLIX API)
     function quickAddTMDB(tmdbId, encodedTitle, isMovie, banner, btnElement) {
+      if (!userCatalogRef) return;
       const title = decodeURIComponent(encodedTitle);
-      const id = db.ref('catalog').push().key;
+      const id = userCatalogRef.push().key;
       let category = isMovie ? 'Filme' : 'Série';
       
       const lowerTitle = title.toLowerCase();
@@ -811,17 +893,16 @@
         seasonNote: ''
       };
 
-      db.ref(`catalog/${id}`).set(itemData, (error) => {
+      userCatalogRef.child(id).set(itemData, (error) => {
         if (!error) {
           btnElement.outerHTML = `<span class="text-[10px] px-2.5 py-1 liquid-pill text-brand-500 font-bold rounded-xl border border-brand-500/30">✓ Salvo</span>`;
-          showToast(`'${title}' adicionado ao catálogo!`);
+          showToast(`'${title}' adicionado ao seu catálogo!`);
         } else {
           showToast('Erro ao salvar no banco.', 'error');
         }
       });
     }
 
-    // MODAL MANUAL
     function openAddModal() {
       document.getElementById('itemForm').reset();
       document.getElementById('addModal').classList.remove('hidden');
@@ -833,7 +914,8 @@
 
     function saveItemManual(e) {
       e.preventDefault();
-      const id = db.ref('catalog').push().key;
+      if (!userCatalogRef) return;
+      const id = userCatalogRef.push().key;
       const title = document.getElementById('titleInput').value.trim();
       const type = document.getElementById('typeInput').value;
       const banner = document.getElementById('bannerInput').value.trim();
@@ -846,7 +928,7 @@
         apiUrl: rawApi
       };
 
-      db.ref(`catalog/${id}`).set(itemData, (error) => {
+      userCatalogRef.child(id).set(itemData, (error) => {
         if (!error) {
           closeAddModal();
           showToast('Item salvo manualmente!');
@@ -856,7 +938,6 @@
       });
     }
 
-    // MODAL DE EDIÇÃO
     function editItem(id, e) {
       if (e) e.stopPropagation();
       const item = catalog.find(i => i.id === id);
@@ -883,6 +964,7 @@
 
     function saveEditDetails(e) {
       e.preventDefault();
+      if (!userCatalogRef) return;
       const id = document.getElementById('editItemId').value;
       const title = document.getElementById('editTitleInput').value.trim();
       const type = document.getElementById('editTypeInput').value;
@@ -892,7 +974,7 @@
 
       let updateData = { title, type, banner, seasonNote, apiUrl };
 
-      db.ref(`catalog/${id}`).update(updateData, (error) => {
+      userCatalogRef.child(id).update(updateData, (error) => {
         if (!error) {
           closeEditModal();
           showToast('Alterações salvas com sucesso!');
@@ -904,13 +986,12 @@
 
     function deleteItem(id, e) {
       if (e) e.stopPropagation();
-      if (confirm('Deseja excluir este título do catálogo?')) {
-        db.ref(`catalog/${id}`).remove();
-        showToast('Item removido do catálogo.');
+      if (confirm('Deseja excluir este título do seu catálogo?')) {
+        userCatalogRef.child(id).remove();
+        showToast('Item removido do seu catálogo.');
       }
     }
 
-    // RENDERIZAÇÃO DO CATÁLOGO (LIQUID GLASS CARDS)
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
       const empty = document.getElementById('emptyState');
@@ -949,7 +1030,6 @@
 
           card.innerHTML = `
             <div class="aspect-[2/3] w-full bg-zinc-950/60 relative overflow-hidden" onclick="playItem('${item.id}')">
-              
               <div class="w-full h-full flex flex-col items-center justify-center p-3 text-center absolute inset-0">
                 <i class="fa-solid fa-play text-zinc-600 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
                 <span class="font-bold text-xs text-zinc-300 line-clamp-2 leading-tight">${item.title}</span>
@@ -990,7 +1070,6 @@
       }
     }
 
-    // REPRODUTOR DE CONTEÚDO
     function playItem(id) {
       const item = catalog.find(i => i.id === id);
       if (!item) return;
