@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>RJ FLIX • Filmes, Séries, Animes & TV ao Vivo</title>
   
-  <link rel="icon" href="./favicon.ico?v=8" type="image/x-icon">
-  <link rel="shortcut icon" href="./favicon.ico?v=8" type="image/x-icon">
-  <link rel="apple-touch-icon" href="./favicon.ico?v=8">
+  <link rel="icon" href="./favicon.ico?v=9" type="image/x-icon">
+  <link rel="shortcut icon" href="./favicon.ico?v=9" type="image/x-icon">
+  <link rel="apple-touch-icon" href="./favicon.ico?v=9">
 
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -128,7 +128,7 @@
   <div class="fixed top-0 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
   <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
-  <!-- BACKDROP BUSCA (100% TRANSPARENTE - SEM ESCURECER A TELA) -->
+  <!-- BACKDROP BUSCA (100% TRANSPARENTE) -->
   <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-transparent z-30 pointer-events-none"></div>
 
   <!-- TOAST CONTAINER -->
@@ -236,7 +236,7 @@
           </button>
         </div>
 
-        <!-- PAINEL DE RESULTADOS DA BUSCA (NÍTIDO, OPÁCO E COM ALTO CONTRASTE) -->
+        <!-- PAINEL DE RESULTADOS DA BUSCA -->
         <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-200 absolute left-0 right-0 top-full mt-3 bg-[#181a26] border-2 border-zinc-700/80 rounded-3xl shadow-2xl max-h-[75vh] overflow-y-auto p-5 space-y-5 z-50">
           <div class="flex items-center justify-between border-b border-zinc-700/80 pb-3">
             <span class="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
@@ -746,7 +746,7 @@
 
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
-    // NOVO DOMÍNIO PRINCIPAL DA API (v2.rdembed.sbs)
+    // DOMÍNIO PRINCIPAL ATIVO MARCADO EM VERDE: v2.rdembed.sbs
     const REI_DOS_EMBEDS_CHANNELS = [
       { id: "globo-sp", name: "Globo SP", cat: "Aberto" },
       { id: "globo-rj", name: "Globo RJ", cat: "Aberto" },
@@ -1136,8 +1136,8 @@
       container.innerHTML = '';
 
       channels.forEach(ch => {
-        // ENDPOINT ATUALIZADO V2 (v2.rdembed.sbs)
-        const playUrl = `https://v2.rdembed.sbs/embed/canal.php?id=${ch.id}`;
+        // ENDPOINT DIRETO PARA EXECUÇÃO EM IFRAME (v2.rdembed.sbs)
+        const playUrl = `https://v2.rdembed.sbs/embed/${ch.id}`;
         
         const div = document.createElement('div');
         div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer";
@@ -1288,9 +1288,10 @@
 
       let playerUrl = item.apiUrl || '';
 
+      // CORREÇÃO E PADRONIZAÇÃO AUTOMÁTICA DE DOMÍNIOS E ROTAS DE EMBED
       if (playerUrl.includes('reidosembeds') || playerUrl.includes('rdembed')) {
         let channelId = playerUrl.includes('id=') ? playerUrl.split('id=')[1].split('&')[0] : playerUrl.split('/').pop();
-        if (channelId) playerUrl = `https://v2.rdembed.sbs/embed/canal.php?id=${channelId}`;
+        if (channelId) playerUrl = `https://v2.rdembed.sbs/embed/${channelId}`;
       }
 
       if (!playerUrl && item.tmdbId) {
@@ -1320,8 +1321,11 @@
       const iframe = document.createElement('iframe');
       iframe.src = cleanUrl;
       iframe.className = "w-full h-full border-0";
-      iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
+      iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture; accelerometer; gyroscope";
+      iframe.referrerPolicy = "no-referrer-when-downgrade";
+      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
       iframe.setAttribute('allowfullscreen', 'true');
+      
       holder.appendChild(iframe);
     }
 
@@ -1409,7 +1413,7 @@
               <span class="text-xs text-emerald-300 font-bold">Canal TV AO VIVO</span>
             </div>
           </div>
-          <button onclick="playCustomUrl('https://v2.rdembed.sbs/embed/canal.php?id=${ch.id}', '${ch.name}', 'TV ao Vivo')" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition cursor-pointer shadow-md">
+          <button onclick="playCustomUrl('https://v2.rdembed.sbs/embed/${ch.id}', '${ch.name}', 'TV ao Vivo')" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition cursor-pointer shadow-md">
             Assistir
           </button>
         `;
