@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>RJ FLIX • Plataforma de Streaming</title>
+  <title>RJ FLIX • Filmes, Séries, Animes & TV ao Vivo</title>
   
   <link rel="icon" href="./favicon.ico?v=4" type="image/x-icon">
   <link rel="shortcut icon" href="./favicon.ico?v=4" type="image/x-icon">
@@ -58,7 +58,6 @@
       overflow: hidden;
     }
 
-    /* CARD STYLE */
     .supercard {
       background-color: #14151c;
       border: 1px solid #222430;
@@ -97,6 +96,19 @@
       0% { transform: scale(0.95); opacity: 0.8; }
       50% { transform: scale(1.3); opacity: 1; }
       100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .nav-active {
+      background-color: rgba(229, 9, 20, 0.2) !important;
+      color: #e50914 !important;
+      border: 1px solid rgba(229, 9, 20, 0.5) !important;
+      font-weight: 800 !important;
+    }
+
+    .genre-btn-active {
+      background-color: #e50914 !important;
+      color: #ffffff !important;
+      border-color: #e50914 !important;
     }
 
     .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -159,7 +171,7 @@
 
         <!-- MENU DE NAVEGAÇÃO -->
         <nav class="hidden md:flex items-center gap-1.5 ml-4">
-          <button onclick="switchTab('home')" id="tab-home" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-brand-500/20 text-brand-500 border border-brand-500/40 transition">Início</button>
+          <button onclick="switchTab('home')" id="tab-home" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Início</button>
           <button onclick="switchTab('movies')" id="tab-movies" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Filmes</button>
           <button onclick="switchTab('series')" id="tab-series" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Séries</button>
           <button onclick="switchTab('animes')" id="tab-animes" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Animes</button>
@@ -193,12 +205,12 @@
 
     <!-- NAVEGAÇÃO MOBILE -->
     <div class="md:hidden flex items-center justify-between bg-[#14151c] border-b border-[#222430] px-3 py-2 overflow-x-auto hide-scrollbar">
-      <button onclick="switchTab('home')" class="px-2.5 py-1 text-xs font-bold text-white whitespace-nowrap">Início</button>
-      <button onclick="switchTab('movies')" class="px-2.5 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Filmes</button>
-      <button onclick="switchTab('series')" class="px-2.5 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Séries</button>
-      <button onclick="switchTab('animes')" class="px-2.5 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Animes</button>
-      <button onclick="switchTab('tv')" class="px-2.5 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">TV</button>
-      <button onclick="switchTab('mycatalog')" class="px-3 py-1 text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/50 rounded-lg whitespace-nowrap flex items-center gap-1">
+      <button onclick="switchTab('home')" id="mob-tab-home" class="px-2.5 py-1 text-xs font-bold text-white whitespace-nowrap">Início</button>
+      <button onclick="switchTab('movies')" id="mob-tab-movies" class="px-2.5 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Filmes</button>
+      <button onclick="switchTab('series')" id="mob-tab-series" class="px-2.5 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Séries</button>
+      <button onclick="switchTab('animes')" id="mob-tab-animes" class="px-2.5 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Animes</button>
+      <button onclick="switchTab('tv')" id="mob-tab-tv" class="px-2.5 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">TV</button>
+      <button onclick="switchTab('mycatalog')" id="mob-tab-mycatalog" class="px-3 py-1 text-xs font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/50 rounded-lg whitespace-nowrap flex items-center gap-1">
         <i class="fa-solid fa-bookmark text-[10px]"></i> Meu Catálogo
       </button>
     </div>
@@ -276,57 +288,117 @@
         </div>
       </section>
 
-      <!-- SEÇÃO 1: EM ALTA / LANÇAMENTOS (HOME) -->
+      <!-- HOME: EM ALTA / LANÇAMENTOS -->
       <section id="sectionTrending" class="space-y-3">
         <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
           <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i class="fa-solid fa-fire text-brand-500"></i> Em Alta / Lançamentos
+            <i class="fa-solid fa-fire text-brand-500"></i> Em Alta / Lançamentos Globais
           </h2>
         </div>
         <div id="gridTrending" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
       </section>
 
-      <!-- SEÇÃO 2: FILMES POPULARES -->
-      <section id="sectionMovies" class="space-y-3">
-        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
-          <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i class="fa-solid fa-film text-brand-500"></i> Filmes Recomendados
-          </h2>
+      <!-- ABA DEDICADA 1: FILMES -->
+      <section id="sectionMovies" class="hidden space-y-6">
+        <div class="bg-[#14151c] border border-[#222430] p-5 rounded-2xl space-y-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+            <div>
+              <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-film text-brand-500"></i> Catálogo de Filmes
+              </h2>
+              <p class="text-xs text-zinc-400">Explore milhares de produções cinematográficas por categoria</p>
+            </div>
+          </div>
+
+          <!-- BOTÕES DE FILTRO DE GÊNERO DE FILMES -->
+          <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1" id="movieGenreButtons">
+            <button onclick="filterMoviesGenre('all', this)" class="genre-btn genre-btn-active px-3 py-1.5 rounded-xl border border-zinc-700 text-xs font-bold transition whitespace-nowrap">Todos</button>
+            <button onclick="filterMoviesGenre('28', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Ação</button>
+            <button onclick="filterMoviesGenre('12', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Aventura</button>
+            <button onclick="filterMoviesGenre('35', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Comédia</button>
+            <button onclick="filterMoviesGenre('18', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Drama</button>
+            <button onclick="filterMoviesGenre('878', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Ficção Científica</button>
+            <button onclick="filterMoviesGenre('27', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Terror</button>
+            <button onclick="filterMoviesGenre('10749', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Romance</button>
+            <button onclick="filterMoviesGenre('16', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Animação</button>
+          </div>
         </div>
+
         <div id="gridMovies" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+
+        <div class="flex justify-center pt-4">
+          <button id="loadMoreMoviesBtn" onclick="loadMoreMovies()" class="px-6 py-2.5 rounded-xl bg-zinc-800 hover:bg-brand-500 text-white font-bold text-xs border border-white/10 transition cursor-pointer shadow-lg">
+            <i class="fa-solid fa-plus mr-1"></i> Carregar Mais Filmes
+          </button>
+        </div>
       </section>
 
-      <!-- SEÇÃO 3: SÉRIES POPULARES -->
-      <section id="sectionSeries" class="space-y-3">
-        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
-          <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i class="fa-solid fa-tv text-brand-500"></i> Séries em Destaque
-          </h2>
+      <!-- ABA DEDICADA 2: SÉRIES -->
+      <section id="sectionSeries" class="hidden space-y-6">
+        <div class="bg-[#14151c] border border-[#222430] p-5 rounded-2xl space-y-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+            <div>
+              <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-tv text-brand-500"></i> Catálogo de Séries
+              </h2>
+              <p class="text-xs text-zinc-400">Séries completas com episódios organizados diretamente do acervo</p>
+            </div>
+          </div>
+
+          <!-- FILTROS DE SÉRIES -->
+          <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1" id="seriesGenreButtons">
+            <button onclick="filterSeriesGenre('all', this)" class="genre-btn genre-btn-active px-3 py-1.5 rounded-xl border border-zinc-700 text-xs font-bold transition whitespace-nowrap">Todas</button>
+            <button onclick="filterSeriesGenre('18', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Drama</button>
+            <button onclick="filterSeriesGenre('35', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Comédia</button>
+            <button onclick="filterSeriesGenre('10765', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Sci-Fi & Fantasia</button>
+            <button onclick="filterSeriesGenre('80', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Crime / Policial</button>
+            <button onclick="filterSeriesGenre('9648', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Mistério</button>
+            <button onclick="filterSeriesGenre('10759', this)" class="genre-btn bg-[#0b0c10] hover:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-800 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Ação & Aventura</button>
+          </div>
         </div>
+
         <div id="gridSeries" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
-      </section>
 
-      <!-- SEÇÃO 4: ANIMES EM DESTAQUE -->
-      <section id="sectionAnimes" class="space-y-3">
-        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
-          <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i class="fa-solid fa-dragon text-amber-500"></i> Animes
-          </h2>
+        <div class="flex justify-center pt-4">
+          <button id="loadMoreSeriesBtn" onclick="loadMoreSeries()" class="px-6 py-2.5 rounded-xl bg-zinc-800 hover:bg-brand-500 text-white font-bold text-xs border border-white/10 transition cursor-pointer shadow-lg">
+            <i class="fa-solid fa-plus mr-1"></i> Carregar Mais Séries
+          </button>
         </div>
-        <div id="gridAnimes" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
       </section>
 
-      <!-- SEÇÃO 5: TV AO VIVO -->
-      <section id="sectionTV" class="space-y-3">
+      <!-- ABA DEDICADA 3: ANIMES -->
+      <section id="sectionAnimes" class="hidden space-y-6">
+        <div class="bg-[#14151c] border border-[#222430] p-5 rounded-2xl space-y-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+            <div>
+              <h2 class="text-xl font-black text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-dragon text-amber-500"></i> Mundo Anime
+              </h2>
+              <p class="text-xs text-zinc-400">Animes japoneses em HD dublados e legendados</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="gridAnimes" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+
+        <div class="flex justify-center pt-4">
+          <button id="loadMoreAnimesBtn" onclick="loadMoreAnimes()" class="px-6 py-2.5 rounded-xl bg-zinc-800 hover:bg-amber-500 text-white font-bold text-xs border border-white/10 transition cursor-pointer shadow-lg">
+            <i class="fa-solid fa-plus mr-1"></i> Carregar Mais Animes
+          </button>
+        </div>
+      </section>
+
+      <!-- ABA DEDICADA 4: TV AO VIVO -->
+      <section id="sectionTV" class="hidden space-y-3">
         <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
           <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
-            <i class="fa-solid fa-satellite-dish text-emerald-400"></i> Canais de TV ao Vivo
+            <i class="fa-solid fa-satellite-dish text-emerald-400"></i> Canais de TV ao Vivo & Esportes
           </h2>
         </div>
         <div id="gridTV" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
       </section>
 
-      <!-- SEÇÃO 6: MEU CATÁLOGO PRIVADO -->
+      <!-- ABA DEDICADA 5: MEU CATÁLOGO PRIVADO -->
       <section id="sectionMyCatalog" class="hidden space-y-4">
         <div class="flex items-center justify-between border-b border-emerald-500/30 pb-3 bg-emerald-950/20 p-4 rounded-2xl border">
           <div>
@@ -443,7 +515,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE LEMBRETE UNIFICADO E PROTEGIDO (SEM API, CAPA OU TITULO EDITÁVEL) -->
+  <!-- MODAL DE LEMBRETE PROTEGIDO -->
   <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
     <div class="bg-[#14151c] border border-[#222430] rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
       <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
@@ -510,7 +582,7 @@
       if (ctrlOrCmd && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
     }, false);
 
-    // MODAL CONTROL
+    // CONTROLADORES DE MODAL
     function openModal(id) {
       const el = document.getElementById(id);
       if (el) el.classList.replace('modal-closed', 'modal-open');
@@ -520,7 +592,7 @@
       if (el) el.classList.replace('modal-open', 'modal-closed');
     }
 
-    // AUTH INJECTION
+    // INJEÇÃO DA TELA DE AUTENTICAÇÃO
     function renderAuthScreen() {
       const container = document.getElementById('authScreenContainer');
       container.innerHTML = `
@@ -622,6 +694,13 @@
     let currentPlayingUrl = '';
     let activeTab = 'home';
 
+    // ESTADOS DE NAVEGAÇÃO E PAGINAÇÃO POR ABA
+    let moviePage = 1;
+    let movieGenre = 'all';
+    let seriesPage = 1;
+    let seriesGenre = 'all';
+    let animePage = 1;
+
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
     const REI_DOS_EMBEDS_CHANNELS = [
@@ -649,7 +728,7 @@
         userProfileRef = db.ref(`users/${user.uid}/profile`);
 
         listenToUserData();
-        loadSuperFlixHomeData();
+        switchTab('home');
       } else {
         currentUser = null;
         renderAuthScreen();
@@ -787,57 +866,144 @@
       });
     }
 
-    // ALTERNAR ABAS
+    // ALTERNAR ABAS COM ATUALIZAÇÃO VISUAL CORRETA
     function switchTab(tabName) {
       activeTab = tabName;
-      
-      const sections = ['heroSection', 'sectionTrending', 'sectionMovies', 'sectionSeries', 'sectionAnimes', 'sectionTV', 'sectionMyCatalog'];
-      sections.forEach(s => document.getElementById(s)?.classList.add('hidden'));
 
+      // Desativar destaque em todos os botões de navegação
+      document.querySelectorAll('.nav-tab').forEach(b => {
+        b.classList.remove('nav-active', 'bg-brand-500/20', 'text-brand-500', 'border-brand-500/40');
+        b.classList.add('text-zinc-400');
+      });
+
+      // Ativar a aba selecionada no menu superior
+      const activeBtn = document.getElementById(`tab-${tabName}`);
+      if (activeBtn && tabName !== 'mycatalog') {
+        activeBtn.classList.add('nav-active');
+      }
+
+      // Ocultar todas as seções
+      ['heroSection', 'sectionTrending', 'sectionMovies', 'sectionSeries', 'sectionAnimes', 'sectionTV', 'sectionMyCatalog'].forEach(s => {
+        document.getElementById(s)?.classList.add('hidden');
+      });
+
+      // Carregar os dados específicos da aba
       if (tabName === 'home') {
-        ['heroSection', 'sectionTrending', 'sectionMovies', 'sectionSeries', 'sectionAnimes', 'sectionTV'].forEach(s => document.getElementById(s)?.classList.remove('hidden'));
+        ['heroSection', 'sectionTrending'].forEach(s => document.getElementById(s)?.classList.remove('hidden'));
+        loadHomeData();
       } else if (tabName === 'movies') {
         document.getElementById('sectionMovies')?.classList.remove('hidden');
+        moviePage = 1;
+        fetchMoviesData(true);
       } else if (tabName === 'series') {
         document.getElementById('sectionSeries')?.classList.remove('hidden');
+        seriesPage = 1;
+        fetchSeriesData(true);
       } else if (tabName === 'animes') {
         document.getElementById('sectionAnimes')?.classList.remove('hidden');
+        animePage = 1;
+        fetchAnimesData(true);
       } else if (tabName === 'tv') {
         document.getElementById('sectionTV')?.classList.remove('hidden');
+        renderTVCards('gridTV', REI_DOS_EMBEDS_CHANNELS);
       } else if (tabName === 'mycatalog') {
         document.getElementById('sectionMyCatalog')?.classList.remove('hidden');
         renderMyCatalogSection();
       }
     }
 
-    // CARREGAR CONTEÚDO RJ FLIX
-    async function loadSuperFlixHomeData() {
+    // HOME DATA
+    async function loadHomeData() {
       try {
         const resTrend = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}&language=pt-BR`);
         const dataTrend = await resTrend.json();
         
         if (dataTrend.results && dataTrend.results.length > 0) {
           setupHeroBanner(dataTrend.results[0]);
-          renderMovieCards('gridTrending', dataTrend.results.slice(1, 13));
+          renderMovieCards('gridTrending', dataTrend.results.slice(1, 13), false);
         }
-
-        const resMovies = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`);
-        const dataMovies = await resMovies.json();
-        if (dataMovies.results) renderMovieCards('gridMovies', dataMovies.results.slice(0, 12));
-
-        const resSeries = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`);
-        const dataSeries = await resSeries.json();
-        if (dataSeries.results) renderMovieCards('gridSeries', dataSeries.results.slice(0, 12), false);
-
-        const resAnimes = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_original_language=ja&sort_by=popularity.desc`);
-        const dataAnimes = await resAnimes.json();
-        if (dataAnimes.results) renderMovieCards('gridAnimes', dataAnimes.results.slice(0, 12), false);
-
-        renderTVCards('gridTV', REI_DOS_EMBEDS_CHANNELS);
-
       } catch (err) {
-        console.error("Erro ao carregar conteúdo:", err);
+        console.error("Erro na Home:", err);
       }
+    }
+
+    // BUSCA E REQUISIÇÕES DA ABA FILMES
+    async function fetchMoviesData(replace = false) {
+      try {
+        let url = `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}`;
+        if (movieGenre !== 'all') {
+          url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=${movieGenre}&sort_by=popularity.desc&page=${moviePage}`;
+        }
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.results) {
+          renderMovieCards('gridMovies', data.results, !replace, true);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar filmes:", err);
+      }
+    }
+
+    function filterMoviesGenre(genreId, btn) {
+      movieGenre = genreId;
+      moviePage = 1;
+      document.querySelectorAll('#movieGenreButtons .genre-btn').forEach(b => b.classList.remove('genre-btn-active'));
+      btn.classList.add('genre-btn-active');
+      fetchMoviesData(true);
+    }
+
+    function loadMoreMovies() {
+      moviePage++;
+      fetchMoviesData(false);
+    }
+
+    // BUSCA E REQUISIÇÕES DA ABA SÉRIES
+    async function fetchSeriesData(replace = false) {
+      try {
+        let url = `https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${seriesPage}`;
+        if (seriesGenre !== 'all') {
+          url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=${seriesGenre}&sort_by=popularity.desc&page=${seriesPage}`;
+        }
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.results) {
+          renderMovieCards('gridSeries', data.results, !replace, false);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar séries:", err);
+      }
+    }
+
+    function filterSeriesGenre(genreId, btn) {
+      seriesGenre = genreId;
+      seriesPage = 1;
+      document.querySelectorAll('#seriesGenreButtons .genre-btn').forEach(b => b.classList.remove('genre-btn-active'));
+      btn.classList.add('genre-btn-active');
+      fetchSeriesData(true);
+    }
+
+    function loadMoreSeries() {
+      seriesPage++;
+      fetchSeriesData(false);
+    }
+
+    // BUSCA E REQUISIÇÕES DA ABA ANIMES
+    async function fetchAnimesData(replace = false) {
+      try {
+        const url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_original_language=ja&sort_by=popularity.desc&page=${animePage}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.results) {
+          renderMovieCards('gridAnimes', data.results, !replace, false);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar animes:", err);
+      }
+    }
+
+    function loadMoreAnimes() {
+      animePage++;
+      fetchAnimesData(false);
     }
 
     function setupHeroBanner(item) {
@@ -857,10 +1023,10 @@
       document.getElementById('heroSaveBtn').onclick = () => saveItemToCatalog(title, isMovie ? 'Filme' : 'Série', `https://image.tmdb.org/t/p/w500${item.poster_path}`, playUrl, String(tmdbId), `★ ${item.vote_average?.toFixed(1) || '8.5'}`);
     }
 
-    function renderMovieCards(containerId, items, defaultIsMovie = true) {
+    function renderMovieCards(containerId, items, append = false, defaultIsMovie = true) {
       const container = document.getElementById(containerId);
       if (!container) return;
-      container.innerHTML = '';
+      if (!append) container.innerHTML = '';
 
       items.forEach(item => {
         const title = item.title || item.name;
@@ -880,7 +1046,7 @@
               <span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-amber-400 shadow-md">${vote}</span>
             </div>
 
-            ${poster ? `<img src="${poster}" alt="${title}" loading="lazy" class="w-full h-full object-cover relative z-10 group-hover:scale-105 transition duration-500">` : `<div class="w-full h-full flex items-center justify-center text-zinc-600 text-xs font-bold">${title}</div>`}
+            ${poster ? `<img src="${poster}" alt="${title}" loading="lazy" class="w-full h-full object-cover relative z-10 group-hover:scale-105 transition duration-500">` : `<div class="w-full h-full flex items-center justify-center text-zinc-600 text-xs font-bold p-2 text-center">${title}</div>`}
 
             <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 flex items-center justify-center z-20">
               <div class="w-11 h-11 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition duration-300">
@@ -933,7 +1099,6 @@
       });
     }
 
-    // RENDERIZAÇÃO ABA "MEU CATÁLOGO"
     function renderMyCatalogSection() {
       const container = document.getElementById('gridMyCatalog');
       const emptyState = document.getElementById('emptyCatalogState');
@@ -952,7 +1117,6 @@
           div.innerHTML = `
             <div class="aspect-[2/3] w-full bg-[#0b0c10] relative overflow-hidden rounded-t-xl" onclick="playItem('${item.id}')">
               
-              <!-- BADGE DE LEMBRETE DA TEMPORADA/EPISÓDIO -->
               <div class="absolute top-2 left-2 z-20">
                 <span class="badge-capa text-[10px] font-bold px-2.5 py-1 rounded-lg text-emerald-300 border border-emerald-500/50 bg-emerald-950/80 shadow-md">
                   ${item.seasonNote || 'HD'}
@@ -974,7 +1138,6 @@
                 <p class="text-[10px] text-zinc-400 font-medium mt-0.5">${item.type}</p>
               </div>
               
-              <!-- APENAS O BOTÃO DE EDITAR LEMBRETE E EXCLUIR -->
               <div class="flex items-center gap-1.5">
                 <button onclick="editItem('${item.id}', event)" title="Editar Lembrete" class="text-zinc-400 hover:text-emerald-400 p-1 cursor-pointer transition">
                   <i class="fa-solid fa-pen text-xs"></i>
@@ -990,7 +1153,6 @@
       }
     }
 
-    // EXIBE APENAS O FORMULÁRIO DE LEMBRETE (PROTEGENDO API, NOME E CATEGORIA)
     function editItem(id, e) {
       if (e) e.stopPropagation();
       const item = catalog.find(i => i.id === id);
