@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>RJ FLIX • Filmes, Séries, Animes & TV ao Vivo</title>
   
-  <link rel="icon" href="./favicon.ico?v=6" type="image/x-icon">
-  <link rel="shortcut icon" href="./favicon.ico?v=6" type="image/x-icon">
-  <link rel="apple-touch-icon" href="./favicon.ico?v=6">
+  <link rel="icon" href="./favicon.ico?v=7" type="image/x-icon">
+  <link rel="shortcut icon" href="./favicon.ico?v=7" type="image/x-icon">
+  <link rel="apple-touch-icon" href="./favicon.ico?v=7">
 
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -17,10 +17,7 @@
       theme: {
         extend: {
           colors: {
-            brand: { 500: '#e50914', 600: '#b81d24' },
-            liquidBg: '#08090c',
-            liquidCard: 'rgba(255, 255, 255, 0.04)',
-            liquidBorder: 'rgba(255, 255, 255, 0.12)'
+            brand: { 500: '#e50914', 600: '#b81d24' }
           }
         }
       }
@@ -54,11 +51,11 @@
 
     /* LIQUID GLASS iOS 26 STYLES */
     .liquid-glass {
-      background: rgba(18, 19, 26, 0.85);
+      background: rgba(22, 24, 34, 0.95);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.2);
     }
 
     .liquid-glass-card {
@@ -131,8 +128,8 @@
   <div class="fixed top-0 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
   <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
-  <!-- BACKDROP BUSCA (CORRIGIDO PARA NÃO EMBACAR TUDO COM BLUR EXCESSSIVO) -->
-  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/75 z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+  <!-- BACKDROP BUSCA (OPACIDADE LEVE SEM ESCURECER A TELA INTEIRA) -->
+  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/40 z-30 opacity-0 pointer-events-none transition-opacity duration-200"></div>
 
   <!-- TOAST CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -233,14 +230,14 @@
       <div class="relative z-30">
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
-          <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais de TV ao vivo..." autocomplete="off" class="w-full bg-[#14151f]/90 border border-white/20 rounded-2xl pl-10 pr-12 py-3.5 text-base text-white focus:outline-none focus:border-brand-500 transition font-medium shadow-2xl">
+          <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais de TV ao vivo..." autocomplete="off" class="w-full bg-[#12141d] border border-white/20 rounded-2xl pl-10 pr-12 py-3.5 text-base text-white focus:outline-none focus:border-brand-500 transition font-medium shadow-2xl">
           <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs transition cursor-pointer">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
 
-        <!-- PAINEL FLUTUANTE DE RESULTADOS DA BUSCA (SEM BLUR EXCESSSIVO DE BACKGROUND) -->
-        <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-300 absolute left-0 right-0 top-full mt-3 liquid-glass rounded-3xl shadow-2xl max-h-[70vh] overflow-y-auto p-5 space-y-5 z-50">
+        <!-- PAINEL DE RESULTADOS DA BUSCA (TOTALMENTE OPACO E LEGÍVEL) -->
+        <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-200 absolute left-0 right-0 top-full mt-3 bg-[#131522] border border-white/20 rounded-3xl shadow-2xl max-h-[75vh] overflow-y-auto p-5 space-y-5 z-50">
           <div class="flex items-center justify-between border-b border-white/10 pb-3">
             <span class="text-xs font-extrabold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
               <i class="fa-solid fa-magnifying-glass text-brand-500"></i> Resultados da Busca
@@ -602,7 +599,7 @@
     </div>
   </div>
 
-  <!-- PLAYER OVERLAY (BOTÃO NOVA ABA REMOVIDO) -->
+  <!-- PLAYER OVERLAY -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
     <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/60 border border-white/15 p-2 rounded-2xl shadow-2xl backdrop-blur-xl">
       <div class="hidden sm:block px-3 text-left">
@@ -1291,7 +1288,6 @@
 
       let playerUrl = item.apiUrl || '';
 
-      // ATUALIZAÇÃO AUTOMÁTICA DE EMBEDS SALVOS ANTIGOS
       if (playerUrl.includes('reidosembeds') || playerUrl.includes('rdembed')) {
         let channelId = playerUrl.includes('id=') ? playerUrl.split('id=')[1].split('&')[0] : playerUrl.split('/').pop();
         if (channelId) playerUrl = `https://v2.rdembed.sbs/embed/canal.php?id=${channelId}`;
@@ -1380,10 +1376,10 @@
       section.classList.remove('hidden');
       items.forEach(item => {
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between p-3 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md";
+        div.className = "flex items-center justify-between p-3 rounded-2xl border border-white/10 bg-[#1b1e2e]";
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
               <i class="fa-solid fa-play text-[10px]"></i>
             </div>
             <div class="min-w-0">
@@ -1408,15 +1404,15 @@
       section.classList.remove('hidden');
       items.forEach(ch => {
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between p-3 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md";
+        div.className = "flex items-center justify-between p-3 rounded-2xl border border-white/10 bg-[#1b1e2e]";
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
               <i class="fa-solid fa-tv text-[10px]"></i>
             </div>
             <div class="min-w-0">
               <h4 class="font-bold text-xs text-white truncate">${ch.name}</h4>
-              <span class="text-[11px] text-zinc-400 font-mono">Canal TV</span>
+              <span class="text-[11px] text-zinc-300 font-mono">Canal TV</span>
             </div>
           </div>
           <button onclick="playCustomUrl('https://v2.rdembed.sbs/embed/canal.php?id=${ch.id}', '${ch.name}', 'TV ao Vivo')" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">
@@ -1448,10 +1444,10 @@
           const playUrl = isMovie ? `https://superflixapi.quest/filme/${item.id}` : `https://superflixapi.quest/serie/${item.id}`;
 
           const div = document.createElement('div');
-          div.className = "flex items-center justify-between p-3 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md";
+          div.className = "flex items-center justify-between p-3 rounded-2xl border border-white/10 bg-[#1b1e2e]";
           div.innerHTML = `
             <div class="flex items-center gap-2.5 min-w-0">
-              <div class="w-8 h-11 bg-black/50 rounded-xl overflow-hidden flex-shrink-0 relative border border-white/10">
+              <div class="w-8 h-11 bg-black/60 rounded-xl overflow-hidden flex-shrink-0 relative border border-white/10">
                 ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]"><i class="fa-solid fa-film"></i></div>`}
               </div>
               <div class="min-w-0">
