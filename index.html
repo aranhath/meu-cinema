@@ -63,6 +63,27 @@
       user-select: text;
     }
 
+    /* PLACEHOLDER DINÂMICO E HARMÔNICO POR DISPOSITIVO */
+    #globalSearchInput::placeholder {
+      content: "Buscar...";
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      color: rgba(212, 212, 216, 0.8);
+    }
+
+    @media (min-width: 480px) {
+      #globalSearchInput::placeholder {
+        content: "Buscar títulos ou canais...";
+      }
+    }
+
+    @media (min-width: 768px) {
+      #globalSearchInput::placeholder {
+        content: "Buscar filmes, séries, animes ou canais...";
+      }
+    }
+
     /* LIQUID GLASS SURFACES */
     .liquid-glass {
       background: rgba(255, 255, 255, 0.07);
@@ -233,12 +254,12 @@
         </header>
       </div>
 
-      <!-- BARRA DE BUSCA -->
+      <!-- BARRA DE BUSCA COM INPUT DINÂMICO -->
       <div class="relative z-30">
         <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
           <div class="relative flex-1">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-xs"></i>
-            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais..." autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base text-white placeholder-zinc-300 focus:outline-none focus:border-white/50 transition font-medium" style="font-size: 16px !important;">
+            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base text-white focus:outline-none focus:border-white/50 transition font-medium" style="font-size: 16px !important;">
             
             <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xs transition cursor-pointer">
               <i class="fa-solid fa-xmark"></i>
@@ -472,7 +493,6 @@
 
     // 2. Bloquear Atalhos de Teclado (F12, Ctrl+Shift+I, Cmd+Option+I, etc.)
     document.addEventListener('keydown', (e) => {
-      // Tecla F12
       if (e.keyCode === 123) {
         e.preventDefault();
         return false;
@@ -482,24 +502,20 @@
       const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
       if (ctrlOrCmd) {
-        // Shift + I / J / C (DevTools, Consola, Inspecionar Elemento)
         if (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
           e.preventDefault();
           return false;
         }
-        // U (Ver Código Fonte)
         if (e.keyCode === 85) {
           e.preventDefault();
           return false;
         }
-        // S (Salvar Página)
         if (e.keyCode === 83) {
           e.preventDefault();
           return false;
         }
       }
       
-      // Atalhos específicos do Mac (Cmd + Option + I / J / C / U)
       if (isMac && e.altKey && e.metaKey) {
         if (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 85) {
           e.preventDefault();
@@ -514,8 +530,7 @@
       debugger;
       const endTime = performance.now();
       if (endTime - startTime > 100) {
-        // Se a consola estive aberta e parar no debugger, limpa o ecrã
-        document.body.innerHTML = '<div style="display:flex;height:100vh;align-items:center;justify-center;background:#0d0e12;color:#fff;font-family:sans-serif;font-weight:bold;">Acesso negado.</div>';
+        document.body.innerHTML = '<div style="display:flex;height:100vh;align-items:center;justify-content:center;background:#0d0e12;color:#fff;font-family:sans-serif;font-weight:bold;">Acesso negado.</div>';
       }
       setTimeout(antiDevTools, 1000);
     })();
