@@ -2,11 +2,9 @@
 <html lang="pt-br" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <!-- META TAG DE VIEWPORT RÍGIDA CONTRA ZOOM NO MOBILE -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Meu Cinema • SuperFlix Style</title>
+  <title>Meu Cinema • SuperFlix Edition</title>
   
-  <!-- FAVICON FÍSICO -->
   <link rel="icon" href="./favicon.ico?v=4" type="image/x-icon">
   <link rel="shortcut icon" href="./favicon.ico?v=4" type="image/x-icon">
   <link rel="apple-touch-icon" href="./favicon.ico?v=4">
@@ -20,9 +18,9 @@
         extend: {
           colors: {
             brand: { 500: '#e50914', 600: '#b81d24' },
-            superbg: '#0f1015',
-            supercard: '#181920',
-            superborder: '#262833'
+            superbg: '#0b0c10',
+            supercard: '#16171e',
+            superborder: '#232530'
           }
         }
       }
@@ -36,30 +34,20 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    /* ESTILO GERAL INSPIRADO NO SUPERFLIX */
     html, body {
       min-height: 100vh;
-      background-color: #0d0e12;
-      background-image: 
-        radial-gradient(circle at 50% 0%, rgba(229, 9, 20, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 85% 90%, rgba(20, 20, 28, 0.8) 0%, transparent 60%);
-      background-attachment: fixed;
+      background-color: #0b0c10;
       color: #f3f4f6;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow-x: hidden;
       overscroll-behavior-y: none;
       -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
       user-select: none;
     }
 
     input, select, textarea {
       font-size: 16px !important;
       -webkit-text-size-adjust: 100%;
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
       user-select: text;
     }
 
@@ -70,27 +58,26 @@
       overflow: hidden;
     }
 
-    /* CARTÃO DE FILME SUPERFLIX STYLE */
-    .superflix-card {
-      background-color: #16171e;
-      border: 1px solid #232530;
-      border-radius: 1rem;
+    /* CARD STYLE SUPERFLIX */
+    .supercard {
+      background-color: #14151c;
+      border: 1px solid #222430;
+      border-radius: 0.85rem;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .superflix-card:hover {
-      transform: translateY(-4px) scale(1.02);
-      border-color: rgba(229, 9, 20, 0.5);
-      box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(229, 9, 20, 0.2);
+    .supercard:hover {
+      transform: translateY(-5px) scale(1.02);
+      border-color: rgba(229, 9, 20, 0.6);
+      box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(229, 9, 20, 0.25);
     }
 
-    .superflix-card:hover .play-overlay {
+    .supercard:hover .play-overlay {
       opacity: 1;
     }
 
-    /* BADGE OVERLAY NA CAPA */
     .badge-capa {
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(11, 12, 16, 0.85);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 255, 255, 0.15);
@@ -115,15 +102,14 @@
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* TRANSIÇÃO MODAIS */
     .modal-closed { opacity: 0 !important; pointer-events: none !important; }
     .modal-open { opacity: 1 !important; pointer-events: auto !important; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative">
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative bg-[#0b0c10]">
 
-  <!-- BACKDROP FECHAR BUSCA -->
-  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+  <!-- BACKDROP BUSCA -->
+  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
   <!-- TOAST CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -133,13 +119,13 @@
 
   <!-- MODAL RESET SENHA -->
   <div id="resetPasswordModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-[#16171e] border border-[#232530] rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+    <div class="bg-[#14151c] border border-[#222430] rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
       <button onclick="closeResetPasswordModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-key text-rose-500"></i>
+        <i class="fa-solid fa-key text-brand-500"></i>
         <span>Redefinir Senha</span>
       </h3>
 
@@ -147,80 +133,93 @@
 
       <form onsubmit="handleSendResetEmail(event)" class="space-y-3" autocomplete="off">
         <div>
-          <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
+          <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeResetPasswordModal()" class="px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white bg-zinc-800/80 cursor-pointer">Cancelar</button>
+          <button type="button" onclick="closeResetPasswordModal()" class="px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white bg-zinc-800 cursor-pointer">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Enviar E-mail</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- CONTEÚDO PRINCIPAL DO APP -->
+  <!-- MAIN APP CONTAINER -->
   <div id="appScreen" class="hidden flex-col min-h-screen">
     
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-4 sm:px-8 space-y-6">
-
-      <!-- TOP HEADER / NAVBAR SUPERFLIX STYLE -->
-      <div class="relative z-20">
-        <header class="bg-[#121319]/90 border border-[#232530] backdrop-blur-md rounded-2xl px-4 py-3 sm:px-6 flex items-center justify-between shadow-xl">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-base shadow-lg shadow-brand-500/30 border border-white/20">
-              <i class="fa-solid fa-play"></i>
-            </div>
-            <div>
-              <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white">
-                <span class="inline-block w-20 h-4 bg-white/20 animate-pulse rounded"></span>
-              </h1>
-              <p class="text-[10px] text-zinc-400 mt-1 font-medium">SuperFlix Private Edition</p>
-            </div>
+    <!-- NAVBAR SUPERFLIX STYLE -->
+    <header class="sticky top-0 z-40 bg-[#0b0c10]/95 border-b border-[#222430] backdrop-blur-md px-4 py-3 sm:px-8 flex items-center justify-between shadow-xl">
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('home')">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/30 border border-white/20">
+            <i class="fa-solid fa-play"></i>
           </div>
-
-          <div class="flex items-center gap-2">
-            <button onclick="openProfileModal()" class="bg-zinc-800/80 hover:bg-zinc-700/80 px-3.5 py-1.5 text-xs font-semibold rounded-xl text-white border border-white/10 transition flex items-center gap-1.5 cursor-pointer">
-              <i class="fa-solid fa-user-gear text-zinc-400"></i>
-              <span class="hidden sm:inline">Perfil</span>
-            </button>
-
-            <button onclick="openAddModal()" class="bg-brand-500/20 hover:bg-brand-500/30 text-brand-400 border border-brand-500/40 px-3.5 py-1.5 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
-              <i class="fa-solid fa-plus text-xs"></i>
-              <span class="hidden sm:inline">Adicionar</span>
-            </button>
-
-            <button onclick="logout()" title="Sair da Conta" class="bg-zinc-800/80 hover:bg-rose-500/20 hover:text-rose-400 text-zinc-400 p-2 text-xs font-semibold rounded-xl border border-white/10 transition cursor-pointer ml-1">
-              <i class="fa-solid fa-right-from-bracket"></i>
-            </button>
-          </div>
-        </header>
-      </div>
-
-      <!-- BARRA DE BUSCA -->
-      <div class="relative z-30">
-        <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-zinc-800/80 pb-4">
-          <div class="relative flex-1">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
-            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar..." autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full bg-[#16171e] border border-[#232530] rounded-xl pl-10 pr-12 py-2.5 text-base text-white focus:outline-none focus:border-brand-500/60 transition font-medium">
-            
-            <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center text-xs transition cursor-pointer">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-
-          <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5"></div>
+          <span class="font-black text-lg tracking-wider text-white">SUPER<span class="text-brand-500">FLIX</span></span>
         </div>
 
-        <!-- RESULTADOS FLUTUANTES -->
-        <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-300 absolute left-0 right-0 top-full mt-2 bg-[#16171e] border border-[#232530] rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-5 z-50">
+        <!-- MENU DE NAVEGAÇÃO / ABAS DO SITE -->
+        <nav class="hidden md:flex items-center gap-1 ml-4">
+          <button onclick="switchTab('home')" id="tab-home" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-brand-500/20 text-brand-500 border border-brand-500/40 transition">Início</button>
+          <button onclick="switchTab('movies')" id="tab-movies" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Filmes</button>
+          <button onclick="switchTab('series')" id="tab-series" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Séries</button>
+          <button onclick="switchTab('animes')" id="tab-animes" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">Animes</button>
+          <button onclick="switchTab('tv')" id="tab-tv" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition">TV ao Vivo</button>
+          <button onclick="switchTab('mycatalog')" id="tab-mycatalog" class="nav-tab px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-bookmark text-[10px]"></i> Meu Catálogo
+          </button>
+        </nav>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <h1 id="userWelcomeHeader" class="hidden sm:block text-xs font-bold text-zinc-300 mr-2">
+          <span class="inline-block w-16 h-3 bg-white/10 animate-pulse rounded"></span>
+        </h1>
+
+        <button onclick="openProfileModal()" class="bg-zinc-800/80 hover:bg-zinc-700/80 px-3 py-1.5 text-xs font-semibold rounded-xl text-white border border-white/10 transition cursor-pointer">
+          <i class="fa-solid fa-user-gear text-zinc-400"></i>
+        </button>
+
+        <button onclick="openAddModal()" title="Adicionar Item" class="bg-brand-500 hover:bg-brand-600 text-white px-3 py-1.5 text-xs font-semibold rounded-xl transition cursor-pointer shadow-md shadow-brand-500/20">
+          <i class="fa-solid fa-plus text-xs"></i>
+        </button>
+
+        <button onclick="logout()" title="Sair" class="bg-zinc-800 hover:bg-rose-500/20 hover:text-rose-400 text-zinc-400 p-1.5 text-xs rounded-xl border border-white/10 transition cursor-pointer ml-1">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- NAVEGAÇÃO MOBILE (MENU INFERIOR SEGUNDÁRIO) -->
+    <div class="md:hidden flex items-center justify-around bg-[#14151c] border-b border-[#222430] px-2 py-2 overflow-x-auto hide-scrollbar">
+      <button onclick="switchTab('home')" class="px-3 py-1 text-xs font-bold text-white whitespace-nowrap">Início</button>
+      <button onclick="switchTab('movies')" class="px-3 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Filmes</button>
+      <button onclick="switchTab('series')" class="px-3 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Séries</button>
+      <button onclick="switchTab('animes')" class="px-3 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">Animes</button>
+      <button onclick="switchTab('tv')" class="px-3 py-1 text-xs font-semibold text-zinc-400 whitespace-nowrap">TV ao Vivo</button>
+      <button onclick="switchTab('mycatalog')" class="px-3 py-1 text-xs font-semibold text-emerald-400 whitespace-nowrap">Meu Catálogo</button>
+    </div>
+
+    <!-- MAIN BODY -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-5 sm:px-8 space-y-8">
+
+      <!-- BARRA DE BUSCA GLOBAL -->
+      <div class="relative z-30">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+          <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes ou canais..." autocomplete="off" class="w-full bg-[#14151c] border border-[#222430] rounded-xl pl-10 pr-12 py-3 text-base text-white focus:outline-none focus:border-brand-500/60 transition font-medium">
+          <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center text-xs transition cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- PAINEL FLUTUANTE DE RESULTADOS DA BUSCA -->
+        <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-300 absolute left-0 right-0 top-full mt-2 bg-[#14151c] border border-[#222430] rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-5 z-50">
           <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-            <span class="text-[12px] font-extrabold uppercase tracking-wider text-zinc-200 flex items-center gap-1.5">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-zinc-200 flex items-center gap-1.5">
               <i class="fa-solid fa-magnifying-glass text-brand-500"></i> Resultados Encontrados
             </span>
             <button onclick="clearGlobalSearch()" class="px-3 py-1 rounded-xl text-xs font-semibold text-zinc-300 bg-zinc-800 hover:bg-zinc-700 transition flex items-center gap-1.5 cursor-pointer">
-              <i class="fa-solid fa-xmark text-rose-500"></i>
-              <span>Fechar</span>
+              <i class="fa-solid fa-xmark text-rose-500"></i> Fechar
             </button>
           </div>
 
@@ -251,48 +250,101 @@
         </div>
       </div>
 
-      <!-- FIXO NO TOPO: CONTEÚDO EM DESTAQUE / ASSISTINDO AGORA -->
-      <div id="pinnedContentSection" class="hidden space-y-3">
+      <!-- HERO BANNER / DIVERSIFICADO DESTAQUE SUPERFLIX (HOME ONLY) -->
+      <section id="heroSection" class="relative rounded-3xl overflow-hidden border border-[#222430] bg-[#14151c] min-h-[260px] sm:min-h-[340px] flex items-end p-6 sm:p-10">
+        <div id="heroBg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 opacity-40"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/60 to-transparent"></div>
+        
+        <div class="relative z-10 max-w-2xl space-y-3">
+          <span id="heroBadge" class="px-3 py-1 rounded-lg bg-brand-500/20 text-brand-400 border border-brand-500/40 text-[11px] font-extrabold uppercase tracking-wider">
+            Destaque da Semana
+          </span>
+          <h2 id="heroTitle" class="text-2xl sm:text-4xl font-black text-white leading-tight">Carregando...</h2>
+          <p id="heroOverview" class="text-xs sm:text-sm text-zinc-300 line-clamp-2 font-medium"></p>
+          <div class="flex items-center gap-3 pt-2">
+            <button id="heroPlayBtn" onclick="" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-brand-500/30 transition flex items-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-play"></i> Assistir Agora
+            </button>
+            <button id="heroSaveBtn" onclick="" class="px-4 py-2.5 bg-zinc-800/90 hover:bg-zinc-700 text-white font-bold text-xs rounded-xl border border-white/10 transition flex items-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-plus"></i> Salvar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO 1: EM ALTA / LANÇAMENTOS (HOME) -->
+      <section id="sectionTrending" class="space-y-3">
         <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
-            <i class="fa-solid fa-fire text-brand-500"></i>
-            <span>Continuar a Assistir / Destaque Fixo</span>
+          <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-fire text-brand-500"></i> Em Alta / Lançamentos
           </h2>
-          <span class="text-[10px] text-zinc-400">Fixado no topo</span>
         </div>
-        <div id="pinnedGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
-      </div>
+        <div id="gridTrending" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
 
-      <!-- CATÁLOGO PRINCIPAL -->
-      <div class="space-y-3">
+      <!-- SEÇÃO 2: FILMES POPULARES -->
+      <section id="sectionMovies" class="space-y-3">
         <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
-            <i class="fa-solid fa-layer-group text-zinc-400"></i>
-            <span>Seu Catálogo Completo</span>
+          <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-film text-brand-500"></i> Filmes Recomendados
           </h2>
         </div>
+        <div id="gridMovies" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
 
-        <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <div class="bg-[#16171e] rounded-2xl aspect-[2/3] animate-pulse border border-[#232530]"></div>
-          <div class="bg-[#16171e] rounded-2xl aspect-[2/3] animate-pulse border border-[#232530]"></div>
-          <div class="bg-[#16171e] rounded-2xl aspect-[2/3] animate-pulse border border-[#232530]"></div>
-          <div class="bg-[#16171e] rounded-2xl aspect-[2/3] animate-pulse border border-[#232530]"></div>
+      <!-- SEÇÃO 3: SÉRIES POPULARES -->
+      <section id="sectionSeries" class="space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-tv text-brand-500"></i> Séries em Destaque
+          </h2>
         </div>
-      </div>
+        <div id="gridSeries" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
 
-      <!-- EMPTY STATE -->
-      <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-2">
-        <div class="w-14 h-14 rounded-2xl bg-[#16171e] border border-[#232530] flex items-center justify-center text-zinc-500 text-xl mb-2">
-          <i class="fa-solid fa-film"></i>
+      <!-- SEÇÃO 4: ANIMES EM DESTAQUE -->
+      <section id="sectionAnimes" class="space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-dragon text-amber-500"></i> Animes
+          </h2>
         </div>
-        <p class="text-zinc-300 font-medium text-xs">Nenhum título ou canal no seu catálogo privado.</p>
-      </div>
+        <div id="gridAnimes" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+
+      <!-- SEÇÃO 5: TV AO VIVO (REI DOS EMBEDS) -->
+      <section id="sectionTV" class="space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-satellite-dish text-emerald-400"></i> Canais de TV ao Vivo
+          </h2>
+        </div>
+        <div id="gridTV" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </section>
+
+      <!-- SEÇÃO 6: MEU CATÁLOGO PRIVADO -->
+      <section id="sectionMyCatalog" class="hidden space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-bookmark text-emerald-400"></i> Meu Catálogo Salvo
+          </h2>
+        </div>
+        <div id="gridMyCatalog" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+        
+        <div id="emptyCatalogState" class="hidden flex-col items-center justify-center py-16 text-center space-y-2">
+          <div class="w-12 h-12 rounded-2xl bg-[#14151c] border border-[#222430] flex items-center justify-center text-zinc-500 text-lg mb-1">
+            <i class="fa-solid fa-folder-open"></i>
+          </div>
+          <p class="text-zinc-400 text-xs font-medium">Seu catálogo privado está vazio. Clique em "+ Adicionar" para salvar títulos!</p>
+        </div>
+      </section>
+
     </main>
   </div>
 
   <!-- PROFILE MODAL -->
   <div id="profileModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-[#16171e] border border-[#232530] rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+    <div class="bg-[#14151c] border border-[#222430] rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -305,7 +357,7 @@
       <form onsubmit="saveUserProfileName(event)" class="space-y-3 border-b border-zinc-800 pb-4" autocomplete="off">
         <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Nome</h4>
         <div>
-          <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
+          <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
         </div>
         <div class="flex justify-end">
           <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Nome</button>
@@ -315,10 +367,10 @@
       <form onsubmit="handleChangePassword(event)" class="space-y-3" autocomplete="new-password">
         <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Senha</h4>
         <div>
-          <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500" autocomplete="new-password">
+          <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500" autocomplete="new-password">
         </div>
         <div>
-          <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500" autocomplete="new-password">
+          <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500" autocomplete="new-password">
         </div>
         <div class="flex justify-end gap-2 pt-1">
           <button type="button" onclick="closeProfileModal()" class="px-4 py-1.5 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white bg-zinc-800 cursor-pointer">Fechar</button>
@@ -330,7 +382,7 @@
 
   <!-- MANUAL ITEM MODAL -->
   <div id="addModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-[#16171e] border border-[#232530] rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+    <div class="bg-[#14151c] border border-[#222430] rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
       <button onclick="closeAddModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -343,28 +395,33 @@
       <form id="itemForm" onsubmit="saveItemManual(event)" class="space-y-3" autocomplete="off">
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
-          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV, Filmes" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
+          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV, Filme" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="typeInput" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500"></select>
+            <select id="typeInput" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
+              <option value="Filme">Filme</option>
+              <option value="Série">Série</option>
+              <option value="Anime">Anime</option>
+              <option value="TV ao Vivo">TV ao Vivo</option>
+            </select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Nota / Temp / Ep</label>
-            <input type="text" id="noteInput" placeholder="Ex: T1:E5 ou ★ 8.5" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Nota / Status</label>
+            <input type="text" id="noteInput" placeholder="Ex: ★ 8.5 ou HD" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
           </div>
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa (Opcional)</label>
-          <input type="url" id="bannerInput" placeholder="https://..." class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
+          <input type="url" id="bannerInput" placeholder="https://..." class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Player / Embed / API</label>
-          <textarea id="apiInput" rows="3" placeholder="Cole o link do iframe ou canal aqui" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-brand-500"></textarea>
+          <textarea id="apiInput" rows="3" placeholder="Cole o link do iframe ou canal aqui" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -375,58 +432,9 @@
     </div>
   </div>
 
-  <!-- EDIT DETAILS MODAL -->
-  <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-[#16171e] border border-[#232530] rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-pen text-brand-500"></i>
-        <span>Editar Título & Player</span>
-      </h3>
-
-      <form id="editForm" onsubmit="saveEditDetails(event)" class="space-y-3" autocomplete="off">
-        <input type="hidden" id="editItemId">
-
-        <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
-          <input type="text" id="editTitleInput" required class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
-            <select id="editTypeInput" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500"></select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Anotação / Temp / Ep</label>
-            <input type="text" id="editNoteInput" placeholder="Ex: T1:E5 ou ★ 8.5" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa</label>
-          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
-        </div>
-
-        <div>
-          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Player / Embed</label>
-          <textarea id="editApiInput" rows="3" placeholder="Cole a URL da API ou iframe" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-brand-500"></textarea>
-        </div>
-
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white bg-zinc-800 cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Alterações</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- PLAYER OVERLAY -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
-    <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-[#16171e]/90 border border-[#232530] p-2 rounded-2xl shadow-2xl">
+    <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-[#14151c]/90 border border-[#222430] p-2 rounded-2xl shadow-2xl">
       <div class="hidden sm:block px-3 text-left">
         <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[200px]">...</h2>
         <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
@@ -447,23 +455,6 @@
   </div>
 
   <script>
-    // RESPONSIVIDADE PLACEHOLDER
-    function updateSearchPlaceholder() {
-      const input = document.getElementById('globalSearchInput');
-      if (!input) return;
-
-      if (window.innerWidth < 480) {
-        input.placeholder = "Buscar...";
-      } else if (window.innerWidth < 768) {
-        input.placeholder = "Buscar títulos ou canais...";
-      } else {
-        input.placeholder = "Buscar filmes, séries, animes ou canais...";
-      }
-    }
-
-    window.addEventListener('resize', updateSearchPlaceholder);
-    document.addEventListener('DOMContentLoaded', updateSearchPlaceholder);
-
     // PROTEÇÃO ANTI-INSPECIONAR
     document.addEventListener('contextmenu', (e) => e.preventDefault(), false);
     document.addEventListener('keydown', (e) => {
@@ -489,7 +480,7 @@
       const container = document.getElementById('authScreenContainer');
       container.innerHTML = `
         <div id="authScreen" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl modal-open flex items-center justify-center p-4 transition-opacity duration-300">
-          <div class="bg-[#16171e] border border-[#232530] rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center">
+          <div class="bg-[#14151c] border border-[#222430] rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/30 border border-white/20 mx-auto">
               <i class="fa-solid fa-play"></i>
             </div>
@@ -502,12 +493,12 @@
             <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3 text-left">
               <div id="nameFieldContainer" class="hidden">
                 <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
-                <input type="text" id="authName" placeholder="Ex: Thiago" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
+                <input type="text" id="authName" placeholder="Ex: Thiago" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
               </div>
 
               <div>
                 <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail</label>
-                <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
+                <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
               </div>
 
               <div>
@@ -515,7 +506,7 @@
                   <label class="block text-[11px] font-semibold text-zinc-300">Senha</label>
                   <button type="button" id="forgotPasswordBtn" onclick="openResetPasswordModal()" class="text-[10px] text-brand-500 hover:underline cursor-pointer">Esqueceu a senha?</button>
                 </div>
-                <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
+                <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-[#0b0c10] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
               </div>
 
               <button type="submit" id="authSubmitBtn" class="w-full py-2.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer mt-2">
@@ -541,7 +532,7 @@
       const toast = document.createElement('div');
       const isSuccess = type === 'success';
 
-      toast.className = `pointer-events-auto bg-[#16171e] border border-[#232530] px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold text-white transition-all duration-300 transform translate-y-4 opacity-0 ${
+      toast.className = `pointer-events-auto bg-[#14151c] border border-[#222430] px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold text-white transition-all duration-300 transform translate-y-4 opacity-0 ${
         isSuccess ? 'border-emerald-500/50' : 'border-rose-500/50'
       }`;
 
@@ -578,16 +569,13 @@
 
     let currentUser = null;
     let userCatalogRef = null;
-    let userCategoriesRef = null;
     let userProfileRef = null;
 
     let catalog = [];
-    let categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
-    let currentFilter = 'ALL';
     let isSignUpMode = false;
-    let isCatalogLoaded = false;
     let globalSearchTimeout = null;
     let currentPlayingUrl = '';
+    let activeTab = 'home';
 
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
@@ -600,7 +588,10 @@
       { id: "sportv3", name: "SporTV 3", cat: "Esporte" },
       { id: "premiere-clubes", name: "Premiere Clubes", cat: "Esporte" },
       { id: "espn", name: "ESPN 1", cat: "Esporte" },
-      { id: "cazetv", name: "CazéTV", cat: "Esporte" }
+      { id: "cazetv", name: "CazéTV", cat: "Esporte" },
+      { id: "sbt", name: "SBT", cat: "TV ao Vivo" },
+      { id: "record", name: "Record TV", cat: "TV ao Vivo" },
+      { id: "band", name: "Band", cat: "TV ao Vivo" }
     ];
 
     auth.onAuthStateChanged((user) => {
@@ -610,11 +601,10 @@
         document.getElementById('appScreen').classList.replace('hidden', 'flex');
 
         userCatalogRef = db.ref(`users/${user.uid}/catalog`);
-        userCategoriesRef = db.ref(`users/${user.uid}/categories`);
         userProfileRef = db.ref(`users/${user.uid}/profile`);
 
-        updateSearchPlaceholder();
         listenToUserData();
+        loadSuperFlixHomeData();
       } else {
         currentUser = null;
         renderAuthScreen();
@@ -745,57 +735,304 @@
         setWelcomeHeaderName(val?.name || '');
       });
 
-      userCategoriesRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data && Array.isArray(data)) {
-          categories = data;
-        } else {
-          categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
-          userCategoriesRef.set(categories);
-        }
-        renderCategoryUI();
-        renderCatalog();
-      });
-
       userCatalogRef.on('value', (snapshot) => {
-        isCatalogLoaded = true;
         const data = snapshot.val();
         catalog = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-        renderCatalog();
+        renderMyCatalogSection();
       });
     }
 
-    function renderCategoryUI() {
-      const container = document.getElementById('filterButtonsContainer');
+    // ALTERNAR ABAS DA INTERFACE
+    function switchTab(tabName) {
+      activeTab = tabName;
+      
+      const sections = ['heroSection', 'sectionTrending', 'sectionMovies', 'sectionSeries', 'sectionAnimes', 'sectionTV', 'sectionMyCatalog'];
+      sections.forEach(s => document.getElementById(s)?.classList.add('hidden'));
+
+      if (tabName === 'home') {
+        ['heroSection', 'sectionTrending', 'sectionMovies', 'sectionSeries', 'sectionAnimes', 'sectionTV'].forEach(s => document.getElementById(s)?.classList.remove('hidden'));
+      } else if (tabName === 'movies') {
+        document.getElementById('sectionMovies')?.classList.remove('hidden');
+      } else if (tabName === 'series') {
+        document.getElementById('sectionSeries')?.classList.remove('hidden');
+      } else if (tabName === 'animes') {
+        document.getElementById('sectionAnimes')?.classList.remove('hidden');
+      } else if (tabName === 'tv') {
+        document.getElementById('sectionTV')?.classList.remove('hidden');
+      } else if (tabName === 'mycatalog') {
+        document.getElementById('sectionMyCatalog')?.classList.remove('hidden');
+        renderMyCatalogSection();
+      }
+    }
+
+    // CARREGAR CONTEÚDO DIRECTAMENTE DA API SUPERFLIX/TMDB
+    async function loadSuperFlixHomeData() {
+      try {
+        // 1. Trending (Em Alta)
+        const resTrend = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}&language=pt-BR`);
+        const dataTrend = await resTrend.json();
+        
+        if (dataTrend.results && dataTrend.results.length > 0) {
+          setupHeroBanner(dataTrend.results[0]);
+          renderMovieCards('gridTrending', dataTrend.results.slice(1, 13));
+        }
+
+        // 2. Filmes Populares
+        const resMovies = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`);
+        const dataMovies = await resMovies.json();
+        if (dataMovies.results) renderMovieCards('gridMovies', dataMovies.results.slice(0, 12));
+
+        // 3. Séries Populares
+        const resSeries = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`);
+        const dataSeries = await resSeries.json();
+        if (dataSeries.results) renderMovieCards('gridSeries', dataSeries.results.slice(0, 12), false);
+
+        // 4. Animes (TMDB com gênero Animação + idioma JP)
+        const resAnimes = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_original_language=ja&sort_by=popularity.desc`);
+        const dataAnimes = await resAnimes.json();
+        if (dataAnimes.results) renderMovieCards('gridAnimes', dataAnimes.results.slice(0, 12), false);
+
+        // 5. TV ao Vivo
+        renderTVCards('gridTV', REI_DOS_EMBEDS_CHANNELS);
+
+      } catch (err) {
+        console.error("Erro ao carregar conteúdo:", err);
+      }
+    }
+
+    function setupHeroBanner(item) {
+      const title = item.title || item.name;
+      const overview = item.overview || 'Confira este incrível título disponível em HD na plataforma!';
+      const bgUrl = item.backdrop_path ? `https://image.tmdb.org/t/p/original${item.backdrop_path}` : '';
+      const isMovie = item.media_type === 'movie' || !item.first_air_date;
+      
+      document.getElementById('heroBg').style.backgroundImage = bgUrl ? `url('${bgUrl}')` : 'none';
+      document.getElementById('heroTitle').innerText = title;
+      document.getElementById('heroOverview').innerText = overview;
+
+      const tmdbId = item.id;
+      const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
+
+      document.getElementById('heroPlayBtn').onclick = () => playCustomUrl(playUrl, title, isMovie ? 'Filme' : 'Série');
+      document.getElementById('heroSaveBtn').onclick = () => saveItemToCatalog(title, isMovie ? 'Filme' : 'Série', `https://image.tmdb.org/t/p/w500${item.poster_path}`, playUrl, String(tmdbId), `★ ${item.vote_average?.toFixed(1) || '8.5'}`);
+    }
+
+    function renderMovieCards(containerId, items, defaultIsMovie = true) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
       container.innerHTML = '';
 
-      const createBtn = (cat, label) => {
-        const btn = document.createElement('button');
-        btn.onclick = () => setFilter(cat);
-        btn.className = currentFilter === cat
-          ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 text-white shadow-lg shadow-brand-500/30 transition whitespace-nowrap"
-          : "px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-300 bg-[#16171e] hover:bg-zinc-800 border border-[#232530] transition whitespace-nowrap cursor-pointer";
-        btn.innerText = label;
-        return btn;
-      };
+      items.forEach(item => {
+        const title = item.title || item.name;
+        const isMovie = item.media_type ? item.media_type === 'movie' : defaultIsMovie;
+        const typeLabel = isMovie ? 'Filme' : 'Série';
+        const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
+        const vote = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'HD';
+        const tmdbId = item.id;
+        
+        const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
 
-      container.appendChild(createBtn('ALL', 'Todos'));
-      categories.forEach(cat => container.appendChild(createBtn(cat, cat)));
+        const div = document.createElement('div');
+        div.className = "supercard group relative overflow-hidden flex flex-col cursor-pointer";
+        div.innerHTML = `
+          <div class="aspect-[2/3] w-full bg-[#0b0c10] relative overflow-hidden rounded-t-xl" onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', '${typeLabel}')">
+            <div class="absolute top-2 left-2 z-20">
+              <span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-amber-400 shadow-md">${vote}</span>
+            </div>
 
-      const selectManual = document.getElementById('typeInput');
-      const selectEdit = document.getElementById('editTypeInput');
-      selectManual.innerHTML = ''; selectEdit.innerHTML = '';
+            ${poster ? `<img src="${poster}" alt="${title}" loading="lazy" class="w-full h-full object-cover relative z-10 group-hover:scale-105 transition duration-500">` : `<div class="w-full h-full flex items-center justify-center text-zinc-600 text-xs font-bold">${title}</div>`}
 
-      categories.forEach(cat => {
-        selectManual.appendChild(new Option(cat, cat));
-        selectEdit.appendChild(new Option(cat, cat));
+            <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 flex items-center justify-center z-20">
+              <div class="w-11 h-11 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition duration-300">
+                <i class="fa-solid fa-play text-sm ml-0.5"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 flex items-center justify-between gap-1.5 bg-[#14151c] rounded-b-xl border-t border-[#222430]">
+            <div class="flex-1 min-w-0" onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', '${typeLabel}')">
+              <h4 class="font-bold text-xs text-white truncate group-hover:text-brand-500 transition">${title}</h4>
+              <p class="text-[10px] text-zinc-400 font-medium mt-0.5">${typeLabel}</p>
+            </div>
+            
+            <button onclick="saveItemToCatalog('${encodeURIComponent(title)}', '${typeLabel}', '${poster}', '${playUrl}', '${tmdbId}', '${vote}', event)" title="Salvar no Catálogo" class="text-zinc-400 hover:text-emerald-400 p-1 cursor-pointer transition">
+              <i class="fa-solid fa-bookmark text-xs"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
       });
     }
 
-    function setFilter(type) {
-      currentFilter = type;
-      renderCategoryUI();
-      renderCatalog();
+    function renderTVCards(containerId, channels) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = '';
+
+      channels.forEach(ch => {
+        const playUrl = `https://reidosembeds.online/embed/canal.php?id=${ch.id}`;
+        const div = document.createElement('div');
+        div.className = "supercard group relative overflow-hidden flex flex-col cursor-pointer";
+        div.innerHTML = `
+          <div class="aspect-[2/3] w-full bg-[#14151c] relative overflow-hidden rounded-t-xl flex flex-col items-center justify-center p-4 text-center border-b border-[#222430]" onclick="playCustomUrl('${playUrl}', '${ch.name}', 'TV ao Vivo')">
+            <div class="absolute top-2 left-2 z-20">
+              <span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-emerald-400 flex items-center gap-1"><span class="live-pulse"></span> AO VIVO</span>
+            </div>
+            <i class="fa-solid fa-tv text-3xl text-zinc-500 group-hover:text-brand-500 transition duration-300 mb-2"></i>
+            <span class="font-bold text-xs text-white line-clamp-2">${ch.name}</span>
+          </div>
+
+          <div class="p-3 flex items-center justify-between gap-1 bg-[#14151c] rounded-b-xl">
+            <span class="text-[10px] text-zinc-400 font-medium">${ch.cat}</span>
+            <button onclick="saveItemToCatalog('${ch.name}', '${ch.cat}', '', '${playUrl}', '', 'AO VIVO', event)" title="Salvar" class="text-zinc-400 hover:text-emerald-400 p-1 cursor-pointer">
+              <i class="fa-solid fa-bookmark text-xs"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderMyCatalogSection() {
+      const container = document.getElementById('gridMyCatalog');
+      const emptyState = document.getElementById('emptyCatalogState');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      if (catalog.length === 0) {
+        emptyState.classList.replace('hidden', 'flex');
+      } else {
+        emptyState.classList.replace('flex', 'hidden');
+
+        catalog.forEach(item => {
+          const div = document.createElement('div');
+          div.className = "supercard group relative overflow-hidden flex flex-col cursor-pointer";
+          div.innerHTML = `
+            <div class="aspect-[2/3] w-full bg-[#0b0c10] relative overflow-hidden rounded-t-xl" onclick="playItem('${item.id}')">
+              <div class="absolute top-2 left-2 z-20">
+                <span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-amber-400 shadow-md">${item.seasonNote || 'HD'}</span>
+              </div>
+
+              ${item.banner ? `<img src="${item.banner}" alt="${item.title}" loading="lazy" class="w-full h-full object-cover relative z-10 group-hover:scale-105 transition duration-500">` : `<div class="w-full h-full flex items-center justify-center text-zinc-500 text-xs font-bold p-2 text-center bg-[#14151c]">${item.title}</div>`}
+
+              <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 flex items-center justify-center z-20">
+                <div class="w-11 h-11 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition duration-300">
+                  <i class="fa-solid fa-play text-sm ml-0.5"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-3 flex items-center justify-between gap-1.5 bg-[#14151c] rounded-b-xl border-t border-[#222430]">
+              <div class="flex-1 min-w-0" onclick="playItem('${item.id}')">
+                <h4 class="font-bold text-xs text-white truncate group-hover:text-brand-500 transition">${item.title}</h4>
+                <p class="text-[10px] text-zinc-400 font-medium mt-0.5">${item.type}</p>
+              </div>
+              
+              <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-400 hover:text-rose-500 p-1 cursor-pointer transition">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+    }
+
+    function saveItemToCatalog(title, type, banner, apiUrl, tmdbId, note, e) {
+      if (e) e.stopPropagation();
+      if (!userCatalogRef) return;
+
+      const decodedTitle = decodeURIComponent(title);
+      const id = userCatalogRef.push().key;
+
+      const itemData = {
+        title: decodedTitle,
+        type: type || 'Filme',
+        banner: banner || '',
+        apiUrl: apiUrl || '',
+        tmdbId: tmdbId ? String(tmdbId) : '',
+        seasonNote: note || 'HD'
+      };
+
+      userCatalogRef.child(id).set(itemData, (err) => {
+        if (!err) showToast(`'${decodedTitle}' salvo no seu catálogo!`);
+        else showToast('Erro ao salvar.', 'error');
+      });
+    }
+
+    function playCustomUrl(url, encodedTitle, subtitle) {
+      const title = decodeURIComponent(encodedTitle);
+      document.getElementById('playerTitle').innerText = title;
+      currentPlayingUrl = url;
+
+      renderApiContent(url, subtitle || 'Player Principal');
+      
+      const overlay = document.getElementById('playerOverlay');
+      overlay.classList.replace('opacity-0', 'opacity-100');
+      overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
+    }
+
+    function playItem(id) {
+      const item = catalog.find(i => i.id === id);
+      if (!item) return;
+
+      let playerUrl = item.apiUrl || '';
+
+      if (playerUrl.includes('reidosembeds.online')) {
+        let channelId = playerUrl.includes('id=') ? playerUrl.split('id=')[1].split('&')[0] : playerUrl.split('/').pop();
+        if (channelId) playerUrl = `https://reidosembeds.online/embed/canal.php?id=${channelId}`;
+      }
+
+      if (!playerUrl && item.tmdbId) {
+        playerUrl = item.type === 'Filme' ? `https://superflixapi.quest/filme/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`;
+      }
+
+      playCustomUrl(playerUrl, encodeURIComponent(item.title), item.type);
+    }
+
+    function renderApiContent(rawContent, subtitle) {
+      document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
+      const holder = document.getElementById('iframeHolder');
+      holder.innerHTML = '';
+
+      if (!rawContent) {
+        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-sm font-semibold">URL do Player não configurada.</div>`;
+        return;
+      }
+
+      let cleanUrl = rawContent;
+      if (cleanUrl.includes('src=')) {
+        const match = cleanUrl.match(/src=["']([^"']+)["']/i);
+        if (match && match[1]) cleanUrl = match[1];
+      }
+      cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
+
+      const iframe = document.createElement('iframe');
+      iframe.src = cleanUrl;
+      iframe.className = "w-full h-full border-0";
+      iframe.allow = "autoplay; encrypted-media; fullscreen";
+      iframe.setAttribute('allowfullscreen', 'true');
+      holder.appendChild(iframe);
+    }
+
+    function openExternalPlayer() {
+      if (currentPlayingUrl) {
+        let cleanUrl = currentPlayingUrl;
+        if (cleanUrl.includes('src=')) {
+          const match = cleanUrl.match(/src=["']([^"']+)["']/i);
+          if (match && match[1]) cleanUrl = match[1];
+        }
+        window.open(cleanUrl.replace(/^["']|["']$/g, '').trim(), '_blank');
+      }
+    }
+
+    function closePlayer() {
+      document.getElementById('iframeHolder').innerHTML = '';
+      currentPlayingUrl = '';
+      const overlay = document.getElementById('playerOverlay');
+      overlay.classList.replace('opacity-100', 'opacity-0');
+      overlay.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
 
     // BUSCA GLOBAL
@@ -842,7 +1079,7 @@
       section.classList.remove('hidden');
       items.forEach(item => {
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-[#0d0e12]";
+        div.className = "flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-[#0b0c10]";
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
@@ -869,9 +1106,8 @@
 
       section.classList.remove('hidden');
       items.forEach(ch => {
-        const isSaved = catalog.some(i => i.title.toLowerCase() === ch.name.toLowerCase());
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-[#0d0e12]";
+        div.className = "flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-[#0b0c10]";
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
@@ -882,13 +1118,9 @@
               <span class="text-[11px] text-zinc-400 font-mono">Canal TV</span>
             </div>
           </div>
-          ${isSaved ? `
-            <span class="text-[11px] px-2.5 py-1 text-emerald-400 font-bold rounded-xl border border-emerald-500/40 bg-emerald-950/30">✓ Salvo</span>
-          ` : `
-            <button onclick="quickAddLive('${ch.id}', '${ch.name}', '${ch.cat}', this)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">
-              + Adicionar
-            </button>
-          `}
+          <button onclick="playCustomUrl('https://reidosembeds.online/embed/canal.php?id=${ch.id}', '${ch.name}', 'TV ao Vivo')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">
+            Assistir
+          </button>
         `;
         container.appendChild(div);
       });
@@ -911,11 +1143,11 @@
           const title = item.title || item.name;
           const isMovie = item.media_type === 'movie';
           const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
-          const vote = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'Série';
-          const isSaved = catalog.some(i => i.tmdbId === String(item.id) || i.title.toLowerCase() === title.toLowerCase());
+          const vote = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'HD';
+          const playUrl = isMovie ? `https://superflixapi.quest/filme/${item.id}` : `https://superflixapi.quest/serie/${item.id}`;
 
           const div = document.createElement('div');
-          div.className = "flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-[#0d0e12]";
+          div.className = "flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-[#0b0c10]";
           div.innerHTML = `
             <div class="flex items-center gap-2.5 min-w-0">
               <div class="w-8 h-11 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 relative border border-zinc-700">
@@ -926,50 +1158,15 @@
                 <span class="text-[11px] text-amber-400 font-semibold">${vote}</span>
               </div>
             </div>
-            ${isSaved ? `
-              <span class="text-[11px] px-2.5 py-1 text-brand-500 font-bold rounded-xl border border-brand-500/40 bg-brand-950/30">✓ Salvo</span>
-            ` : `
-              <button onclick="quickAddTMDB(${item.id}, '${encodeURIComponent(title)}',${isMovie}, '${poster}', '${vote}', this)" class="px-3 py-1 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition cursor-pointer">
-                + Adicionar
-              </button>
-            `}
+            <button onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', '${isMovie ? 'Filme' : 'Série'}')" class="px-3 py-1 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition cursor-pointer">
+              Assistir
+            </button>
           `;
           container.appendChild(div);
         });
 
         section.classList.toggle('hidden', count === 0);
       } catch (err) { section.classList.add('hidden'); }
-    }
-
-    function quickAddLive(channelId, name, category, btnElement) {
-      if (!userCatalogRef) return;
-      const id = userCatalogRef.push().key;
-      const itemData = { title: name, type: category || 'TV ao Vivo', banner: '', apiUrl: `https://reidosembeds.online/embed/canal.php?id=${channelId}`, seasonNote: 'AO VIVO' };
-      userCatalogRef.child(id).set(itemData, (err) => {
-        if (!err) {
-          btnElement.outerHTML = `<span class="text-[11px] px-2.5 py-1 text-emerald-400 font-bold rounded-xl border border-emerald-500/40 bg-emerald-950/30">✓ Salvo</span>`;
-          showToast(`'${name}' adicionado!`);
-        }
-      });
-    }
-
-    function quickAddTMDB(tmdbId, encodedTitle, isMovie, banner, vote, btnElement) {
-      if (!userCatalogRef) return;
-      const title = decodeURIComponent(encodedTitle);
-      const id = userCatalogRef.push().key;
-      let category = isMovie ? 'Filme' : 'Série';
-
-      const apiUrl = isMovie 
-        ? `https://superflixapi.quest/filme/${tmdbId}`
-        : `https://superflixapi.quest/serie/${tmdbId}`;
-
-      const itemData = { title, type: category, banner: banner || '', apiUrl, tmdbId: String(tmdbId), seasonNote: vote || 'HD', isPinned: true };
-      userCatalogRef.child(id).set(itemData, (err) => {
-        if (!err) {
-          btnElement.outerHTML = `<span class="text-[11px] px-2.5 py-1 text-brand-500 font-bold rounded-xl border border-brand-500/40 bg-brand-950/30">✓ Salvo</span>`;
-          showToast(`'${title}' adicionado ao seu catálogo!`);
-        }
-      });
     }
 
     function openAddModal() { document.getElementById('itemForm').reset(); openModal('addModal'); }
@@ -992,227 +1189,12 @@
       });
     }
 
-    function editItem(id, e) {
-      if (e) e.stopPropagation();
-      const item = catalog.find(i => i.id === id);
-      if (!item) return;
-
-      document.getElementById('editItemId').value = item.id;
-      document.getElementById('editTitleInput').value = item.title;
-      document.getElementById('editTypeInput').value = item.type;
-      document.getElementById('editBannerInput').value = item.banner || '';
-      document.getElementById('editNoteInput').value = item.seasonNote || '';
-      document.getElementById('editApiInput').value = item.apiUrl || '';
-      openModal('editModal');
-    }
-
-    function closeEditModal() { closeModal('editModal'); }
-
-    function saveEditDetails(e) {
-      e.preventDefault();
-      if (!userCatalogRef) return;
-      const id = document.getElementById('editItemId').value;
-      const updateData = {
-        title: document.getElementById('editTitleInput').value.trim(),
-        type: document.getElementById('editTypeInput').value,
-        banner: document.getElementById('editBannerInput').value.trim(),
-        seasonNote: document.getElementById('editNoteInput').value.trim(),
-        apiUrl: document.getElementById('editApiInput').value.trim()
-      };
-
-      userCatalogRef.child(id).update(updateData, (err) => {
-        if (!err) { closeEditModal(); showToast('Alterações salvas!'); }
-      });
-    }
-
     function deleteItem(id, e) {
       if (e) e.stopPropagation();
-      if (confirm('Deseja excluir este item?')) {
+      if (confirm('Deseja remover do seu catálogo?')) {
         userCatalogRef.child(id).remove();
         showToast('Item removido.');
       }
-    }
-
-    // RENDERIZAÇÃO DO CATÁLOGO E SEÇÃO FIXADA NO TOPO (SUPERFLIX STYLE)
-    function createCardHTML(item) {
-      const isLive = item.type === 'TV ao Vivo' || item.type === 'Esporte';
-      let badgeMarkup = '';
-
-      if (isLive) {
-        badgeMarkup = `<span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-emerald-400 flex items-center gap-1 shadow-md"><span class="live-pulse"></span> AO VIVO</span>`;
-      } else if (item.seasonNote) {
-        badgeMarkup = `<span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-amber-400 shadow-md">${item.seasonNote}</span>`;
-      } else {
-        badgeMarkup = `<span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-white shadow-md">HD</span>`;
-      }
-
-      const hasBanner = item.banner && item.banner.trim() !== '';
-
-      return `
-        <div class="superflix-card group relative overflow-hidden flex flex-col cursor-pointer" onclick="playItem('${item.id}')">
-          <!-- ÁREA DA CAPA/POSTER -->
-          <div class="aspect-[2/3] w-full bg-[#0d0e12] relative overflow-hidden rounded-t-2xl">
-            <!-- BADGE SOBREPOSTA NO TOPO (SUPERFLIX STYLE) -->
-            <div class="absolute top-2.5 left-2.5 z-20">
-              ${badgeMarkup}
-            </div>
-
-            <div class="w-full h-full flex flex-col items-center justify-center p-3 text-center absolute inset-0 bg-[#16171e]">
-              <i class="fa-solid fa-play text-zinc-600 text-3xl mb-2"></i>
-              <span class="font-bold text-xs text-white line-clamp-2 leading-tight">${item.title}</span>
-            </div>
-
-            ${hasBanner ? `<img src="${item.banner}" alt="${item.title}" loading="lazy" class="w-full h-full object-cover relative z-10 group-hover:scale-105 transition duration-500" onerror="this.classList.add('hidden');">` : ''}
-
-            <!-- OVERLAY DE PLAY NO HOVER -->
-            <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 flex items-center justify-center z-20">
-              <div class="w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition duration-300">
-                <i class="fa-solid fa-play text-base ml-0.5"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- RÓTULO DE TÍTULO E BOTÕES -->
-          <div class="p-3 flex items-center justify-between gap-1.5 bg-[#16171e] rounded-b-2xl border-t border-[#232530]">
-            <div class="flex-1 min-w-0">
-              <h4 class="font-bold text-xs text-white truncate group-hover:text-brand-500 transition">${item.title}</h4>
-              <p class="text-[10px] text-zinc-400 font-medium mt-0.5">${item.type}</p>
-            </div>
-            
-            <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
-              <button onclick="editItem('${item.id}', event)" title="Editar" class="text-zinc-400 hover:text-white p-1 cursor-pointer">
-                <i class="fa-solid fa-pen text-[10px]"></i>
-              </button>
-              <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-400 hover:text-rose-400 p-1 cursor-pointer">
-                <i class="fa-solid fa-trash text-[10px]"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderCatalog() {
-      const grid = document.getElementById('catalogGrid');
-      const pinnedGrid = document.getElementById('pinnedGrid');
-      const pinnedSection = document.getElementById('pinnedContentSection');
-      const empty = document.getElementById('emptyState');
-      const search = (document.getElementById('globalSearchInput')?.value || '').toLowerCase();
-
-      grid.innerHTML = '';
-      pinnedGrid.innerHTML = '';
-
-      if (!isCatalogLoaded) {
-        empty.classList.add('hidden');
-        return;
-      }
-
-      const filtered = catalog.filter(item => {
-        const matchesType = currentFilter === 'ALL' || item.type === currentFilter;
-        const matchesSearch = item.title.toLowerCase().includes(search);
-        return matchesType && matchesSearch;
-      });
-
-      if (filtered.length === 0) {
-        empty.classList.replace('hidden', 'flex');
-        pinnedSection.classList.add('hidden');
-      } else {
-        empty.classList.replace('flex', 'hidden');
-
-        // FILTRA ITENS FIXADOS/ASSISTIDOS RECENTEMENTE PARA O TOPO
-        const pinnedItems = filtered.filter(i => i.isPinned || i.seasonNote?.includes('T') || i.type === 'TV ao Vivo');
-        
-        if (pinnedItems.length > 0 && currentFilter === 'ALL' && !search) {
-          pinnedSection.classList.remove('hidden');
-          pinnedItems.slice(0, 6).forEach(item => {
-            pinnedGrid.innerHTML += createCardHTML(item);
-          });
-        } else {
-          pinnedSection.classList.add('hidden');
-        }
-
-        filtered.forEach(item => {
-          grid.innerHTML += createCardHTML(item);
-        });
-      }
-    }
-
-    function playItem(id) {
-      const item = catalog.find(i => i.id === id);
-      if (!item) return;
-
-      document.getElementById('playerTitle').innerText = item.title;
-      let playerUrl = item.apiUrl || '';
-
-      if (playerUrl.includes('reidosembeds.online')) {
-        let channelId = playerUrl.includes('id=') ? playerUrl.split('id=')[1].split('&')[0] : playerUrl.split('/').pop();
-        if (channelId) playerUrl = `https://reidosembeds.online/embed/canal.php?id=${channelId}`;
-      }
-
-      if (!playerUrl && item.tmdbId) {
-        playerUrl = item.type === 'Filme' ? `https://superflixapi.quest/filme/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`;
-      }
-
-      currentPlayingUrl = playerUrl;
-      renderApiContent(playerUrl, item.type);
-      
-      const overlay = document.getElementById('playerOverlay');
-      overlay.classList.replace('opacity-0', 'opacity-100');
-      overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
-    }
-
-    function renderApiContent(rawContent, subtitle) {
-      document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
-      const holder = document.getElementById('iframeHolder');
-      holder.innerHTML = '';
-
-      if (!rawContent) {
-        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-sm font-semibold">URL da API não configurada.</div>`;
-        return;
-      }
-
-      if (rawContent.includes('<iframe') && rawContent.includes('</iframe>')) {
-        holder.innerHTML = rawContent;
-        const inserted = holder.querySelector('iframe');
-        if (inserted) {
-          inserted.style.width = "100%"; inserted.style.height = "100%";
-          inserted.allow = "autoplay; encrypted-media; fullscreen";
-          inserted.setAttribute('allowfullscreen', 'true');
-        }
-      } else {
-        let cleanUrl = rawContent;
-        if (cleanUrl.includes('src=')) {
-          const match = cleanUrl.match(/src=["']([^"']+)["']/i);
-          if (match && match[1]) cleanUrl = match[1];
-        }
-        cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
-
-        const iframe = document.createElement('iframe');
-        iframe.src = cleanUrl;
-        iframe.className = "w-full h-full border-0";
-        iframe.allow = "autoplay; encrypted-media; fullscreen";
-        iframe.setAttribute('allowfullscreen', 'true');
-        holder.appendChild(iframe);
-      }
-    }
-
-    function openExternalPlayer() {
-      if (currentPlayingUrl) {
-        let cleanUrl = currentPlayingUrl;
-        if (cleanUrl.includes('src=')) {
-          const match = cleanUrl.match(/src=["']([^"']+)["']/i);
-          if (match && match[1]) cleanUrl = match[1];
-        }
-        window.open(cleanUrl.replace(/^["']|["']$/g, '').trim(), '_blank');
-      }
-    }
-
-    function closePlayer() {
-      document.getElementById('iframeHolder').innerHTML = '';
-      currentPlayingUrl = '';
-      const overlay = document.getElementById('playerOverlay');
-      overlay.classList.replace('opacity-100', 'opacity-0');
-      overlay.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
   </script>
 </body>
