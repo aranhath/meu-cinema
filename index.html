@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <!-- META TAG DE VIEWPORT RÍGIDA CONTRA ZOOM NO MOBILE -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Meu Cinema</title>
+  <title>Meu Cinema • SuperFlix Style</title>
   
   <!-- FAVICON FÍSICO -->
   <link rel="icon" href="./favicon.ico?v=4" type="image/x-icon">
@@ -19,7 +19,10 @@
       theme: {
         extend: {
           colors: {
-            brand: { 500: '#e50914', 600: '#b81d24' }
+            brand: { 500: '#e50914', 600: '#b81d24' },
+            superbg: '#0f1015',
+            supercard: '#181920',
+            superborder: '#262833'
           }
         }
       }
@@ -33,27 +36,24 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    /* BASE STYLING & FUNDO COM GRADIENTE DIVERSIFICADO */
+    /* ESTILO GERAL INSPIRADO NO SUPERFLIX */
     html, body {
       min-height: 100vh;
       background-color: #0d0e12;
       background-image: 
-        radial-gradient(circle at 15% 15%, rgba(229, 9, 20, 0.35) 0%, transparent 45%),
-        radial-gradient(circle at 85% 75%, rgba(16, 185, 129, 0.28) 0%, transparent 50%),
-        radial-gradient(circle at 50% 40%, rgba(99, 102, 241, 0.22) 0%, transparent 55%);
+        radial-gradient(circle at 50% 0%, rgba(229, 9, 20, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 85% 90%, rgba(20, 20, 28, 0.8) 0%, transparent 60%);
       background-attachment: fixed;
       color: #f3f4f6;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       overflow-x: hidden;
       overscroll-behavior-y: none;
-      /* DIFICULTA SELEÇÃO DE TEXTO/ELEMENTOS */
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
     }
 
-    /* REGRA GLOBAL ANTI-ZOOM PARA IOS/MOBILE EM INPUTS */
     input, select, textarea {
       font-size: 16px !important;
       -webkit-text-size-adjust: 100%;
@@ -63,87 +63,39 @@
       user-select: text;
     }
 
-    /* FORMATAÇÃO COMPATÍVEL DO PLACEHOLDER COM RETICÊNCIAS */
     #globalSearchInput::placeholder {
-      color: rgba(212, 212, 216, 0.65);
+      color: rgba(161, 161, 170, 0.7);
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
     }
 
-    /* LIQUID GLASS SURFACES */
-    .liquid-glass {
-      background: rgba(255, 255, 255, 0.07);
-      backdrop-filter: blur(30px) saturate(200%);
-      -webkit-backdrop-filter: blur(30px) saturate(200%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37),
-                  inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-    .liquid-glass-card {
-      background: rgba(22, 22, 28, 0.55);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.5),
-                  inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+    /* CARTÃO DE FILME SUPERFLIX STYLE */
+    .superflix-card {
+      background-color: #16171e;
+      border: 1px solid #232530;
+      border-radius: 1rem;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .liquid-glass-card:hover {
-      background: rgba(35, 35, 45, 0.75);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-3px);
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7),
-                  0 0 20px rgba(229, 9, 20, 0.2),
-                  inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+    .superflix-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: rgba(229, 9, 20, 0.5);
+      box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(229, 9, 20, 0.2);
     }
 
-    .liquid-pill {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    .superflix-card:hover .play-overlay {
+      opacity: 1;
     }
 
-    .liquid-pill:hover {
-      background: rgba(255, 255, 255, 0.18);
-      border-color: rgba(255, 255, 255, 0.28);
-      transform: translateY(-1px);
+    /* BADGE OVERLAY NA CAPA */
+    .badge-capa {
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
-    /* TRANSIÇÕES DE MODAIS */
-    .modal-backdrop {
-      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .modal-card {
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .modal-closed {
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-
-    .modal-closed .modal-card {
-      transform: scale(0.95) translateY(8px) !important;
-      opacity: 0 !important;
-    }
-
-    .modal-open {
-      opacity: 1 !important;
-      pointer-events: auto !important;
-    }
-
-    .modal-open .modal-card {
-      transform: scale(1) translateY(0) !important;
-      opacity: 1 !important;
-    }
-
-    /* LIVE PULSE BADGE */
     .live-pulse {
       display: inline-block;
       width: 6px;
@@ -162,23 +114,27 @@
 
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* TRANSIÇÃO MODAIS */
+    .modal-closed { opacity: 0 !important; pointer-events: none !important; }
+    .modal-open { opacity: 1 !important; pointer-events: auto !important; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative">
 
-  <!-- BACKDROP TRANSPARENTE PARA FECHAR BUSCA AO CLICAR FORA -->
-  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+  <!-- BACKDROP FECHAR BUSCA -->
+  <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
-  <!-- TOAST NOTIFICATION CONTAINER -->
+  <!-- TOAST CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- CONTAINER DINÂMICO DE AUTENTICAÇÃO -->
+  <!-- AUTH CONTAINER -->
   <div id="authScreenContainer"></div>
 
-  <!-- MODAL DE RESET DE SENHA -->
-  <div id="resetPasswordModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative modal-card">
-      <button onclick="closeResetPasswordModal()" class="absolute top-5 right-5 text-zinc-300 hover:text-white text-sm cursor-pointer">
+  <!-- MODAL RESET SENHA -->
+  <div id="resetPasswordModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="bg-[#16171e] border border-[#232530] rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeResetPasswordModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
@@ -187,16 +143,15 @@
         <span>Redefinir Senha</span>
       </h3>
 
-      <p class="text-xs text-zinc-200">Digite seu e-mail para receber um link de redefinição de senha.</p>
+      <p class="text-xs text-zinc-300">Digite seu e-mail para receber um link de redefinição.</p>
 
       <form onsubmit="handleSendResetEmail(event)" class="space-y-3" autocomplete="off">
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">E-mail Cadastrado</label>
-          <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+          <input type="email" id="resetEmailInput" required placeholder="seu@email.com" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeResetPasswordModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-200 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="button" onclick="closeResetPasswordModal()" class="px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white bg-zinc-800/80 cursor-pointer">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Enviar E-mail</button>
         </div>
       </form>
@@ -206,49 +161,50 @@
   <!-- CONTEÚDO PRINCIPAL DO APP -->
   <div id="appScreen" class="hidden flex-col min-h-screen">
     
-    <!-- MAIN CATALOG CONTENT CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-4 sm:px-8 space-y-5">
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-4 sm:px-8 space-y-6">
 
-      <!-- TOP HEADER -->
+      <!-- TOP HEADER / NAVBAR SUPERFLIX STYLE -->
       <div class="relative z-20">
-        <header class="liquid-glass rounded-2xl px-4 py-3 sm:px-6 flex items-center justify-between">
+        <header class="bg-[#121319]/90 border border-[#232530] backdrop-blur-md rounded-2xl px-4 py-3 sm:px-6 flex items-center justify-between shadow-xl">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/30 border border-white/20">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-base shadow-lg shadow-brand-500/30 border border-white/20">
               <i class="fa-solid fa-play"></i>
             </div>
             <div>
               <h1 id="userWelcomeHeader" class="font-bold text-base leading-none tracking-tight text-white">
                 <span class="inline-block w-20 h-4 bg-white/20 animate-pulse rounded"></span>
               </h1>
+              <p class="text-[10px] text-zinc-400 mt-1 font-medium">SuperFlix Private Edition</p>
             </div>
           </div>
 
           <div class="flex items-center gap-2">
-            <button onclick="openProfileModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-white transition flex items-center gap-1.5 cursor-pointer">
-              <i class="fa-solid fa-user-gear text-zinc-300"></i>
+            <button onclick="openProfileModal()" class="bg-zinc-800/80 hover:bg-zinc-700/80 px-3.5 py-1.5 text-xs font-semibold rounded-xl text-white border border-white/10 transition flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-user-gear text-zinc-400"></i>
               <span class="hidden sm:inline">Perfil</span>
             </button>
 
-            <button onclick="openAddModal()" class="liquid-pill px-3.5 py-1.5 text-xs font-semibold rounded-xl text-white transition flex items-center gap-1.5 cursor-pointer">
-              <i class="fa-solid fa-code text-xs"></i>
-              <span class="hidden sm:inline">API</span>
+            <button onclick="openAddModal()" class="bg-brand-500/20 hover:bg-brand-500/30 text-brand-400 border border-brand-500/40 px-3.5 py-1.5 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-plus text-xs"></i>
+              <span class="hidden sm:inline">Adicionar</span>
             </button>
 
-            <button onclick="logout()" title="Sair da Conta" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-zinc-300 hover:text-rose-400 transition cursor-pointer ml-1">
+            <button onclick="logout()" title="Sair da Conta" class="bg-zinc-800/80 hover:bg-rose-500/20 hover:text-rose-400 text-zinc-400 p-2 text-xs font-semibold rounded-xl border border-white/10 transition cursor-pointer ml-1">
               <i class="fa-solid fa-right-from-bracket"></i>
             </button>
           </div>
         </header>
       </div>
 
-      <!-- BARRA DE BUSCA COM PLACEHOLDER SEGURO -->
+      <!-- BARRA DE BUSCA -->
       <div class="relative z-30">
-        <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-white/10 pb-4">
+        <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between border-b border-zinc-800/80 pb-4">
           <div class="relative flex-1">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-xs"></i>
-            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar..." autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full liquid-glass rounded-xl pl-10 pr-12 py-2.5 text-base text-white focus:outline-none focus:border-white/50 transition font-medium" style="font-size: 16px !important;">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+            <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar..." autocomplete="off" autocapitalize="none" spellcheck="false" class="w-full bg-[#16171e] border border-[#232530] rounded-xl pl-10 pr-12 py-2.5 text-base text-white focus:outline-none focus:border-brand-500/60 transition font-medium">
             
-            <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xs transition cursor-pointer">
+            <button id="clearSearchBtn" onclick="clearGlobalSearch()" title="Fechar busca (Esc)" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center text-xs transition cursor-pointer">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
@@ -256,81 +212,100 @@
           <div id="filterButtonsContainer" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5"></div>
         </div>
 
-        <!-- PAINEL FLUTUANTE DE RESULTADOS -->
-        <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-300 absolute left-0 right-0 top-full mt-2 liquid-glass rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-5 z-50">
-          
-          <div class="flex items-center justify-between border-b border-white/15 pb-3">
-            <span class="text-[12px] font-extrabold uppercase tracking-wider text-zinc-100 flex items-center gap-1.5">
-              <i class="fa-solid fa-magnifying-glass text-rose-500"></i> Resultados Encontrados
+        <!-- RESULTADOS FLUTUANTES -->
+        <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-300 absolute left-0 right-0 top-full mt-2 bg-[#16171e] border border-[#232530] rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto p-4 space-y-5 z-50">
+          <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+            <span class="text-[12px] font-extrabold uppercase tracking-wider text-zinc-200 flex items-center gap-1.5">
+              <i class="fa-solid fa-magnifying-glass text-brand-500"></i> Resultados Encontrados
             </span>
-            <button onclick="clearGlobalSearch()" class="liquid-pill px-3 py-1 rounded-xl text-xs font-semibold text-white hover:bg-white/20 transition flex items-center gap-1.5 cursor-pointer border border-white/20">
+            <button onclick="clearGlobalSearch()" class="px-3 py-1 rounded-xl text-xs font-semibold text-zinc-300 bg-zinc-800 hover:bg-zinc-700 transition flex items-center gap-1.5 cursor-pointer">
               <i class="fa-solid fa-xmark text-rose-500"></i>
-              <span>Fechar Busca</span>
+              <span>Fechar</span>
             </button>
           </div>
 
           <div id="sectionSaved" class="hidden space-y-2.5">
-            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
               <i class="fa-solid fa-bookmark"></i> No Seu Catálogo
             </h3>
             <div id="resultsSavedList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
           </div>
 
           <div id="sectionLive" class="hidden space-y-2.5">
-            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
-              <i class="fa-solid fa-tv"></i> TV ao Vivo & Esportes (Rei dos Embeds)
+            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
+              <i class="fa-solid fa-tv"></i> TV ao Vivo & Esportes
             </h3>
             <div id="resultsLiveList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
           </div>
 
           <div id="sectionTMDB" class="hidden space-y-2.5">
-            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-rose-400 flex items-center gap-1.5 border-b border-white/10 pb-1">
+            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-brand-500 flex items-center gap-1.5 border-b border-zinc-800 pb-1">
               <i class="fa-solid fa-film"></i> Filmes, Séries & Animes
             </h3>
             <div id="resultsTMDBList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
           </div>
 
-          <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-300 font-medium">
-            Nenhum resultado encontrado para a busca.
+          <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-400 font-medium">
+            Nenhum resultado encontrado.
           </div>
         </div>
       </div>
 
-      <!-- CARDS GRID GLASS -->
-      <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
-        <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
-        <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
-        <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
+      <!-- FIXO NO TOPO: CONTEÚDO EM DESTAQUE / ASSISTINDO AGORA -->
+      <div id="pinnedContentSection" class="hidden space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <i class="fa-solid fa-fire text-brand-500"></i>
+            <span>Continuar a Assistir / Destaque Fixo</span>
+          </h2>
+          <span class="text-[10px] text-zinc-400">Fixado no topo</span>
+        </div>
+        <div id="pinnedGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+      </div>
+
+      <!-- CATÁLOGO PRINCIPAL -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+            <i class="fa-solid fa-layer-group text-zinc-400"></i>
+            <span>Seu Catálogo Completo</span>
+          </h2>
+        </div>
+
+        <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div class="bg-[#16171e] rounded-2xl aspect-[2/3] animate-pulse border border-[#232530]"></div>
+          <div class="bg-[#16171e] rounded-2xl aspect-[2/3] animate-pulse border border-[#232530]"></div>
+          <div class="bg-[#16171e] rounded-2xl aspect-[2/3] animate-pulse border border-[#232530]"></div>
+          <div class="bg-[#16171e] rounded-2xl aspect-[2/3] animate-pulse border border-[#232530]"></div>
+        </div>
       </div>
 
       <!-- EMPTY STATE -->
       <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center space-y-2">
-        <div class="w-14 h-14 rounded-2xl liquid-glass flex items-center justify-center text-zinc-400 text-xl mb-2">
+        <div class="w-14 h-14 rounded-2xl bg-[#16171e] border border-[#232530] flex items-center justify-center text-zinc-500 text-xl mb-2">
           <i class="fa-solid fa-film"></i>
         </div>
-        <p class="text-zinc-200 font-medium text-xs">Nenhum título ou canal no seu catálogo privado.</p>
+        <p class="text-zinc-300 font-medium text-xs">Nenhum título ou canal no seu catálogo privado.</p>
       </div>
     </main>
   </div>
 
   <!-- PROFILE MODAL -->
-  <div id="profileModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto modal-card">
-      <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-zinc-300 hover:text-white text-sm cursor-pointer">
+  <div id="profileModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="bg-[#16171e] border border-[#232530] rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-user-gear text-rose-500"></i>
+        <i class="fa-solid fa-user-gear text-brand-500"></i>
         <span>Minha Conta & Perfil</span>
       </h3>
 
-      <form onsubmit="saveUserProfileName(event)" class="space-y-3 border-b border-white/10 pb-4" autocomplete="off">
-        <h4 class="text-xs font-bold text-zinc-100 uppercase tracking-wider">Alterar Nome</h4>
+      <form onsubmit="saveUserProfileName(event)" class="space-y-3 border-b border-zinc-800 pb-4" autocomplete="off">
+        <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Nome</h4>
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Seu Nome</label>
-          <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+          <input type="text" id="editProfileNameInput" required placeholder="Ex: Thiago" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
         </div>
         <div class="flex justify-end">
           <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Nome</button>
@@ -338,59 +313,62 @@
       </form>
 
       <form onsubmit="handleChangePassword(event)" class="space-y-3" autocomplete="new-password">
-        <h4 class="text-xs font-bold text-zinc-100 uppercase tracking-wider">Alterar Senha</h4>
+        <h4 class="text-xs font-bold text-zinc-200 uppercase tracking-wider">Alterar Senha</h4>
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Nova Senha</label>
-          <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;" autocomplete="new-password">
+          <input type="password" id="newPasswordInput" required placeholder="No mínimo 6 caracteres" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500" autocomplete="new-password">
         </div>
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Confirmar Nova Senha</label>
-          <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;" autocomplete="new-password">
+          <input type="password" id="confirmPasswordInput" required placeholder="Repita a nova senha" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500" autocomplete="new-password">
         </div>
         <div class="flex justify-end gap-2 pt-1">
-          <button type="button" onclick="closeProfileModal()" class="liquid-pill px-4 py-1.5 text-xs font-semibold rounded-xl text-zinc-200 hover:text-white cursor-pointer">Fechar</button>
-          <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg transition cursor-pointer">Atualizar Senha</button>
+          <button type="button" onclick="closeProfileModal()" class="px-4 py-1.5 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white bg-zinc-800 cursor-pointer">Fechar</button>
+          <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition cursor-pointer">Atualizar Senha</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MANUAL ITEM MODAL -->
-  <div id="addModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative modal-card">
-      <button onclick="closeAddModal()" class="absolute top-5 right-5 text-zinc-300 hover:text-white text-sm cursor-pointer">
+  <div id="addModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="bg-[#16171e] border border-[#232530] rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeAddModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-code text-rose-500"></i>
-        <span>Cadastro Manual / Rei dos Embeds</span>
+        <i class="fa-solid fa-code text-brand-500"></i>
+        <span>Adicionar Manualmente</span>
       </h3>
 
       <form id="itemForm" onsubmit="saveItemManual(event)" class="space-y-3" autocomplete="off">
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Título do Canal / Filme</label>
-          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV 1, Premiere" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
+          <input type="text" id="titleInput" required placeholder="Ex: Globo RJ, SporTV, Filmes" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Categoria</label>
-            <select id="typeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white bg-zinc-900/90 focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></select>
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
+            <select id="typeInput" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500"></select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-200 mb-1">URL da Capa (Opcional)</label>
-            <input type="url" id="bannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Nota / Temp / Ep</label>
+            <input type="text" id="noteInput" placeholder="Ex: T1:E5 ou ★ 8.5" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
           </div>
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Link do Rei dos Embeds OU Código iframe</label>
-          <textarea id="apiInput" rows="3" placeholder="Ex: https://reidosembeds.online/embed/canal.php?id=globo-rj ou id do canal" class="w-full liquid-pill rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></textarea>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa (Opcional)</label>
+          <input type="url" id="bannerInput" placeholder="https://..." class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Player / Embed / API</label>
+          <textarea id="apiInput" rows="3" placeholder="Cole o link do iframe ou canal aqui" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeAddModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-200 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="button" onclick="closeAddModal()" class="px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white bg-zinc-800 cursor-pointer">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar na Nuvem</button>
         </div>
       </form>
@@ -398,14 +376,14 @@
   </div>
 
   <!-- EDIT DETAILS MODAL -->
-  <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-backdrop modal-closed flex items-center justify-center p-4">
-    <div class="liquid-glass rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto modal-card">
-      <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-300 hover:text-white text-sm cursor-pointer">
+  <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md modal-closed flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="bg-[#16171e] border border-[#232530] rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
       <h3 class="text-sm font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-pen text-rose-500"></i>
+        <i class="fa-solid fa-pen text-brand-500"></i>
         <span>Editar Título & Player</span>
       </h3>
 
@@ -413,48 +391,48 @@
         <input type="hidden" id="editItemId">
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Título</label>
-          <input type="text" id="editTitleInput" required class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Título</label>
+          <input type="text" id="editTitleInput" required class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Categoria</label>
-            <select id="editTypeInput" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white bg-zinc-900/90 focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></select>
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Categoria</label>
+            <select id="editTypeInput" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500"></select>
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Anotação / Status</label>
-            <input type="text" id="editNoteInput" placeholder="Ex: AO VIVO • HD" class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Anotação / Temp / Ep</label>
+            <input type="text" id="editNoteInput" placeholder="Ex: T1:E5 ou ★ 8.5" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
           </div>
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">URL da Capa</label>
-          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full liquid-pill rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">URL da Capa</label>
+          <input type="url" id="editBannerInput" placeholder="https://..." class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3 py-2 text-base text-white focus:outline-none focus:border-brand-500">
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Código iframe OU Link da API</label>
-          <textarea id="editApiInput" rows="3" placeholder="Cole a URL do Rei dos Embeds" class="w-full liquid-pill rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-white/40" style="font-size: 16px !important;"></textarea>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Link do Player / Embed</label>
+          <textarea id="editApiInput" rows="3" placeholder="Cole a URL da API ou iframe" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl p-2.5 text-base text-white font-mono focus:outline-none focus:border-brand-500"></textarea>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeEditModal()" class="liquid-pill px-4 py-2 text-xs font-semibold rounded-xl text-zinc-200 hover:text-white cursor-pointer">Cancelar</button>
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-xs font-semibold rounded-xl text-zinc-300 hover:text-white bg-zinc-800 cursor-pointer">Cancelar</button>
           <button type="submit" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer">Salvar Alterações</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- PLAYER OVERLAY LAYER -->
+  <!-- PLAYER OVERLAY -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
-    <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 liquid-glass p-2 rounded-2xl shadow-2xl border border-white/20">
+    <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-[#16171e]/90 border border-[#232530] p-2 rounded-2xl shadow-2xl">
       <div class="hidden sm:block px-3 text-left">
         <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[200px]">...</h2>
-        <p id="playerSubtitle" class="text-[10px] text-zinc-300 font-medium"></p>
+        <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
       </div>
 
-      <button id="openExternalBtn" onclick="openExternalPlayer()" title="Abrir Player em Nova Aba" class="liquid-pill px-3 py-1.5 text-xs font-semibold rounded-xl text-white transition flex items-center gap-1.5 cursor-pointer">
+      <button id="openExternalBtn" onclick="openExternalPlayer()" title="Abrir em Nova Aba" class="bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 text-xs font-semibold rounded-xl text-white transition flex items-center gap-1.5 cursor-pointer">
         <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
         <span>Nova Aba</span>
       </button>
@@ -469,9 +447,7 @@
   </div>
 
   <script>
-    // ==========================================
-    // AJUSTA PLACEHOLDER SEGUNDO O TAMANHO DA TELA
-    // ==========================================
+    // RESPONSIVIDADE PLACEHOLDER
     function updateSearchPlaceholder() {
       const input = document.getElementById('globalSearchInput');
       if (!input) return;
@@ -488,97 +464,58 @@
     window.addEventListener('resize', updateSearchPlaceholder);
     document.addEventListener('DOMContentLoaded', updateSearchPlaceholder);
 
-    // ==========================================
-    // BLOQUEIO AMIGÁVEL DO INSPECIONAR (SEM CRASH/TRAVAMENTO)
-    // ==========================================
-    
-    // 1. Bloquear Clique Direito (Menu de Contexto)
-    document.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-    }, false);
-
-    // 2. Bloquear Atalhos de Teclado (F12, Ctrl+Shift+I, Cmd+Option+I, etc.)
+    // PROTEÇÃO ANTI-INSPECIONAR
+    document.addEventListener('contextmenu', (e) => e.preventDefault(), false);
     document.addEventListener('keydown', (e) => {
-      if (e.keyCode === 123) {
-        e.preventDefault();
-        return false;
-      }
-
+      if (e.keyCode === 123) { e.preventDefault(); return false; }
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
-
-      if (ctrlOrCmd) {
-        if (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
-          e.preventDefault();
-          return false;
-        }
-        if (e.keyCode === 85 || e.keyCode === 83) {
-          e.preventDefault();
-          return false;
-        }
-      }
-      
-      if (isMac && e.altKey && e.metaKey) {
-        if (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 85) {
-          e.preventDefault();
-          return false;
-        }
-      }
+      if (ctrlOrCmd && (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))) { e.preventDefault(); return false; }
+      if (ctrlOrCmd && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
     }, false);
 
-    // ==========================================
-    // LÓGICA DA APLICAÇÃO
-    // ==========================================
-
-    // HELPER PARA TRANSIÇÃO DE MODAIS
-    function openModal(elementId) {
-      const el = document.getElementById(elementId);
-      if (el) {
-        el.classList.remove('modal-closed');
-        el.classList.add('modal-open');
-      }
+    // MODAL CONTROL
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.replace('modal-closed', 'modal-open');
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.replace('modal-open', 'modal-closed');
     }
 
-    function closeModal(elementId) {
-      const el = document.getElementById(elementId);
-      if (el) {
-        el.classList.remove('modal-open');
-        el.classList.add('modal-closed');
-      }
-    }
-
-    // INJEÇÃO DINÂMICA DA TELA DE LOGIN
+    // AUTH INJECTION
     function renderAuthScreen() {
       const container = document.getElementById('authScreenContainer');
       container.innerHTML = `
-        <div id="authScreen" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl modal-backdrop modal-open flex items-center justify-center p-4">
-          <div class="liquid-glass rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center modal-card">
+        <div id="authScreen" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl modal-open flex items-center justify-center p-4 transition-opacity duration-300">
+          <div class="bg-[#16171e] border border-[#232530] rounded-3xl max-w-sm w-full p-8 space-y-6 shadow-2xl relative text-center">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-rose-700 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/30 border border-white/20 mx-auto">
               <i class="fa-solid fa-play"></i>
             </div>
             
             <div>
               <h2 id="authTitle" class="text-xl font-bold text-white leading-tight">Entrar no Meu Cinema</h2>
-              <p class="text-xs text-zinc-300 mt-1">Acesse seu painel privado de filmes e canais</p>
+              <p class="text-xs text-zinc-400 mt-1">SuperFlix Private Edition</p>
             </div>
 
             <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3 text-left">
               <div id="nameFieldContainer" class="hidden">
-                <label class="block text-[11px] font-semibold text-zinc-200 mb-1">Seu Nome</label>
-                <input type="text" id="authName" placeholder="Ex: Thiago" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+                <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Seu Nome</label>
+                <input type="text" id="authName" placeholder="Ex: Thiago" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
               </div>
 
               <div>
-                <label class="block text-[11px] font-semibold text-zinc-200 mb-1">E-mail</label>
-                <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+                <label class="block text-[11px] font-semibold text-zinc-300 mb-1">E-mail</label>
+                <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
               </div>
 
               <div>
                 <div class="flex justify-between items-center mb-1">
-                  <label class="block text-[11px] font-semibold text-zinc-200">Senha</label>
-                  <button type="button" id="forgotPasswordBtn" onclick="openResetPasswordModal()" class="text-[10px] text-rose-400 hover:underline cursor-pointer">Esqueceu a senha?</button>
+                  <label class="block text-[11px] font-semibold text-zinc-300">Senha</label>
+                  <button type="button" id="forgotPasswordBtn" onclick="openResetPasswordModal()" class="text-[10px] text-brand-500 hover:underline cursor-pointer">Esqueceu a senha?</button>
                 </div>
-                <input type="password" id="authPassword" required placeholder="••••••••" class="w-full liquid-pill rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-white/40" style="font-size: 16px !important;">
+                <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-[#0d0e12] border border-zinc-700/60 rounded-xl px-3.5 py-2.5 text-base text-white focus:outline-none focus:border-brand-500">
               </div>
 
               <button type="submit" id="authSubmitBtn" class="w-full py-2.5 text-xs font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/30 transition cursor-pointer mt-2">
@@ -586,9 +523,9 @@
               </button>
             </form>
 
-            <div class="text-xs text-zinc-300 pt-2 border-t border-white/10">
+            <div class="text-xs text-zinc-400 pt-2 border-t border-zinc-800">
               <span id="authToggleText">Não tem uma conta?</span>
-              <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-rose-400 font-semibold hover:underline ml-1 cursor-pointer">Criar Conta</button>
+              <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-brand-500 font-semibold hover:underline ml-1 cursor-pointer">Criar Conta</button>
             </div>
           </div>
         </div>
@@ -596,40 +533,34 @@
     }
 
     function removeAuthScreen() {
-      const container = document.getElementById('authScreenContainer');
-      container.innerHTML = '';
+      document.getElementById('authScreenContainer').innerHTML = '';
     }
 
-    // SISTEMA DE NOTIFICAÇÕES TOAST
     function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
       const isSuccess = type === 'success';
 
-      toast.className = `pointer-events-auto liquid-glass px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 border text-xs font-semibold text-white transition-all duration-300 transform translate-y-4 opacity-0 ${
+      toast.className = `pointer-events-auto bg-[#16171e] border border-[#232530] px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold text-white transition-all duration-300 transform translate-y-4 opacity-0 ${
         isSuccess ? 'border-emerald-500/50' : 'border-rose-500/50'
       }`;
 
       toast.innerHTML = `
-        <div class="w-5 h-5 rounded-lg ${isSuccess ? 'bg-emerald-500/30 text-emerald-300' : 'bg-rose-500/30 text-rose-300'} flex items-center justify-center text-[10px]">
+        <div class="w-5 h-5 rounded-lg ${isSuccess ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'} flex items-center justify-center text-[10px]">
           <i class="fa-solid ${isSuccess ? 'fa-check' : 'fa-exclamation'}"></i>
         </div>
         <span>${message}</span>
       `;
 
       container.appendChild(toast);
-
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-4', 'opacity-0');
-      });
-
+      requestAnimationFrame(() => toast.classList.remove('translate-y-4', 'opacity-0'));
       setTimeout(() => {
         toast.classList.add('translate-y-4', 'opacity-0');
         setTimeout(() => toast.remove(), 300);
       }, 3000);
     }
 
-    // CONFIGURAÇÃO DO FIREBASE
+    // CONFIG FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyC2NZ67Uh1biKo27WvRoT5B41GLMOUM0xo",
       authDomain: "meu-cinema-931ad.firebaseapp.com",
@@ -645,7 +576,6 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // VARIÁVEIS DE ESTADO
     let currentUser = null;
     let userCatalogRef = null;
     let userCategoriesRef = null;
@@ -664,44 +594,20 @@
     const REI_DOS_EMBEDS_CHANNELS = [
       { id: "globo-sp", name: "Globo SP", cat: "TV ao Vivo" },
       { id: "globo-rj", name: "Globo RJ", cat: "TV ao Vivo" },
-      { id: "globo-mg", name: "Globo MG", cat: "TV ao Vivo" },
-      { id: "globo-rs", name: "Globo RS", cat: "TV ao Vivo" },
       { id: "globonews", name: "GloboNews", cat: "TV ao Vivo" },
       { id: "sportv", name: "SporTV 1", cat: "Esporte" },
       { id: "sportv2", name: "SporTV 2", cat: "Esporte" },
       { id: "sportv3", name: "SporTV 3", cat: "Esporte" },
       { id: "premiere-clubes", name: "Premiere Clubes", cat: "Esporte" },
-      { id: "premiere2", name: "Premiere 2", cat: "Esporte" },
-      { id: "premiere3", name: "Premiere 3", cat: "Esporte" },
-      { id: "premiere4", name: "Premiere 4", cat: "Esporte" },
       { id: "espn", name: "ESPN 1", cat: "Esporte" },
-      { id: "espn2", name: "ESPN 2", cat: "Esporte" },
-      { id: "espn3", name: "ESPN 3", cat: "Esporte" },
-      { id: "espn4", name: "ESPN 4", cat: "Esporte" },
-      { id: "combate", name: "Combate", cat: "Esporte" },
-      { id: "bandsports", name: "BandSports", cat: "Esporte" },
-      { id: "cazetv", name: "CazéTV", cat: "Esporte" },
-      { id: "sbt", name: "SBT", cat: "TV ao Vivo" },
-      { id: "record", name: "Record TV", cat: "TV ao Vivo" },
-      { id: "band", name: "Band", cat: "TV ao Vivo" },
-      { id: "tnt", name: "TNT", cat: "TV ao Vivo" },
-      { id: "space", name: "Space", cat: "TV ao Vivo" },
-      { id: "megapix", name: "Megapix", cat: "TV ao Vivo" },
-      { id: "telecine-pipoca", name: "Telecine Pipoca", cat: "TV ao Vivo" },
-      { id: "telecine-action", name: "Telecine Action", cat: "TV ao Vivo" },
-      { id: "telecine-premium", name: "Telecine Premium", cat: "TV ao Vivo" },
-      { id: "hbo", name: "HBO", cat: "TV ao Vivo" },
-      { id: "cartoon-network", name: "Cartoon Network", cat: "TV ao Vivo" }
+      { id: "cazetv", name: "CazéTV", cat: "Esporte" }
     ];
 
-    // MONITOR DE AUTENTICAÇÃO DO FIREBASE
     auth.onAuthStateChanged((user) => {
       if (user) {
         currentUser = user;
         removeAuthScreen();
-
-        document.getElementById('appScreen').classList.remove('hidden');
-        document.getElementById('appScreen').classList.add('flex');
+        document.getElementById('appScreen').classList.replace('hidden', 'flex');
 
         userCatalogRef = db.ref(`users/${user.uid}/catalog`);
         userCategoriesRef = db.ref(`users/${user.uid}/categories`);
@@ -712,39 +618,28 @@
       } else {
         currentUser = null;
         renderAuthScreen();
-
-        document.getElementById('appScreen').classList.add('hidden');
-        document.getElementById('appScreen').classList.remove('flex');
+        document.getElementById('appScreen').classList.replace('flex', 'hidden');
       }
     });
 
-    // ATUALIZA NOME NA TELA
     function setWelcomeHeaderName(name) {
       const headerEl = document.getElementById('userWelcomeHeader');
-
       if (name && name.trim() !== '') {
-        const firstName = name.trim().split(' ')[0];
-        headerEl.innerText = `Olá, ${firstName}`;
+        headerEl.innerText = `Olá, ${name.trim().split(' ')[0]}`;
       } else if (currentUser && currentUser.displayName) {
-        const firstName = currentUser.displayName.trim().split(' ')[0];
-        headerEl.innerText = `Olá, ${firstName}`;
+        headerEl.innerText = `Olá, ${currentUser.displayName.trim().split(' ')[0]}`;
       } else {
         headerEl.innerText = 'Meu Cinema';
       }
     }
 
-    // MODAL EDITAR NOME E TROCAR SENHA
     function openProfileModal() {
-      const currentName = currentUser && currentUser.displayName ? currentUser.displayName : '';
-      document.getElementById('editProfileNameInput').value = currentName;
+      document.getElementById('editProfileNameInput').value = currentUser?.displayName || '';
       document.getElementById('newPasswordInput').value = '';
       document.getElementById('confirmPasswordInput').value = '';
       openModal('profileModal');
     }
-
-    function closeProfileModal() {
-      closeModal('profileModal');
-    }
+    function closeProfileModal() { closeModal('profileModal'); }
 
     async function saveUserProfileName(e) {
       e.preventDefault();
@@ -753,11 +648,9 @@
 
       try {
         await currentUser.updateProfile({ displayName: newName });
-        if (userProfileRef) {
-          await userProfileRef.update({ name: newName });
-        }
+        if (userProfileRef) await userProfileRef.update({ name: newName });
         setWelcomeHeaderName(newName);
-        showToast('Nome de exibição atualizado!');
+        showToast('Nome atualizado!');
       } catch (err) {
         showToast('Erro ao atualizar nome.', 'error');
       }
@@ -767,47 +660,33 @@
       e.preventDefault();
       const newPass = document.getElementById('newPasswordInput').value;
       const confirmPass = document.getElementById('confirmPasswordInput').value;
-
-      if (newPass.length < 6) {
-        showToast('A senha deve ter no mínimo 6 caracteres.', 'error');
+      if (newPass.length < 6 || newPass !== confirmPass) {
+        showToast('Senhas inválidas ou não coincidem.', 'error');
         return;
       }
-
-      if (newPass !== confirmPass) {
-        showToast('As senhas não coincidem.', 'error');
-        return;
-      }
-
       try {
         await currentUser.updatePassword(newPass);
-        document.getElementById('newPasswordInput').value = '';
-        document.getElementById('confirmPasswordInput').value = '';
         showToast('Senha alterada com sucesso!');
+        closeProfileModal();
       } catch (err) {
-        showToast('Erro ao alterar a senha.', 'error');
+        showToast('Erro ao alterar senha.', 'error');
       }
     }
 
-    // REDEFINIÇÃO DE SENHA
     function openResetPasswordModal() {
-      const currentEmail = document.getElementById('authEmail') ? document.getElementById('authEmail').value : '';
-      document.getElementById('resetEmailInput').value = currentEmail;
+      document.getElementById('resetEmailInput').value = document.getElementById('authEmail')?.value || '';
       openModal('resetPasswordModal');
     }
-
-    function closeResetPasswordModal() {
-      closeModal('resetPasswordModal');
-    }
+    function closeResetPasswordModal() { closeModal('resetPasswordModal'); }
 
     async function handleSendResetEmail(e) {
       e.preventDefault();
       const email = document.getElementById('resetEmailInput').value.trim();
       if (!email) return;
-
       try {
         await auth.sendPasswordResetEmail(email);
         closeResetPasswordModal();
-        showToast('E-mail de redefinição enviado com sucesso!');
+        showToast('E-mail de redefinição enviado!');
       } catch (err) {
         showToast('Erro ao enviar e-mail.', 'error');
       }
@@ -816,16 +695,13 @@
     function toggleAuthMode() {
       isSignUpMode = !isSignUpMode;
       const nameContainer = document.getElementById('nameFieldContainer');
-      const nameInput = document.getElementById('authName');
       const forgotBtn = document.getElementById('forgotPasswordBtn');
 
       if (isSignUpMode) {
         nameContainer.classList.remove('hidden');
-        nameInput.setAttribute('required', 'true');
         forgotBtn.classList.add('hidden');
       } else {
         nameContainer.classList.add('hidden');
-        nameInput.removeAttribute('required');
         forgotBtn.classList.remove('hidden');
       }
 
@@ -839,25 +715,22 @@
       e.preventDefault();
       const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value.trim();
-      const name = document.getElementById('authName') ? document.getElementById('authName').value.trim() : '';
+      const name = document.getElementById('authName')?.value.trim() || '';
 
       try {
         if (isSignUpMode) {
           const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-          const newUser = userCredential.user;
-          
           if (name) {
-            await newUser.updateProfile({ displayName: name });
-            await db.ref(`users/${newUser.uid}/profile`).set({ name: name });
-            setWelcomeHeaderName(name);
+            await userCredential.user.updateProfile({ displayName: name });
+            await db.ref(`users/${userCredential.user.uid}/profile`).set({ name: name });
           }
           showToast('Conta criada com sucesso!');
         } else {
           await auth.signInWithEmailAndPassword(email, password);
-          showToast('Login efetuado!');
+          showToast('Login bem-sucedido!');
         }
       } catch (err) {
-        showToast(err.message || 'Erro na autenticação.', 'error');
+        showToast(err.message || 'Erro de autenticação.', 'error');
       }
     }
 
@@ -869,21 +742,13 @@
     function listenToUserData() {
       userProfileRef.on('value', (snapshot) => {
         const val = snapshot.val();
-        if (val && val.name) {
-          setWelcomeHeaderName(val.name);
-        } else {
-          setWelcomeHeaderName('');
-        }
+        setWelcomeHeaderName(val?.name || '');
       });
 
       userCategoriesRef.on('value', (snapshot) => {
         const data = snapshot.val();
         if (data && Array.isArray(data)) {
           categories = data;
-          if (!categories.includes('TV ao Vivo')) {
-            categories.push('TV ao Vivo');
-            userCategoriesRef.set(categories);
-          }
         } else {
           categories = ['Filme', 'Série', 'Anime', 'Esporte', 'TV ao Vivo'];
           userCategoriesRef.set(categories);
@@ -895,15 +760,8 @@
       userCatalogRef.on('value', (snapshot) => {
         isCatalogLoaded = true;
         const data = snapshot.val();
-        if (data) {
-          catalog = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-        } else {
-          catalog = [];
-        }
+        catalog = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
         renderCatalog();
-        if (document.getElementById('globalSearchInput').value.trim() !== '') {
-          handleGlobalSearch();
-        }
       });
     }
 
@@ -911,41 +769,26 @@
       const container = document.getElementById('filterButtonsContainer');
       container.innerHTML = '';
 
-      const allBtn = document.createElement('button');
-      allBtn.onclick = () => setFilter('ALL');
-      allBtn.id = 'filter-ALL';
-      allBtn.className = currentFilter === 'ALL'
-        ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 text-white shadow-lg shadow-brand-500/30 transition whitespace-nowrap"
-        : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition whitespace-nowrap";
-      allBtn.innerText = 'Todos';
-      container.appendChild(allBtn);
-
-      categories.forEach(cat => {
+      const createBtn = (cat, label) => {
         const btn = document.createElement('button');
         btn.onclick = () => setFilter(cat);
-        btn.id = `filter-${cat}`;
         btn.className = currentFilter === cat
           ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 text-white shadow-lg shadow-brand-500/30 transition whitespace-nowrap"
-          : "liquid-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition whitespace-nowrap";
-        btn.innerText = cat;
-        container.appendChild(btn);
-      });
+          : "px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-300 bg-[#16171e] hover:bg-zinc-800 border border-[#232530] transition whitespace-nowrap cursor-pointer";
+        btn.innerText = label;
+        return btn;
+      };
+
+      container.appendChild(createBtn('ALL', 'Todos'));
+      categories.forEach(cat => container.appendChild(createBtn(cat, cat)));
 
       const selectManual = document.getElementById('typeInput');
       const selectEdit = document.getElementById('editTypeInput');
-      selectManual.innerHTML = '';
-      selectEdit.innerHTML = '';
+      selectManual.innerHTML = ''; selectEdit.innerHTML = '';
 
       categories.forEach(cat => {
-        const opt1 = document.createElement('option');
-        opt1.value = cat;
-        opt1.innerText = cat;
-        selectManual.appendChild(opt1);
-
-        const opt2 = document.createElement('option');
-        opt2.value = cat;
-        opt2.innerText = cat;
-        selectEdit.appendChild(opt2);
+        selectManual.appendChild(new Option(cat, cat));
+        selectEdit.appendChild(new Option(cat, cat));
       });
     }
 
@@ -957,87 +800,60 @@
 
     // BUSCA GLOBAL
     function handleGlobalSearch(e) {
-      if (e && e.key === "Escape") {
-        clearGlobalSearch();
-        return;
-      }
-
+      if (e && e.key === "Escape") { clearGlobalSearch(); return; }
       clearTimeout(globalSearchTimeout);
       const query = document.getElementById('globalSearchInput').value.trim();
       const panel = document.getElementById('searchResultsPanel');
       const backdrop = document.getElementById('searchBackdrop');
       const clearBtn = document.getElementById('clearSearchBtn');
 
-      if (!query) {
-        clearGlobalSearch();
-        return;
-      }
+      if (!query) { clearGlobalSearch(); return; }
 
       clearBtn.classList.remove('hidden');
+      panel.classList.replace('opacity-0', 'opacity-100');
+      panel.classList.replace('pointer-events-none', 'pointer-events-auto');
+      backdrop.classList.replace('opacity-0', 'opacity-100');
+      backdrop.classList.replace('pointer-events-none', 'pointer-events-auto');
 
-      panel.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
-      panel.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+      renderSavedSearchList(catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase())));
+      renderLiveSearchList(REI_DOS_EMBEDS_CHANNELS.filter(c => c.name.toLowerCase().includes(query.toLowerCase())));
 
-      backdrop.classList.remove('opacity-0', 'pointer-events-none');
-      backdrop.classList.add('opacity-100', 'pointer-events-auto');
-
-      const savedMatches = catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase()));
-      renderSavedSearchList(savedMatches);
-
-      const liveMatches = REI_DOS_EMBEDS_CHANNELS.filter(c => 
-        c.name.toLowerCase().includes(query.toLowerCase()) || c.id.toLowerCase().includes(query.toLowerCase())
-      );
-      renderLiveSearchList(liveMatches);
-
-      globalSearchTimeout = setTimeout(() => {
-        fetchTMDBSearch(query);
-      }, 350);
-
-      renderCatalog();
+      globalSearchTimeout = setTimeout(() => fetchTMDBSearch(query), 350);
     }
 
     function clearGlobalSearch() {
       document.getElementById('globalSearchInput').value = '';
       const panel = document.getElementById('searchResultsPanel');
       const backdrop = document.getElementById('searchBackdrop');
-      const clearBtn = document.getElementById('clearSearchBtn');
+      document.getElementById('clearSearchBtn').classList.add('hidden');
 
-      clearBtn.classList.add('hidden');
-
-      panel.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
-      panel.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
-
-      backdrop.classList.remove('opacity-100', 'pointer-events-auto');
-      backdrop.classList.add('opacity-0', 'pointer-events-none');
-
-      renderCatalog();
+      panel.classList.replace('opacity-100', 'opacity-0');
+      panel.classList.replace('pointer-events-auto', 'pointer-events-none');
+      backdrop.classList.replace('opacity-100', 'opacity-0');
+      backdrop.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
 
     function renderSavedSearchList(items) {
       const section = document.getElementById('sectionSaved');
       const container = document.getElementById('resultsSavedList');
       container.innerHTML = '';
-
-      if (items.length === 0) {
-        section.classList.add('hidden');
-        return;
-      }
+      if (items.length === 0) { section.classList.add('hidden'); return; }
 
       section.classList.remove('hidden');
       items.forEach(item => {
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between liquid-pill p-2.5 rounded-xl border border-white/15 hover:border-emerald-400 transition bg-zinc-900/80";
+        div.className = "flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-[#0d0e12]";
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0 border border-white/20">
+            <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
               <i class="fa-solid fa-play text-[10px]"></i>
             </div>
             <div class="min-w-0">
               <h4 class="font-bold text-xs text-white truncate">${item.title}</h4>
-              <span class="text-[11px] text-emerald-300 font-semibold">${item.type} • No catálogo</span>
+              <span class="text-[11px] text-emerald-400 font-semibold">${item.type} • No catálogo</span>
             </div>
           </div>
-          <button onclick="playItem('${item.id}')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex-shrink-0 cursor-pointer shadow-md">
+          <button onclick="playItem('${item.id}')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">
             Assistir
           </button>
         `;
@@ -1049,36 +865,28 @@
       const section = document.getElementById('sectionLive');
       const container = document.getElementById('resultsLiveList');
       container.innerHTML = '';
-
-      if (items.length === 0) {
-        section.classList.add('hidden');
-        return;
-      }
+      if (items.length === 0) { section.classList.add('hidden'); return; }
 
       section.classList.remove('hidden');
       items.forEach(ch => {
-        const isSaved = catalog.some(i => i.title.toLowerCase() === ch.name.toLowerCase() || (i.apiUrl && i.apiUrl.includes(ch.id)));
-        
+        const isSaved = catalog.some(i => i.title.toLowerCase() === ch.name.toLowerCase());
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between liquid-pill p-2.5 rounded-xl border border-white/15 hover:border-emerald-400 transition bg-zinc-900/80";
-        
+        div.className = "flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-[#0d0e12]";
         div.innerHTML = `
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-lg bg-zinc-950 border border-white/20 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0">
               <i class="fa-solid fa-tv text-[10px]"></i>
             </div>
             <div class="min-w-0">
               <h4 class="font-bold text-xs text-white truncate">${ch.name}</h4>
-              <span class="text-[11px] text-zinc-300 font-mono">ID: ${ch.id}</span>
+              <span class="text-[11px] text-zinc-400 font-mono">Canal TV</span>
             </div>
           </div>
-
           ${isSaved ? `
-            <span class="text-[11px] px-2.5 py-1 liquid-pill text-emerald-300 font-bold rounded-xl border border-emerald-500/50 bg-emerald-950/40">✓ Salvo</span>
+            <span class="text-[11px] px-2.5 py-1 text-emerald-400 font-bold rounded-xl border border-emerald-500/40 bg-emerald-950/30">✓ Salvo</span>
           ` : `
-            <button onclick="quickAddLive('${ch.id}', '${ch.name}', '${ch.cat}', this)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-md">
-              <i class="fa-solid fa-plus text-[10px]"></i>
-              <span>Adicionar</span>
+            <button onclick="quickAddLive('${ch.id}', '${ch.name}', '${ch.cat}', this)" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">
+              + Adicionar
             </button>
           `}
         `;
@@ -1089,150 +897,98 @@
     async function fetchTMDBSearch(query) {
       const section = document.getElementById('sectionTMDB');
       const container = document.getElementById('resultsTMDBList');
-      
       try {
         const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`);
         const data = await res.json();
-
-        if (!data.results || data.results.length === 0) {
-          section.classList.add('hidden');
-          return;
-        }
+        if (!data.results || data.results.length === 0) { section.classList.add('hidden'); return; }
 
         container.innerHTML = '';
         let count = 0;
-
         data.results.forEach(item => {
           if (item.media_type !== 'movie' && item.media_type !== 'tv') return;
-          if (count >= 6) return;
-          count++;
+          if (count >= 6) return; count++;
 
           const title = item.title || item.name;
           const isMovie = item.media_type === 'movie';
-          const typeLabel = isMovie ? 'Filme' : 'Série';
           const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
+          const vote = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'Série';
           const isSaved = catalog.some(i => i.tmdbId === String(item.id) || i.title.toLowerCase() === title.toLowerCase());
 
           const div = document.createElement('div');
-          div.className = "flex items-center justify-between liquid-pill p-2.5 rounded-xl border border-white/15 hover:border-rose-500/50 transition bg-zinc-900/80";
-          
+          div.className = "flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 bg-[#0d0e12]";
           div.innerHTML = `
             <div class="flex items-center gap-2.5 min-w-0">
-              <div class="w-8 h-11 bg-zinc-950 rounded-lg overflow-hidden flex-shrink-0 relative border border-white/20">
-                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-500 text-[10px]"><i class="fa-solid fa-film"></i></div>`}
+              <div class="w-8 h-11 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 relative border border-zinc-700">
+                ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-600 text-[10px]"><i class="fa-solid fa-film"></i></div>`}
               </div>
               <div class="min-w-0">
                 <h4 class="font-bold text-xs text-white truncate">${title}</h4>
-                <span class="text-[11px] text-zinc-200 font-medium">${typeLabel}</span>
+                <span class="text-[11px] text-amber-400 font-semibold">${vote}</span>
               </div>
             </div>
-
             ${isSaved ? `
-              <span class="text-[11px] px-2.5 py-1 liquid-pill text-rose-400 font-bold rounded-xl border border-rose-500/50 bg-rose-950/40">✓ Salvo</span>
+              <span class="text-[11px] px-2.5 py-1 text-brand-500 font-bold rounded-xl border border-brand-500/40 bg-brand-950/30">✓ Salvo</span>
             ` : `
-              <button onclick="quickAddTMDB(${item.id}, '${encodeURIComponent(title)}', ${isMovie}, '${poster}', this)" class="px-3 py-1 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-md shadow-brand-500/20">
-                <i class="fa-solid fa-plus text-[10px]"></i>
-                <span>Adicionar</span>
+              <button onclick="quickAddTMDB(${item.id}, '${encodeURIComponent(title)}',${isMovie}, '${poster}', '${vote}', this)" class="px-3 py-1 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition cursor-pointer">
+                + Adicionar
               </button>
             `}
           `;
           container.appendChild(div);
         });
 
-        if (count > 0) {
-          section.classList.remove('hidden');
-        } else {
-          section.classList.add('hidden');
-        }
-      } catch (err) {
-        section.classList.add('hidden');
-      }
+        section.classList.toggle('hidden', count === 0);
+      } catch (err) { section.classList.add('hidden'); }
     }
 
     function quickAddLive(channelId, name, category, btnElement) {
       if (!userCatalogRef) return;
       const id = userCatalogRef.push().key;
-      const apiUrl = `https://reidosembeds.online/embed/canal.php?id=${channelId}`;
-
-      const itemData = {
-        title: name,
-        type: category || 'TV ao Vivo',
-        banner: '',
-        apiUrl,
-        seasonNote: 'AO VIVO'
-      };
-
-      userCatalogRef.child(id).set(itemData, (error) => {
-        if (!error) {
-          btnElement.outerHTML = `<span class="text-[11px] px-2.5 py-1 liquid-pill text-emerald-300 font-bold rounded-xl border border-emerald-500/50 bg-emerald-950/40">✓ Salvo</span>`;
-          showToast(`'${name}' adicionado ao seu catálogo!`);
-        } else {
-          showToast('Erro ao salvar no banco.', 'error');
+      const itemData = { title: name, type: category || 'TV ao Vivo', banner: '', apiUrl: `https://reidosembeds.online/embed/canal.php?id=${channelId}`, seasonNote: 'AO VIVO' };
+      userCatalogRef.child(id).set(itemData, (err) => {
+        if (!err) {
+          btnElement.outerHTML = `<span class="text-[11px] px-2.5 py-1 text-emerald-400 font-bold rounded-xl border border-emerald-500/40 bg-emerald-950/30">✓ Salvo</span>`;
+          showToast(`'${name}' adicionado!`);
         }
       });
     }
 
-    function quickAddTMDB(tmdbId, encodedTitle, isMovie, banner, btnElement) {
+    function quickAddTMDB(tmdbId, encodedTitle, isMovie, banner, vote, btnElement) {
       if (!userCatalogRef) return;
       const title = decodeURIComponent(encodedTitle);
       const id = userCatalogRef.push().key;
       let category = isMovie ? 'Filme' : 'Série';
-      
-      const lowerTitle = title.toLowerCase();
-      if (!isMovie && (lowerTitle.includes('anime') || lowerTitle.includes('titan') || lowerTitle.includes('naruto') || lowerTitle.includes('piece') || lowerTitle.includes('dragon ball') || lowerTitle.includes('jujutsu'))) {
-        if (categories.includes('Anime')) category = 'Anime';
-      }
 
       const apiUrl = isMovie 
         ? `https://superflixapi.quest/filme/${tmdbId}`
-        : (category === 'Anime' ? `https://superflixapi.quest/anime/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`);
+        : `https://superflixapi.quest/serie/${tmdbId}`;
 
-      const itemData = {
-        title,
-        type: category,
-        banner: banner || '',
-        apiUrl,
-        tmdbId: String(tmdbId),
-        seasonNote: ''
-      };
-
-      userCatalogRef.child(id).set(itemData, (error) => {
-        if (!error) {
-          btnElement.outerHTML = `<span class="text-[11px] px-2.5 py-1 liquid-pill text-rose-400 font-bold rounded-xl border border-rose-500/50 bg-rose-950/40">✓ Salvo</span>`;
+      const itemData = { title, type: category, banner: banner || '', apiUrl, tmdbId: String(tmdbId), seasonNote: vote || 'HD', isPinned: true };
+      userCatalogRef.child(id).set(itemData, (err) => {
+        if (!err) {
+          btnElement.outerHTML = `<span class="text-[11px] px-2.5 py-1 text-brand-500 font-bold rounded-xl border border-brand-500/40 bg-brand-950/30">✓ Salvo</span>`;
           showToast(`'${title}' adicionado ao seu catálogo!`);
-        } else {
-          showToast('Erro ao salvar no banco.', 'error');
         }
       });
     }
 
-    function openAddModal() {
-      document.getElementById('itemForm').reset();
-      openModal('addModal');
-    }
-
-    function closeAddModal() {
-      closeModal('addModal');
-    }
+    function openAddModal() { document.getElementById('itemForm').reset(); openModal('addModal'); }
+    function closeAddModal() { closeModal('addModal'); }
 
     function saveItemManual(e) {
       e.preventDefault();
       if (!userCatalogRef) return;
       const id = userCatalogRef.push().key;
-      const title = document.getElementById('titleInput').value.trim();
-      const type = document.getElementById('typeInput').value;
-      const banner = document.getElementById('bannerInput').value.trim();
-      let rawApi = document.getElementById('apiInput').value.trim();
+      const itemData = {
+        title: document.getElementById('titleInput').value.trim(),
+        type: document.getElementById('typeInput').value,
+        banner: document.getElementById('bannerInput').value.trim(),
+        apiUrl: document.getElementById('apiInput').value.trim(),
+        seasonNote: document.getElementById('noteInput').value.trim() || 'HD'
+      };
 
-      const itemData = { title, type, banner, apiUrl: rawApi };
-
-      userCatalogRef.child(id).set(itemData, (error) => {
-        if (!error) {
-          closeAddModal();
-          showToast('Item salvo manualmente!');
-        } else {
-          showToast('Erro ao salvar no banco.', 'error');
-        }
+      userCatalogRef.child(id).set(itemData, (err) => {
+        if (!err) { closeAddModal(); showToast('Item adicionado!'); }
       });
     }
 
@@ -1246,67 +1002,108 @@
       document.getElementById('editTypeInput').value = item.type;
       document.getElementById('editBannerInput').value = item.banner || '';
       document.getElementById('editNoteInput').value = item.seasonNote || '';
-      
-      let currentApi = item.apiUrl || '';
-      if (!currentApi && item.episodes && item.episodes.length > 0) {
-        currentApi = item.episodes.join('\n');
-      }
-      document.getElementById('editApiInput').value = currentApi;
-
+      document.getElementById('editApiInput').value = item.apiUrl || '';
       openModal('editModal');
     }
 
-    function closeEditModal() {
-      closeModal('editModal');
-    }
+    function closeEditModal() { closeModal('editModal'); }
 
     function saveEditDetails(e) {
       e.preventDefault();
       if (!userCatalogRef) return;
       const id = document.getElementById('editItemId').value;
-      const title = document.getElementById('editTitleInput').value.trim();
-      const type = document.getElementById('editTypeInput').value;
-      const banner = document.getElementById('editBannerInput').value.trim();
-      const seasonNote = document.getElementById('editNoteInput').value.trim();
-      let apiUrl = document.getElementById('editApiInput').value.trim();
+      const updateData = {
+        title: document.getElementById('editTitleInput').value.trim(),
+        type: document.getElementById('editTypeInput').value,
+        banner: document.getElementById('editBannerInput').value.trim(),
+        seasonNote: document.getElementById('editNoteInput').value.trim(),
+        apiUrl: document.getElementById('editApiInput').value.trim()
+      };
 
-      let updateData = { title, type, banner, seasonNote, apiUrl };
-
-      userCatalogRef.child(id).update(updateData, (error) => {
-        if (!error) {
-          closeEditModal();
-          showToast('Alterações salvas!');
-        } else {
-          showToast('Erro ao atualizar.', 'error');
-        }
+      userCatalogRef.child(id).update(updateData, (err) => {
+        if (!err) { closeEditModal(); showToast('Alterações salvas!'); }
       });
     }
 
     function deleteItem(id, e) {
       if (e) e.stopPropagation();
-      if (confirm('Deseja excluir este título do seu catálogo?')) {
+      if (confirm('Deseja excluir este item?')) {
         userCatalogRef.child(id).remove();
         showToast('Item removido.');
       }
     }
 
+    // RENDERIZAÇÃO DO CATÁLOGO E SEÇÃO FIXADA NO TOPO (SUPERFLIX STYLE)
+    function createCardHTML(item) {
+      const isLive = item.type === 'TV ao Vivo' || item.type === 'Esporte';
+      let badgeMarkup = '';
+
+      if (isLive) {
+        badgeMarkup = `<span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-emerald-400 flex items-center gap-1 shadow-md"><span class="live-pulse"></span> AO VIVO</span>`;
+      } else if (item.seasonNote) {
+        badgeMarkup = `<span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-amber-400 shadow-md">${item.seasonNote}</span>`;
+      } else {
+        badgeMarkup = `<span class="badge-capa text-[10px] font-bold px-2 py-0.5 rounded-md text-white shadow-md">HD</span>`;
+      }
+
+      const hasBanner = item.banner && item.banner.trim() !== '';
+
+      return `
+        <div class="superflix-card group relative overflow-hidden flex flex-col cursor-pointer" onclick="playItem('${item.id}')">
+          <!-- ÁREA DA CAPA/POSTER -->
+          <div class="aspect-[2/3] w-full bg-[#0d0e12] relative overflow-hidden rounded-t-2xl">
+            <!-- BADGE SOBREPOSTA NO TOPO (SUPERFLIX STYLE) -->
+            <div class="absolute top-2.5 left-2.5 z-20">
+              ${badgeMarkup}
+            </div>
+
+            <div class="w-full h-full flex flex-col items-center justify-center p-3 text-center absolute inset-0 bg-[#16171e]">
+              <i class="fa-solid fa-play text-zinc-600 text-3xl mb-2"></i>
+              <span class="font-bold text-xs text-white line-clamp-2 leading-tight">${item.title}</span>
+            </div>
+
+            ${hasBanner ? `<img src="${item.banner}" alt="${item.title}" loading="lazy" class="w-full h-full object-cover relative z-10 group-hover:scale-105 transition duration-500" onerror="this.classList.add('hidden');">` : ''}
+
+            <!-- OVERLAY DE PLAY NO HOVER -->
+            <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 flex items-center justify-center z-20">
+              <div class="w-12 h-12 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition duration-300">
+                <i class="fa-solid fa-play text-base ml-0.5"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- RÓTULO DE TÍTULO E BOTÕES -->
+          <div class="p-3 flex items-center justify-between gap-1.5 bg-[#16171e] rounded-b-2xl border-t border-[#232530]">
+            <div class="flex-1 min-w-0">
+              <h4 class="font-bold text-xs text-white truncate group-hover:text-brand-500 transition">${item.title}</h4>
+              <p class="text-[10px] text-zinc-400 font-medium mt-0.5">${item.type}</p>
+            </div>
+            
+            <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+              <button onclick="editItem('${item.id}', event)" title="Editar" class="text-zinc-400 hover:text-white p-1 cursor-pointer">
+                <i class="fa-solid fa-pen text-[10px]"></i>
+              </button>
+              <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-400 hover:text-rose-400 p-1 cursor-pointer">
+                <i class="fa-solid fa-trash text-[10px]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     function renderCatalog() {
       const grid = document.getElementById('catalogGrid');
+      const pinnedGrid = document.getElementById('pinnedGrid');
+      const pinnedSection = document.getElementById('pinnedContentSection');
       const empty = document.getElementById('emptyState');
-      const searchInput = document.getElementById('globalSearchInput');
-      const search = searchInput ? searchInput.value.toLowerCase() : '';
+      const search = (document.getElementById('globalSearchInput')?.value || '').toLowerCase();
 
       grid.innerHTML = '';
+      pinnedGrid.innerHTML = '';
 
       if (!isCatalogLoaded) {
-        grid.innerHTML = `
-          <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
-          <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
-          <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
-          <div class="liquid-glass-card rounded-2xl aspect-[2/3] animate-pulse"></div>
-        `;
         empty.classList.add('hidden');
-        empty.classList.remove('flex');
         return;
       }
 
@@ -1317,65 +1114,25 @@
       });
 
       if (filtered.length === 0) {
-        empty.classList.remove('hidden');
-        empty.classList.add('flex');
+        empty.classList.replace('hidden', 'flex');
+        pinnedSection.classList.add('hidden');
       } else {
-        empty.classList.add('hidden');
-        empty.classList.remove('flex');
+        empty.classList.replace('flex', 'hidden');
+
+        // FILTRA ITENS FIXADOS/ASSISTIDOS RECENTEMENTE PARA O TOPO
+        const pinnedItems = filtered.filter(i => i.isPinned || i.seasonNote?.includes('T') || i.type === 'TV ao Vivo');
+        
+        if (pinnedItems.length > 0 && currentFilter === 'ALL' && !search) {
+          pinnedSection.classList.remove('hidden');
+          pinnedItems.slice(0, 6).forEach(item => {
+            pinnedGrid.innerHTML += createCardHTML(item);
+          });
+        } else {
+          pinnedSection.classList.add('hidden');
+        }
 
         filtered.forEach(item => {
-          const card = document.createElement('div');
-          card.className = "group relative liquid-glass-card rounded-2xl overflow-hidden flex flex-col cursor-pointer transition-all duration-300";
-          
-          let noteBadge = '';
-          const isLiveType = item.type === 'TV ao Vivo' || item.type === 'Esporte';
-          
-          if (isLiveType) {
-            noteBadge = `<span class="text-[9px] font-bold px-2 py-0.5 rounded-lg liquid-pill text-emerald-300 border border-emerald-500/50 bg-emerald-950/40 flex items-center gap-1"><span class="live-pulse"></span> AO VIVO</span>`;
-          } else if (item.seasonNote) {
-            noteBadge = `<span class="text-[9px] font-bold px-2 py-0.5 rounded-lg liquid-pill text-emerald-300 border border-emerald-500/50 bg-emerald-950/40">${item.seasonNote}</span>`;
-          }
-
-          const hasBanner = item.banner && item.banner.trim() !== '';
-
-          card.innerHTML = `
-            <div class="aspect-[2/3] w-full bg-zinc-950/80 relative overflow-hidden" onclick="playItem('${item.id}')">
-              <div class="w-full h-full flex flex-col items-center justify-center p-3 text-center absolute inset-0">
-                <i class="fa-solid fa-play text-zinc-500 text-2xl group-hover:text-brand-500 group-hover:scale-110 transition duration-300 mb-2"></i>
-                <span class="font-bold text-xs text-white line-clamp-2 leading-tight">${item.title}</span>
-              </div>
-
-              ${hasBanner ? `
-                <img src="${item.banner}" alt="${item.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10" onerror="this.classList.add('hidden');">
-              ` : ''}
-
-              <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
-                <div class="w-11 h-11 rounded-2xl liquid-glass text-white flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition duration-300 border border-white/30">
-                  <i class="fa-solid fa-play text-sm ml-0.5 text-brand-500"></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="p-3 flex items-center justify-between gap-1.5 border-t border-white/10 bg-black/40">
-              <div onclick="playItem('${item.id}')" class="flex-1 min-w-0">
-                <h4 class="font-bold text-xs text-white truncate group-hover:text-rose-400 transition">${item.title}</h4>
-                <div class="flex items-center gap-1.5 mt-1">
-                  <span class="text-[11px] text-zinc-300 font-medium">${item.type}</span>
-                  ${noteBadge}
-                </div>
-              </div>
-              
-              <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1">
-                <button onclick="editItem('${item.id}', event)" title="Editar" class="text-zinc-300 hover:text-white p-1 cursor-pointer">
-                  <i class="fa-solid fa-pen text-[10px]"></i>
-                </button>
-                <button onclick="deleteItem('${item.id}', event)" title="Excluir" class="text-zinc-300 hover:text-rose-400 p-1 cursor-pointer">
-                  <i class="fa-solid fa-trash text-[10px]"></i>
-                </button>
-              </div>
-            </div>
-          `;
-          grid.appendChild(card);
+          grid.innerHTML += createCardHTML(item);
         });
       }
     }
@@ -1385,59 +1142,42 @@
       if (!item) return;
 
       document.getElementById('playerTitle').innerText = item.title;
-      
       let playerUrl = item.apiUrl || '';
 
       if (playerUrl.includes('reidosembeds.online')) {
-        let channelId = '';
-        if (playerUrl.includes('id=')) {
-          channelId = playerUrl.split('id=')[1].split('&')[0];
-        } else {
-          const parts = playerUrl.split('/');
-          channelId = parts[parts.length - 1];
-        }
-        if (channelId) {
-          playerUrl = `https://reidosembeds.online/embed/canal.php?id=${channelId}`;
-        }
-      }
-
-      if (!playerUrl && item.episodes && item.episodes.length > 0) {
-        playerUrl = item.episodes[0];
+        let channelId = playerUrl.includes('id=') ? playerUrl.split('id=')[1].split('&')[0] : playerUrl.split('/').pop();
+        if (channelId) playerUrl = `https://reidosembeds.online/embed/canal.php?id=${channelId}`;
       }
 
       if (!playerUrl && item.tmdbId) {
-        playerUrl = item.type === 'Filme' 
-          ? `https://superflixapi.quest/filme/${item.tmdbId}`
-          : (item.type === 'Anime' ? `https://superflixapi.quest/anime/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`);
+        playerUrl = item.type === 'Filme' ? `https://superflixapi.quest/filme/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`;
       }
 
       currentPlayingUrl = playerUrl;
-      renderApiContent(playerUrl, item.type === 'Filme' ? 'Filme Completo' : (item.type === 'TV ao Vivo' ? 'Transmissão ao Vivo' : 'Player Principal'));
+      renderApiContent(playerUrl, item.type);
       
       const overlay = document.getElementById('playerOverlay');
-      overlay.classList.remove('opacity-0', 'pointer-events-none');
-      overlay.classList.add('opacity-100', 'pointer-events-auto');
+      overlay.classList.replace('opacity-0', 'opacity-100');
+      overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
     }
 
     function renderApiContent(rawContent, subtitle) {
-      document.getElementById('playerSubtitle').innerText = subtitle;
+      document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
       const holder = document.getElementById('iframeHolder');
       holder.innerHTML = '';
 
       if (!rawContent) {
-        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-300 text-sm font-semibold">URL da API não configurada.</div>`;
+        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-sm font-semibold">URL da API não configurada.</div>`;
         return;
       }
 
       if (rawContent.includes('<iframe') && rawContent.includes('</iframe>')) {
         holder.innerHTML = rawContent;
-        const insertedIframe = holder.querySelector('iframe');
-        if (insertedIframe) {
-          insertedIframe.style.width = "100%";
-          insertedIframe.style.height = "100%";
-          insertedIframe.referrerPolicy = "no-referrer";
-          insertedIframe.allow = "autoplay; encrypted-media; fullscreen";
-          insertedIframe.setAttribute('allowfullscreen', 'true');
+        const inserted = holder.querySelector('iframe');
+        if (inserted) {
+          inserted.style.width = "100%"; inserted.style.height = "100%";
+          inserted.allow = "autoplay; encrypted-media; fullscreen";
+          inserted.setAttribute('allowfullscreen', 'true');
         }
       } else {
         let cleanUrl = rawContent;
@@ -1450,12 +1190,8 @@
         const iframe = document.createElement('iframe');
         iframe.src = cleanUrl;
         iframe.className = "w-full h-full border-0";
-        iframe.referrerPolicy = "no-referrer";
         iframe.allow = "autoplay; encrypted-media; fullscreen";
         iframe.setAttribute('allowfullscreen', 'true');
-        iframe.setAttribute('webkitallowfullscreen', 'true');
-        iframe.setAttribute('mozallowfullscreen', 'true');
-
         holder.appendChild(iframe);
       }
     }
@@ -1467,19 +1203,16 @@
           const match = cleanUrl.match(/src=["']([^"']+)["']/i);
           if (match && match[1]) cleanUrl = match[1];
         }
-        cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
-        window.open(cleanUrl, '_blank');
+        window.open(cleanUrl.replace(/^["']|["']$/g, '').trim(), '_blank');
       }
     }
 
     function closePlayer() {
-      const holderEl = document.getElementById('iframeHolder');
-      holderEl.innerHTML = '';
+      document.getElementById('iframeHolder').innerHTML = '';
       currentPlayingUrl = '';
-
       const overlay = document.getElementById('playerOverlay');
-      overlay.classList.remove('opacity-100', 'pointer-events-auto');
-      overlay.classList.add('opacity-0', 'pointer-events-none');
+      overlay.classList.replace('opacity-100', 'opacity-0');
+      overlay.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
   </script>
 </body>
