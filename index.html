@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>RJ FLIX • Filmes, Séries & Animes</title>
   
-  <link rel="icon" href="./favicon.ico?v=11" type="image/x-icon">
-  <link rel="shortcut icon" href="./favicon.ico?v=11" type="image/x-icon">
-  <link rel="apple-touch-icon" href="./favicon.ico?v=11">
+  <link rel="icon" href="./favicon.ico?v=12" type="image/x-icon">
+  <link rel="shortcut icon" href="./favicon.ico?v=12" type="image/x-icon">
+  <link rel="apple-touch-icon" href="./favicon.ico?v=12">
 
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -331,20 +331,23 @@
               <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fa-solid fa-film text-brand-500"></i> Catálogo Completo de Filmes
               </h2>
-              <p class="text-xs text-zinc-400">Explore milhares de produções por gênero</p>
+              <p class="text-xs text-zinc-400">Filtre por lançamentos recentes ou gêneros</p>
             </div>
           </div>
 
+          <!-- FILTROS COM OPÇÃO DE LANÇAMENTOS -->
           <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1" id="movieGenreButtons">
-            <button onclick="filterMoviesGenre('all', this)" class="genre-btn genre-btn-active px-4 py-2 rounded-2xl border border-white/10 text-xs font-bold transition whitespace-nowrap">Todos</button>
+            <button onclick="filterMoviesGenre('now_playing', this)" class="genre-btn genre-btn-active px-4 py-2 rounded-2xl border border-white/10 text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5">
+              <i class="fa-solid fa-sparkles text-amber-400"></i> Lançamentos (Cinema)
+            </button>
+            <button onclick="filterMoviesGenre('all', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Populares</button>
+            <button onclick="filterMoviesGenre('upcoming', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Em Breve / Novos</button>
             <button onclick="filterMoviesGenre('28', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Ação</button>
             <button onclick="filterMoviesGenre('12', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Aventura</button>
             <button onclick="filterMoviesGenre('35', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Comédia</button>
             <button onclick="filterMoviesGenre('18', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Drama</button>
             <button onclick="filterMoviesGenre('878', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Ficção Científica</button>
             <button onclick="filterMoviesGenre('27', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Terror</button>
-            <button onclick="filterMoviesGenre('10749', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Romance</button>
-            <button onclick="filterMoviesGenre('16', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Animação</button>
           </div>
         </div>
 
@@ -365,18 +368,20 @@
               <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
                 <i class="fa-solid fa-tv text-brand-500"></i> Catálogo Completo de Séries
               </h2>
-              <p class="text-xs text-zinc-400">Episódios organizados diretamente do acervo</p>
+              <p class="text-xs text-zinc-400">Novos episódios e séries em exibição</p>
             </div>
           </div>
 
+          <!-- FILTROS COM OPÇÃO DE LANÇAMENTOS/NO AR -->
           <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1" id="seriesGenreButtons">
-            <button onclick="filterSeriesGenre('all', this)" class="genre-btn genre-btn-active px-4 py-2 rounded-2xl border border-white/10 text-xs font-bold transition whitespace-nowrap">Todas</button>
+            <button onclick="filterSeriesGenre('on_the_air', this)" class="genre-btn genre-btn-active px-4 py-2 rounded-2xl border border-white/10 text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5">
+              <i class="fa-solid fa-clock text-rose-400"></i> Lançamentos / No Ar
+            </button>
+            <button onclick="filterSeriesGenre('all', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Populares</button>
             <button onclick="filterSeriesGenre('18', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Drama</button>
             <button onclick="filterSeriesGenre('35', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Comédia</button>
             <button onclick="filterSeriesGenre('10765', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Sci-Fi & Fantasia</button>
             <button onclick="filterSeriesGenre('80', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Crime / Policial</button>
-            <button onclick="filterSeriesGenre('9648', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Mistério</button>
-            <button onclick="filterSeriesGenre('10759', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Ação & Aventura</button>
           </div>
         </div>
 
@@ -399,6 +404,14 @@
               </h2>
               <p class="text-xs text-zinc-400">Animes japoneses em HD dublados e legendados</p>
             </div>
+          </div>
+
+          <!-- FILTROS ANIMES -->
+          <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1" id="animeFilterButtons">
+            <button onclick="filterAnimesType('newest', this)" class="genre-btn genre-btn-active px-4 py-2 rounded-2xl border border-white/10 text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5">
+              <i class="fa-solid fa-bolt text-amber-400"></i> Lançamentos Recentes
+            </button>
+            <button onclick="filterAnimesType('popular', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Mais Populares</button>
           </div>
         </div>
 
@@ -701,10 +714,11 @@
     let activeTab = 'home';
 
     let moviePage = 1;
-    let movieGenre = 'all';
+    let movieGenre = 'now_playing'; // Padrão: Lançamentos
     let seriesPage = 1;
-    let seriesGenre = 'all';
+    let seriesGenre = 'on_the_air'; // Padrão: Lançamentos / No Ar
     let animePage = 1;
+    let animeType = 'newest'; // Padrão: Lançamentos de Anime
 
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
@@ -934,13 +948,20 @@
       }
     }
 
-    // REQUISIÇÕES FILMES
+    // REQUISIÇÕES FILMES COM LANÇAMENTOS
     async function fetchMoviesData(replace = false) {
       try {
-        let url = `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}`;
-        if (movieGenre !== 'all') {
+        let url = '';
+        if (movieGenre === 'now_playing') {
+          url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}`;
+        } else if (movieGenre === 'upcoming') {
+          url = `https://api.themoviedb.org/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}`;
+        } else if (movieGenre === 'all') {
+          url = `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}`;
+        } else {
           url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=${movieGenre}&sort_by=popularity.desc&page=${moviePage}`;
         }
+
         const res = await fetch(url);
         const data = await res.json();
         if (data.results) {
@@ -964,13 +985,18 @@
       fetchMoviesData(false);
     }
 
-    // REQUISIÇÕES SÉRIES
+    // REQUISIÇÕES SÉRIES COM LANÇAMENTOS
     async function fetchSeriesData(replace = false) {
       try {
-        let url = `https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${seriesPage}`;
-        if (seriesGenre !== 'all') {
+        let url = '';
+        if (seriesGenre === 'on_the_air') {
+          url = `https://api.themoviedb.org/3/tv/on_the_air?api_key=${TMDB_API_KEY}&language=pt-BR&page=${seriesPage}`;
+        } else if (seriesGenre === 'all') {
+          url = `https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${seriesPage}`;
+        } else {
           url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=${seriesGenre}&sort_by=popularity.desc&page=${seriesPage}`;
         }
+
         const res = await fetch(url);
         const data = await res.json();
         if (data.results) {
@@ -994,10 +1020,12 @@
       fetchSeriesData(false);
     }
 
-    // REQUISIÇÕES ANIMES
+    // REQUISIÇÕES ANIMES COM LANÇAMENTOS
     async function fetchAnimesData(replace = false) {
       try {
-        const url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_original_language=ja&sort_by=popularity.desc&page=${animePage}`;
+        let sortBy = animeType === 'newest' ? 'first_air_date.desc' : 'popularity.desc';
+        const url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_original_language=ja&sort_by=${sortBy}&page=${animePage}`;
+        
         const res = await fetch(url);
         const data = await res.json();
         if (data.results) {
@@ -1006,6 +1034,14 @@
       } catch (err) {
         console.error("Erro ao carregar animes:", err);
       }
+    }
+
+    function filterAnimesType(type, btn) {
+      animeType = type;
+      animePage = 1;
+      document.querySelectorAll('#animeFilterButtons .genre-btn').forEach(b => b.classList.remove('genre-btn-active'));
+      btn.classList.add('genre-btn-active');
+      fetchAnimesData(true);
     }
 
     function loadMoreAnimes() {
@@ -1244,7 +1280,7 @@
       overlay.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
 
-    // BUSCA GLOBAL (SEM RETORNO DE CANAIS AO VIVO)
+    // BUSCA GLOBAL
     function handleGlobalSearch(e) {
       if (e && e.key === "Escape") { clearGlobalSearch(); return; }
       clearTimeout(globalSearchTimeout);
