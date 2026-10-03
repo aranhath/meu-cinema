@@ -226,7 +226,7 @@
           </button>
         </div>
 
-        <!-- PAINEL DE RESULTADOS DA BUSCA (GRID RESPONSIVO OTIMIZADO) -->
+        <!-- PAINEL DE RESULTADOS DA BUSCA (GRID RESPONSIVO E OTIMIZADO PARA MOBILE) -->
         <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-200 absolute left-0 right-0 top-full mt-3 bg-[#181a26] border-2 border-zinc-700/80 rounded-3xl shadow-2xl max-h-[75vh] overflow-y-auto p-3.5 sm:p-5 space-y-4 z-50">
           <div class="flex items-center justify-between border-b border-zinc-700/80 pb-3">
             <span class="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
@@ -1274,7 +1274,7 @@
       overlay.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
 
-    // BUSCA GLOBAL (OTIMIZADA)
+    // BUSCA GLOBAL (LAYOUT TOTALMENTE OTIMIZADO PARA CELULAR E PC)
     function handleGlobalSearch(e) {
       if (e && e.key === "Escape") { clearGlobalSearch(); return; }
       clearTimeout(globalSearchTimeout);
@@ -1311,18 +1311,18 @@
       section.classList.remove('hidden');
       items.forEach(item => {
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border border-emerald-500/30 bg-[#25283b] shadow-md w-full gap-2";
+        div.className = "flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl border border-emerald-500/30 bg-[#25283b] shadow-md w-full gap-2.5";
         div.innerHTML = `
-          <div class="flex items-center gap-2.5 min-w-0 flex-1">
-            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0 border border-emerald-500/30">
-              <i class="fa-solid fa-play text-[10px]"></i>
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0 border border-emerald-500/30">
+              <i class="fa-solid fa-play text-xs"></i>
             </div>
             <div class="min-w-0 flex-1">
-              <h4 class="font-bold text-xs sm:text-sm text-white line-clamp-2 leading-tight">${item.title}</h4>
-              <span class="text-[10px] sm:text-xs text-emerald-300 font-bold">${item.type} • No catálogo</span>
+              <h4 class="font-bold text-sm text-white line-clamp-2 leading-snug">${item.title}</h4>
+              <span class="text-xs text-emerald-300 font-bold">${item.type} • No catálogo</span>
             </div>
           </div>
-          <button onclick="playItem('${item.id}')" class="px-3 sm:px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition cursor-pointer shadow-md flex-shrink-0">
+          <button onclick="playItem('${item.id}')" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition cursor-pointer shadow-md text-center flex-shrink-0">
             Assistir
           </button>
         `;
@@ -1353,27 +1353,27 @@
           const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
 
           const div = document.createElement('div');
-          div.className = "flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border border-zinc-700/80 bg-[#25283b] shadow-md w-full gap-2 sm:gap-3";
+          div.className = "flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl border border-zinc-700/80 bg-[#25283b] shadow-md w-full gap-3";
           div.innerHTML = `
-            <div class="flex items-center gap-2.5 min-w-0 flex-1">
-              <div class="w-9 h-12 sm:w-10 sm:h-14 bg-black/60 rounded-xl overflow-hidden flex-shrink-0 relative border border-white/20">
+            <div class="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+              <div class="w-11 h-16 bg-black/60 rounded-xl overflow-hidden flex-shrink-0 relative border border-white/20">
                 ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-xs"><i class="fa-solid fa-film"></i></div>`}
               </div>
               <div class="min-w-0 flex-1">
-                <h4 class="font-bold text-xs sm:text-sm text-white line-clamp-2 leading-tight">${title}</h4>
-                <span class="text-[10px] sm:text-xs text-amber-400 font-bold mt-0.5 block">${vote} • ${typeLabel}</span>
+                <h4 class="font-bold text-sm text-white line-clamp-2 leading-snug">${title}</h4>
+                <span class="text-xs text-amber-400 font-bold mt-1 block">${vote} • ${typeLabel}</span>
               </div>
             </div>
             
-            <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-              <button onclick="saveItemToCatalog('${encodeURIComponent(title)}', '${typeLabel}', '${poster}', '${playUrl}', '${tmdbId}', '${vote}', event)" title="Salvar no Catálogo" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer shadow-md flex items-center gap-1">
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-shrink-0 pt-1 sm:pt-0 border-t border-white/5 sm:border-0">
+              <button onclick="saveItemToCatalog('${encodeURIComponent(title)}', '${typeLabel}', '${poster}', '${playUrl}', '${tmdbId}', '${vote}', event)" title="Salvar no Catálogo" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer shadow-md flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-bookmark text-xs"></i>
-                <span class="hidden sm:inline">Salvar</span>
+                <span>Salvar</span>
               </button>
               
-              <button onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', '${typeLabel}')" title="Assistir Agora" class="p-2 sm:px-3.5 sm:py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1">
+              <button onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', '${typeLabel}')" title="Assistir Agora" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-black transition cursor-pointer shadow-md flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-play text-xs"></i>
-                <span class="hidden sm:inline">Assistir</span>
+                <span>Assistir</span>
               </button>
             </div>
           `;
