@@ -242,14 +242,14 @@
             <h3 class="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 border-b border-zinc-700/60 pb-1">
               <i class="fa-solid fa-bookmark"></i> No Seu Catálogo
             </h3>
-            <div id="resultsSavedList" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+            <div id="resultsSavedList" class="flex flex-col gap-2.5"></div>
           </div>
 
           <div id="sectionTMDB" class="hidden space-y-2.5">
             <h3 class="text-xs font-black uppercase tracking-wider text-brand-500 flex items-center gap-1.5 border-b border-zinc-700/60 pb-1">
               <i class="fa-solid fa-film"></i> Filmes, Séries & Animes
             </h3>
-            <div id="resultsTMDBList" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+            <div id="resultsTMDBList" class="flex flex-col gap-2.5"></div>
           </div>
 
           <div id="resultsEmpty" class="hidden text-center py-8 text-xs text-zinc-300 font-bold">
@@ -714,11 +714,11 @@
     let activeTab = 'home';
 
     let moviePage = 1;
-    let movieGenre = 'now_playing'; // Padrão: Lançamentos
+    let movieGenre = 'now_playing';
     let seriesPage = 1;
-    let seriesGenre = 'on_the_air'; // Padrão: Lançamentos / No Ar
+    let seriesGenre = 'on_the_air';
     let animePage = 1;
-    let animeType = 'newest'; // Padrão: Lançamentos de Anime
+    let animeType = 'newest';
 
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
@@ -870,7 +870,6 @@
       });
     }
 
-    // ALTERNAR ABAS (COM BLOQUEIO NA TV)
     function switchTab(tabName) {
       if (tabName === 'tv') {
         showToast('A seção de TV ao Vivo está temporariamente desativada.', 'error');
@@ -915,7 +914,6 @@
       }
     }
 
-    // CARREGAR HOME COMPLETA
     async function loadFullHomeData() {
       try {
         const resTrend = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}&language=pt-BR`);
@@ -948,7 +946,6 @@
       }
     }
 
-    // REQUISIÇÕES FILMES COM LANÇAMENTOS
     async function fetchMoviesData(replace = false) {
       try {
         let url = '';
@@ -985,7 +982,6 @@
       fetchMoviesData(false);
     }
 
-    // REQUISIÇÕES SÉRIES COM LANÇAMENTOS
     async function fetchSeriesData(replace = false) {
       try {
         let url = '';
@@ -1020,7 +1016,6 @@
       fetchSeriesData(false);
     }
 
-    // REQUISIÇÕES ANIMES COM LANÇAMENTOS
     async function fetchAnimesData(replace = false) {
       try {
         let sortBy = animeType === 'newest' ? 'first_air_date.desc' : 'popularity.desc';
@@ -1202,7 +1197,10 @@
     }
 
     function saveItemToCatalog(title, type, banner, apiUrl, tmdbId, note, e) {
-      if (e) e.stopPropagation();
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
       if (!userCatalogRef) return;
 
       const decodedTitle = decodeURIComponent(title);
@@ -1317,18 +1315,18 @@
       section.classList.remove('hidden');
       items.forEach(item => {
         const div = document.createElement('div');
-        div.className = "flex items-center justify-between p-3 rounded-2xl border border-emerald-500/30 bg-[#25283b] shadow-md";
+        div.className = "flex items-center justify-between p-3 rounded-2xl border border-emerald-500/30 bg-[#25283b] shadow-md w-full";
         div.innerHTML = `
-          <div class="flex items-center gap-3 min-w-0">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
             <div class="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs flex-shrink-0 border border-emerald-500/30">
               <i class="fa-solid fa-play text-xs"></i>
             </div>
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
               <h4 class="font-black text-sm text-white truncate">${item.title}</h4>
               <span class="text-xs text-emerald-300 font-bold">${item.type} • No catálogo</span>
             </div>
           </div>
-          <button onclick="playItem('${item.id}')" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition cursor-pointer shadow-md">
+          <button onclick="playItem('${item.id}')" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition cursor-pointer shadow-md flex-shrink-0">
             Assistir
           </button>
         `;
@@ -1348,7 +1346,7 @@
         let count = 0;
         data.results.forEach(item => {
           if (item.media_type !== 'movie' && item.media_type !== 'tv') return;
-          if (count >= 8) return; count++;
+          if (count >= 10) return; count++;
 
           const title = item.title || item.name;
           const isMovie = item.media_type === 'movie';
@@ -1359,10 +1357,10 @@
           const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
 
           const div = document.createElement('div');
-          div.className = "flex items-center justify-between p-3 rounded-2xl border border-zinc-700/80 bg-[#25283b] shadow-md gap-2";
+          div.className = "flex items-center justify-between p-3 rounded-2xl border border-zinc-700/80 bg-[#25283b] shadow-md w-full gap-3";
           div.innerHTML = `
             <div class="flex items-center gap-3 min-w-0 flex-1">
-              <div class="w-9 h-12 bg-black/60 rounded-xl overflow-hidden flex-shrink-0 relative border border-white/20">
+              <div class="w-10 h-14 bg-black/60 rounded-xl overflow-hidden flex-shrink-0 relative border border-white/20">
                 ${poster ? `<img src="${poster}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-xs"><i class="fa-solid fa-film"></i></div>`}
               </div>
               <div class="min-w-0 flex-1">
@@ -1372,13 +1370,13 @@
             </div>
             
             <div class="flex items-center gap-2 flex-shrink-0">
-              <button onclick="saveItemToCatalog('${encodeURIComponent(title)}', '${typeLabel}', '${poster}', '${playUrl}', '${tmdbId}', '${vote}', event)" title="Salvar no Catálogo" class="px-3 py-1.5 rounded-xl bg-emerald-600/80 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer shadow-md flex items-center gap-1">
-                <i class="fa-solid fa-bookmark text-[11px]"></i>
-                <span class="hidden sm:inline">Salvar</span>
+              <button onclick="saveItemToCatalog('${encodeURIComponent(title)}', '${typeLabel}', '${poster}', '${playUrl}', '${tmdbId}', '${vote}', event)" title="Salvar no Catálogo" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer shadow-md flex items-center gap-1.5">
+                <i class="fa-solid fa-bookmark text-xs"></i>
+                <span class="text-xs font-bold">Salvar</span>
               </button>
               
-              <button onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', '${typeLabel}')" class="px-3.5 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1">
-                <i class="fa-solid fa-play text-[10px]"></i>
+              <button onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', '${typeLabel}')" class="px-3.5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-black transition cursor-pointer shadow-md flex items-center gap-1.5">
+                <i class="fa-solid fa-play text-xs"></i>
                 <span>Assistir</span>
               </button>
             </div>
