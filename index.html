@@ -226,7 +226,7 @@
           </button>
         </div>
 
-        <!-- PAINEL DE RESULTADOS DA BUSCA -->
+        <!-- PAINEL DE RESULTADOS DA BUSCA (GRID RESPONSIVO E OTIMIZADO PARA MOBILE) -->
         <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-200 absolute left-0 right-0 top-full mt-3 bg-[#181a26] border-2 border-zinc-700/80 rounded-3xl shadow-2xl max-h-[75vh] overflow-y-auto p-3.5 sm:p-5 space-y-4 z-50">
           <div class="flex items-center justify-between border-b border-zinc-700/80 pb-3">
             <span class="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
@@ -570,7 +570,7 @@
     </div>
   </div>
 
-  <!-- PLAYER OVERLAY COM BLOQUEADOR DE POPUPS -->
+  <!-- PLAYER OVERLAY -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
     <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/60 border border-white/15 p-2 rounded-2xl shadow-2xl backdrop-blur-xl">
       <div class="hidden sm:block px-3 text-left">
@@ -584,8 +584,7 @@
       </button>
     </div>
 
-    <!-- HOLDER DO PLAYER COM CAMADA INVÍSIVEL ANTI-ANÚNCIOS -->
-    <div id="iframeHolder" class="w-full h-full relative"></div>
+    <div id="iframeHolder" class="w-full h-full"></div>
   </div>
 
   <script>
@@ -1242,7 +1241,6 @@
       playCustomUrl(playerUrl, encodeURIComponent(item.title), item.type);
     }
 
-    // RENDERIZAÇÃO DO PLAYER COM SANDBOX RIGOROSO ANTI-POPUPS
     function renderApiContent(rawContent, subtitle) {
       document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
       const holder = document.getElementById('iframeHolder');
@@ -1260,27 +1258,13 @@
       }
       cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
 
-      // IFRAME COM SANDBOX BLOQUEADOR DE REDIRECIONAMENTOS E POPUPS
       const iframe = document.createElement('iframe');
       iframe.src = cleanUrl;
-      iframe.className = "w-full h-full border-0 relative z-10";
+      iframe.className = "w-full h-full border-0";
       iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
       iframe.setAttribute('allowfullscreen', 'true');
       
-      // DIRETIVAS DO SANDBOX: SEM POPUPS E SEM NAVEGAÇÃO DE TELA CHEIA PARA FORA DO APP
-      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen');
-
-      // CAMADA TRANSPARENTE ESCUDO PARA QUEIMAR O PRIMEIRO CLIQUE DE POPUP
-      const shield = document.createElement('div');
-      shield.id = 'playerClickShield';
-      shield.className = 'absolute inset-0 z-20 bg-transparent cursor-pointer flex items-center justify-center';
-      shield.title = 'Clique para Iniciar o Vídeo';
-      shield.onclick = function() {
-        shield.remove(); // Remove o escudo no primeiro toque permitindo a navegação no vídeo
-      };
-
       holder.appendChild(iframe);
-      holder.appendChild(shield);
     }
 
     function closePlayer() {
@@ -1290,7 +1274,7 @@
       overlay.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
 
-    // BUSCA GLOBAL
+    // BUSCA GLOBAL (LAYOUT TOTALMENTE OTIMIZADO PARA CELULAR E PC)
     function handleGlobalSearch(e) {
       if (e && e.key === "Escape") { clearGlobalSearch(); return; }
       clearTimeout(globalSearchTimeout);
