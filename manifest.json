@@ -1,0 +1,16 @@
+{
+  "name": "RJ FLIX",
+  "short_name": "RJ FLIX",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#08090c",
+  "theme_color": "#08090c",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
