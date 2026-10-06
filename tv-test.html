@@ -17,23 +17,23 @@
 <body class="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
 
   <!-- CABEÇALHO DO TESTADOR -->
-  <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+  <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
     <div>
       <h1 class="text-xl font-black text-rose-500 flex items-center gap-2">
         <i class="fa-solid fa-flask"></i> Laboratório de Testes de Canais (TV ao Vivo)
       </h1>
       <p class="text-xs text-zinc-400 mt-1">
-        Este ambiente é 100% isolado do sistema principal. Teste os servidores abaixo para validar as transmissões.
+        Ambiente de teste isolado para validar os links diretos sem a subpasta /canal/.
       </p>
     </div>
     
     <div class="flex items-center gap-2 w-full md:w-auto">
-      <label class="text-xs font-bold text-zinc-300">Servidor / API:</label>
-      <select id="serverSelect" onchange="switchServerRoute()" class="bg-zinc-800 border border-zinc-700 text-white text-xs font-bold py-2 px-3 rounded-xl focus:outline-none">
-        <option value="api">API Dinâmica (reidosembeds.online/api)</option>
-        <option value="direct">Direct Embed (reidosembeds.online/embed/)</option>
-        <option value="v2">Mirror v2 (v2.rdembed.sbs/canal/)</option>
-        <option value="embed">Mirror Subdomínio (embed.reidosembeds.online/canal/)</option>
+      <label class="text-xs font-bold text-zinc-300">Servidor / Rota:</label>
+      <select id="serverSelect" onchange="switchServerRoute()" class="bg-zinc-800 border border-zinc-700 text-white text-xs font-bold py-2 px-3 rounded-xl focus:outline-none cursor-pointer">
+        <option value="v2_direct">Mirror v2 Direto (v2.rdembed.sbs/id)</option>
+        <option value="reidos_embed">Rei dos Embeds Direct (reidosembeds.online/embed/id)</option>
+        <option value="reidos_root">Rei dos Embeds Raiz (reidosembeds.online/id)</option>
+        <option value="embed_subdomain">Subdomínio Direct (embed.reidosembeds.online/id)</option>
       </select>
     </div>
   </div>
@@ -53,28 +53,28 @@
 
     <!-- PLAYER DE EXIBIÇÃO E LOGS -->
     <div class="lg:col-span-2 space-y-4">
-      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3 shadow-2xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-800 pb-2 gap-1">
           <h3 id="currentChannelTitle" class="text-sm font-bold text-white">Nenhum canal selecionado</h3>
-          <span id="currentUrlDisplay" class="text-[10px] font-mono text-zinc-500 truncate max-w-[300px]">URL: -</span>
+          <span id="currentUrlDisplay" class="text-[10px] font-mono text-emerald-400 truncate max-w-full sm:max-w-[350px]">URL: -</span>
         </div>
 
-        <div id="playerBox" class="aspect-video w-full bg-black rounded-xl overflow-hidden flex items-center justify-center relative border border-zinc-800">
+        <div id="playerBox" class="aspect-video w-full bg-black rounded-xl overflow-hidden flex items-center justify-center relative border border-zinc-800 shadow-inner">
           <div class="text-center text-zinc-500 space-y-2 p-4">
             <i class="fa-solid fa-play-circle text-4xl"></i>
-            <p class="text-xs">Clique em um canal da lista ao lado para iniciar o teste.</p>
+            <p class="text-xs">Clique em um canal da lista ao lado para testar a transmissão.</p>
           </div>
         </div>
       </div>
 
       <!-- LOGS DE DIAGNÓSTICO -->
-      <div class="bg-black/80 border border-zinc-800 rounded-2xl p-4 space-y-2 font-mono text-xs">
+      <div class="bg-black/80 border border-zinc-800 rounded-2xl p-4 space-y-2 font-mono text-xs shadow-2xl">
         <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-          <span class="text-zinc-400 font-bold"><i class="fa-solid fa-terminal mr-1"></i> Console de Diagnóstico em Tempo Real</span>
+          <span class="text-zinc-400 font-bold"><i class="fa-solid fa-terminal mr-1"></i> Console de Diagnóstico</span>
           <button onclick="clearLogs()" class="text-[10px] text-zinc-500 hover:text-zinc-300">Limpar</button>
         </div>
         <div id="logOutput" class="h-28 overflow-y-auto space-y-1 text-[11px] text-emerald-400">
-          <div>[SISTEMA]: Testador carregado e pronto.</div>
+          <div>[SISTEMA]: Testador pronto com as novas rotas diretas sem /canal/.</div>
         </div>
       </div>
     </div>
@@ -83,6 +83,7 @@
 
   <script>
     const TEST_CHANNELS = [
+      { id: "combate", name: "Combate", category: "Esportes" },
       { id: "globo-rj", name: "Globo RJ", category: "Abertos" },
       { id: "globo-sp", name: "Globo SP", category: "Abertos" },
       { id: "sportv", name: "SporTV 1", category: "Esportes" },
@@ -92,7 +93,6 @@
       { id: "espn-2", name: "ESPN 2", category: "Esportes" },
       { id: "premiere-clubes", name: "Premiere Clubes", category: "Esportes" },
       { id: "cazetv", name: "CazéTV", category: "Esportes" },
-      { id: "combate", name: "Combate", category: "Esportes" },
       { id: "sbt", name: "SBT", category: "Abertos" },
       { id: "record-tv", name: "Record TV", category: "Abertos" },
       { id: "band", name: "Band", category: "Abertos" },
@@ -113,7 +113,7 @@
 
       TEST_CHANNELS.forEach(ch => {
         const btn = document.createElement('button');
-        btn.className = "w-full text-left p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-rose-500/50 hover:bg-zinc-800 transition flex items-center justify-between group";
+        btn.className = "w-full text-left p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-rose-500/50 hover:bg-zinc-800 transition flex items-center justify-between group cursor-pointer";
         btn.onclick = () => testChannel(ch);
 
         btn.innerHTML = `
@@ -127,42 +127,25 @@
       });
     }
 
-    async function testChannel(ch) {
+    function testChannel(ch) {
       currentSelectedChannel = ch;
       document.getElementById('currentChannelTitle').innerText = `Testando: ${ch.name}`;
-      log(`Iniciando teste no canal: ${ch.name} (${ch.id})`);
 
       const routeType = document.getElementById('serverSelect').value;
       let targetUrl = "";
 
-      if (routeType === 'api') {
-        log(`Consultando endpoint da API do Rei dos Embeds...`);
-        try {
-          const apiEndpoint = `https://reidosembeds.online/api/channel?id=${ch.id}`;
-          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiEndpoint)}`;
-          const res = await fetch(proxyUrl);
-          const data = await res.json();
-
-          if (data && (data.embed_url || data.url || data.player)) {
-            targetUrl = data.embed_url || data.url || data.player;
-            log(`URL resolvida via API: ${targetUrl}`);
-          } else {
-            targetUrl = `https://reidosembeds.online/embed/${ch.id}`;
-            log(`API não retornou embed. Usando rota padrão: ${targetUrl}`, 'warn');
-          }
-        } catch (err) {
-          targetUrl = `https://reidosembeds.online/embed/${ch.id}`;
-          log(`Falha ao consultar API. Usando fallback direct: ${targetUrl}`, 'error');
-        }
-      } else if (routeType === 'direct') {
+      if (routeType === 'v2_direct') {
+        targetUrl = `https://v2.rdembed.sbs/${ch.id}`;
+      } else if (routeType === 'reidos_embed') {
         targetUrl = `https://reidosembeds.online/embed/${ch.id}`;
-      } else if (routeType === 'v2') {
-        targetUrl = `https://v2.rdembed.sbs/canal/${ch.id}`;
-      } else if (routeType === 'embed') {
-        targetUrl = `https://embed.reidosembeds.online/canal/${ch.id}`;
+      } else if (routeType === 'reidos_root') {
+        targetUrl = `https://reidosembeds.online/${ch.id}`;
+      } else if (routeType === 'embed_subdomain') {
+        targetUrl = `https://embed.reidosembeds.online/${ch.id}`;
       }
 
       document.getElementById('currentUrlDisplay').innerText = `URL: ${targetUrl}`;
+      log(`Carregando ${ch.name} -> ${targetUrl}`);
       loadIframe(targetUrl);
     }
 
@@ -183,7 +166,7 @@
       iframe.setAttribute('allowfullscreen', 'true');
       
       box.appendChild(iframe);
-      log(`Iframe injetado com a URL: ${url}`);
+      log(`Iframe injetado com sucesso.`);
     }
 
     function log(msg, level = 'info') {
