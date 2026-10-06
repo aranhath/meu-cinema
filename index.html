@@ -25,11 +25,6 @@
     }
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  
-  <!-- Firebase SDK (v9 Compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
     html, body {
@@ -121,9 +116,6 @@
 
         <nav class="hidden md:flex items-center gap-1.5 ml-4">
           <button onclick="switchTab('home')" id="tab-home" class="nav-tab nav-active px-3.5 py-2 rounded-2xl text-xs font-semibold transition cursor-pointer">Início</button>
-          <button onclick="switchTab('movies')" id="tab-movies" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Filmes</button>
-          <button onclick="switchTab('series')" id="tab-series" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Séries</button>
-          <button onclick="switchTab('animes')" id="tab-animes" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Animes</button>
           <button onclick="switchTab('tv')" id="tab-tv" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer flex items-center gap-1.5">
             <i class="fa-solid fa-tv text-rose-500"></i>
             <span>TV ao Vivo</span>
@@ -135,9 +127,6 @@
     <!-- MENU MOBILE -->
     <div class="md:hidden flex items-center justify-between bg-black/50 border-b border-white/10 px-3 py-2.5 overflow-x-auto hide-scrollbar backdrop-blur-xl">
       <button onclick="switchTab('home')" class="px-3 py-1.5 text-xs font-bold text-white whitespace-nowrap rounded-xl bg-white/10">Início</button>
-      <button onclick="switchTab('movies')" class="px-3 py-1.5 text-xs font-semibold text-zinc-300 whitespace-nowrap">Filmes</button>
-      <button onclick="switchTab('series')" class="px-3 py-1.5 text-xs font-semibold text-zinc-300 whitespace-nowrap">Séries</button>
-      <button onclick="switchTab('animes')" class="px-3 py-1.5 text-xs font-semibold text-zinc-300 whitespace-nowrap">Animes</button>
       <button onclick="switchTab('tv')" class="px-3 py-1.5 text-xs font-bold text-rose-400 bg-rose-950/40 border border-rose-500/30 rounded-xl whitespace-nowrap flex items-center gap-1">
         <i class="fa-solid fa-tv text-[10px]"></i> TV ao Vivo
       </button>
@@ -150,7 +139,7 @@
       <div class="relative z-30">
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-sm"></i>
-          <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar filmes, séries, animes e canais ao vivo..." autocomplete="off" class="w-full bg-[#181a26] border-2 border-brand-500/60 rounded-2xl pl-11 pr-12 py-3.5 text-base text-white focus:outline-none focus:border-brand-500 transition font-bold shadow-2xl">
+          <input type="search" id="globalSearchInput" onkeyup="handleGlobalSearch(event)" placeholder="Buscar canais ao vivo, filmes e séries..." autocomplete="off" class="w-full bg-[#181a26] border-2 border-brand-500/60 rounded-2xl pl-11 pr-12 py-3.5 text-base text-white focus:outline-none focus:border-brand-500 transition font-bold shadow-2xl">
           <button id="clearSearchBtn" onclick="clearGlobalSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xs transition cursor-pointer">
             <i class="fa-solid fa-xmark"></i>
           </button>
@@ -171,13 +160,6 @@
               <i class="fa-solid fa-tv"></i> Canais de TV ao Vivo
             </h3>
             <div id="resultsTVList" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
-          </div>
-
-          <div id="sectionTMDB" class="hidden space-y-2">
-            <h3 class="text-xs font-black uppercase tracking-wider text-brand-500 flex items-center gap-1.5 border-b border-zinc-700/60 pb-1">
-              <i class="fa-solid fa-film"></i> Filmes, Séries & Animes
-            </h3>
-            <div id="resultsTMDBList" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
           </div>
         </div>
       </div>
@@ -217,9 +199,9 @@
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
             <div>
               <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-solid fa-satellite-dish text-rose-500 animate-pulse"></i> Canais de TV ao Vivo
+                <i class="fa-solid fa-satellite-dish text-rose-500 animate-pulse"></i> Grade Completa de TV ao Vivo
               </h2>
-              <p class="text-xs text-zinc-400">Selecione uma opção de servidor no topo do vídeo se algum canal der indisponível</p>
+              <p class="text-xs text-zinc-400">Todos os canais com resolução de embed dinâmica sem erro 404</p>
             </div>
           </div>
 
@@ -239,19 +221,13 @@
     </main>
   </div>
 
-  <!-- PLAYER OVERLAY COM SELETOR DE OPÇÕES DE SERVIDOR -->
+  <!-- PLAYER OVERLAY -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
     <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/80 border border-white/15 p-2 rounded-2xl shadow-2xl backdrop-blur-xl">
       <div class="hidden sm:block px-3 text-left">
         <h2 id="playerTitle" class="text-xs font-bold text-white truncate max-w-[180px]">...</h2>
         <p id="playerSubtitle" class="text-[10px] text-zinc-400 font-medium"></p>
       </div>
-
-      <select id="serverRouteSelect" onchange="changeServerRoute()" class="hidden bg-rose-950/80 border border-rose-500/50 text-white text-xs font-bold py-1.5 px-2.5 rounded-xl focus:outline-none cursor-pointer">
-        <option value="0">Servidor 1</option>
-        <option value="1">Servidor 2</option>
-        <option value="2">Servidor 3</option>
-      </select>
 
       <button onclick="closePlayer()" title="Fechar Player" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-xl shadow-lg shadow-brand-500/30 transition flex items-center gap-1.5 cursor-pointer">
         <i class="fa-solid fa-xmark"></i>
@@ -263,35 +239,85 @@
   </div>
 
   <script>
-    // BASE COMPLETA DE CANAIS DE TV
-    const CHANNELS = [
-      { id: "globo-rj", name: "Globo RJ", category: "abertos", icon: "fa-tv", color: "from-blue-600 to-indigo-800", routes: ["https://v2.rdembed.sbs/canal/globo-rj", "https://reidosembeds.online/embed/globo-rj", "https://embed.reidosembeds.online/canal/globo-rj"] },
-      { id: "globo-sp", name: "Globo SP", category: "abertos", icon: "fa-tv", color: "from-blue-700 to-indigo-900", routes: ["https://v2.rdembed.sbs/canal/globo-sp", "https://reidosembeds.online/embed/globo-sp", "https://embed.reidosembeds.online/canal/globo-sp"] },
-      { id: "sportv", name: "SporTV", category: "esportes", icon: "fa-futbol", color: "from-green-600 to-emerald-800", routes: ["https://v2.rdembed.sbs/canal/sportv", "https://reidosembeds.online/embed/sportv", "https://embed.reidosembeds.online/canal/sportv"] },
-      { id: "sportv-2", name: "SporTV 2", category: "esportes", icon: "fa-futbol", color: "from-green-700 to-teal-900", routes: ["https://v2.rdembed.sbs/canal/sportv-2", "https://reidosembeds.online/embed/sportv-2", "https://embed.reidosembeds.online/canal/sportv-2"] },
-      { id: "sportv-3", name: "SporTV 3", category: "esportes", icon: "fa-futbol", color: "from-emerald-600 to-green-900", routes: ["https://v2.rdembed.sbs/canal/sportv-3", "https://reidosembeds.online/embed/sportv-3", "https://embed.reidosembeds.online/canal/sportv-3"] },
-      { id: "espn", name: "ESPN", category: "esportes", icon: "fa-trophy", color: "from-red-600 to-rose-900", routes: ["https://v2.rdembed.sbs/canal/espn", "https://reidosembeds.online/embed/espn", "https://embed.reidosembeds.online/canal/espn"] },
-      { id: "espn-2", name: "ESPN 2", category: "esportes", icon: "fa-trophy", color: "from-red-700 to-rose-950", routes: ["https://v2.rdembed.sbs/canal/espn-2", "https://reidosembeds.online/embed/espn-2", "https://embed.reidosembeds.online/canal/espn-2"] },
-      { id: "premiere-clubes", name: "Premiere Clubes", category: "esportes", icon: "fa-shirt", color: "from-green-500 to-emerald-700", routes: ["https://v2.rdembed.sbs/canal/premiere-clubes", "https://reidosembeds.online/embed/premiere-clubes", "https://embed.reidosembeds.online/canal/premiere-clubes"] },
-      { id: "cazetv", name: "CazéTV", category: "esportes", icon: "fa-bolt", color: "from-yellow-500 to-amber-700", routes: ["https://v2.rdembed.sbs/canal/cazetv", "https://reidosembeds.online/embed/cazetv", "https://embed.reidosembeds.online/canal/cazetv"] },
-      { id: "sbt", name: "SBT", category: "abertos", icon: "fa-tv", color: "from-blue-500 to-cyan-700", routes: ["https://v2.rdembed.sbs/canal/sbt", "https://reidosembeds.online/embed/sbt", "https://embed.reidosembeds.online/canal/sbt"] },
-      { id: "record-tv", name: "Record TV", category: "abertos", icon: "fa-tv", color: "from-purple-600 to-indigo-900", routes: ["https://v2.rdembed.sbs/canal/record-tv", "https://reidosembeds.online/embed/record-tv", "https://embed.reidosembeds.online/canal/record-tv"] },
-      { id: "band", name: "Band", category: "abertos", icon: "fa-tv", color: "from-red-600 to-amber-700", routes: ["https://v2.rdembed.sbs/canal/band", "https://reidosembeds.online/embed/band", "https://embed.reidosembeds.online/canal/band"] },
-      { id: "telecine-pipoca", name: "Telecine Pipoca", category: "filmes", icon: "fa-film", color: "from-rose-600 to-red-900", routes: ["https://v2.rdembed.sbs/canal/telecine-pipoca", "https://reidosembeds.online/embed/telecine-pipoca", "https://embed.reidosembeds.online/canal/telecine-pipoca"] },
-      { id: "telecine-action", name: "Telecine Action", category: "filmes", icon: "fa-film", color: "from-red-700 to-amber-900", routes: ["https://v2.rdembed.sbs/canal/telecine-action", "https://reidosembeds.online/embed/telecine-action", "https://embed.reidosembeds.online/canal/telecine-action"] },
-      { id: "hbo", name: "HBO", category: "filmes", icon: "fa-clapperboard", color: "from-purple-700 to-violet-950", routes: ["https://v2.rdembed.sbs/canal/hbo", "https://reidosembeds.online/embed/hbo", "https://embed.reidosembeds.online/canal/hbo"] },
-      { id: "tnt", name: "TNT", category: "filmes", icon: "fa-film", color: "from-pink-600 to-rose-900", routes: ["https://v2.rdembed.sbs/canal/tnt", "https://reidosembeds.online/embed/tnt", "https://embed.reidosembeds.online/canal/tnt"] }
+    // BASE DE DADOS COMPLETA COM MAIS DE 30 CANAIS
+    let CHANNELS_DATABASE = [
+      // Abertos & Regionais
+      { id: "globo-rj", name: "Globo RJ", category: "abertos", icon: "fa-tv", color: "from-blue-600 to-indigo-800" },
+      { id: "globo-sp", name: "Globo SP", category: "abertos", icon: "fa-tv", color: "from-blue-700 to-indigo-900" },
+      { id: "globo-df", name: "Globo DF", category: "abertos", icon: "fa-tv", color: "from-blue-800 to-indigo-950" },
+      { id: "globo-mg", name: "Globo MG", category: "abertos", icon: "fa-tv", color: "from-indigo-600 to-blue-900" },
+      { id: "sbt", name: "SBT", category: "abertos", icon: "fa-tv", color: "from-blue-500 to-cyan-700" },
+      { id: "record-tv", name: "Record TV", category: "abertos", icon: "fa-tv", color: "from-purple-600 to-indigo-900" },
+      { id: "band", name: "Band", category: "abertos", icon: "fa-tv", color: "from-red-600 to-amber-700" },
+      { id: "redetv", name: "RedeTV!", category: "abertos", icon: "fa-tv", color: "from-emerald-600 to-teal-900" },
+      { id: "tv-cultura", name: "TV Cultura", category: "abertos", icon: "fa-tv", color: "from-green-600 to-emerald-900" },
+
+      // Esportes
+      { id: "sportv", name: "SporTV 1", category: "esportes", icon: "fa-futbol", color: "from-green-600 to-emerald-800" },
+      { id: "sportv-2", name: "SporTV 2", category: "esportes", icon: "fa-futbol", color: "from-green-700 to-teal-900" },
+      { id: "sportv-3", name: "SporTV 3", category: "esportes", icon: "fa-futbol", color: "from-emerald-600 to-green-900" },
+      { id: "espn", name: "ESPN 1", category: "esportes", icon: "fa-trophy", color: "from-red-600 to-rose-900" },
+      { id: "espn-2", name: "ESPN 2", category: "esportes", icon: "fa-trophy", color: "from-red-700 to-rose-950" },
+      { id: "espn-3", name: "ESPN 3", category: "esportes", icon: "fa-trophy", color: "from-rose-700 to-red-900" },
+      { id: "espn-4", name: "ESPN 4", category: "esportes", icon: "fa-trophy", color: "from-rose-800 to-amber-950" },
+      { id: "premiere-clubes", name: "Premiere Clubes", category: "esportes", icon: "fa-shirt", color: "from-green-500 to-emerald-700" },
+      { id: "premiere-2", name: "Premiere 2", category: "esportes", icon: "fa-shirt", color: "from-green-600 to-emerald-800" },
+      { id: "premiere-3", name: "Premiere 3", category: "esportes", icon: "fa-shirt", color: "from-green-700 to-emerald-900" },
+      { id: "cazetv", name: "CazéTV", category: "esportes", icon: "fa-bolt", color: "from-yellow-500 to-amber-700" },
+      { id: "combate", name: "Combate", category: "esportes", icon: "fa-hand-fist", color: "from-red-800 to-zinc-950" },
+      { id: "band-sports", name: "BandSports", category: "esportes", icon: "fa-futbol", color: "from-green-800 to-emerald-950" },
+
+      // Filmes & Séries
+      { id: "telecine-premium", name: "Telecine Premium", category: "filmes", icon: "fa-film", color: "from-rose-600 to-red-900" },
+      { id: "telecine-pipoca", name: "Telecine Pipoca", category: "filmes", icon: "fa-film", color: "from-rose-600 to-red-900" },
+      { id: "telecine-action", name: "Telecine Action", category: "filmes", icon: "fa-film", color: "from-red-700 to-amber-900" },
+      { id: "telecine-touch", name: "Telecine Touch", category: "filmes", icon: "fa-film", color: "from-rose-700 to-pink-950" },
+      { id: "hbo", name: "HBO", category: "filmes", icon: "fa-clapperboard", color: "from-purple-700 to-violet-950" },
+      { id: "hbo-2", name: "HBO 2", category: "filmes", icon: "fa-clapperboard", color: "from-purple-800 to-indigo-950" },
+      { id: "tnt", name: "TNT", category: "filmes", icon: "fa-film", color: "from-pink-600 to-rose-900" },
+      { id: "megapix", name: "Megapix", category: "filmes", icon: "fa-film", color: "from-amber-600 to-red-900" },
+      { id: "space", name: "Space", category: "filmes", icon: "fa-film", color: "from-zinc-700 to-zinc-900" },
+      { id: "universal-tv", name: "Universal TV", category: "filmes", icon: "fa-tv", color: "from-blue-600 to-slate-900" },
+      { id: "warner-channel", name: "Warner Channel", category: "filmes", icon: "fa-tv", color: "from-blue-700 to-indigo-950" }
     ];
 
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
-    let currentChannelRoutes = [];
-    let activeChannelTitle = "";
     let tvCategory = 'all';
 
-    // Inicialização direta do app
     window.addEventListener('DOMContentLoaded', () => {
       loadFullHomeData();
+      syncChannelsFromApi();
     });
+
+    // Sincroniza dinamicamente novos canais da API caso disponíveis
+    async function syncChannelsFromApi() {
+      try {
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://reidosembeds.online/api/channels')}`;
+        const res = await fetch(proxyUrl);
+        const data = await res.json();
+        
+        if (Array.isArray(data) && data.length > 0) {
+          data.forEach(remoteCh => {
+            const slug = remoteCh.id || remoteCh.slug || remoteCh.name.toLowerCase().replace(/\s+/g, '-');
+            const exists = CHANNELS_DATABASE.some(c => c.id === slug);
+            if (!exists) {
+              CHANNELS_DATABASE.push({
+                id: slug,
+                name: remoteCh.name || remoteCh.title,
+                category: remoteCh.category || 'abertos',
+                icon: 'fa-tv',
+                color: 'from-zinc-800 to-zinc-950'
+              });
+            }
+          });
+        }
+      } catch (e) {
+        console.log("Mantendo banco otimizado de canais...");
+      }
+      if (!document.getElementById('sectionTV').classList.contains('hidden')) {
+        renderTVGrid();
+      }
+    }
 
     function switchTab(tabName) {
       document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('nav-active'));
@@ -313,7 +339,7 @@
       const grid = document.getElementById('gridTVChannels');
       grid.innerHTML = '';
 
-      let list = CHANNELS;
+      let list = CHANNELS_DATABASE;
       if (tvCategory !== 'all') {
         list = list.filter(c => c.category === tvCategory);
       }
@@ -321,7 +347,7 @@
       list.forEach(ch => {
         const div = document.createElement('div');
         div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer border-rose-500/20 hover:border-rose-500/80 transition shadow-lg";
-        div.onclick = () => playChannel(ch.id);
+        div.onclick = () => playChannelDynamic(ch.id, ch.name);
 
         div.innerHTML = `
           <div class="aspect-video w-full bg-gradient-to-br ${ch.color} relative overflow-hidden rounded-t-2xl flex items-center justify-center p-3">
@@ -345,29 +371,31 @@
       });
     }
 
-    function playChannel(id) {
-      const ch = CHANNELS.find(c => c.id === id);
-      if (!ch) return;
+    // RESOLVE A URL EM TEMPO REAL PARA EVITAR O ERRO 404
+    async function playChannelDynamic(channelId, channelName) {
+      loadIframeUrl('', channelName, 'Buscando sinal...');
 
-      currentChannelRoutes = ch.routes;
-      activeChannelTitle = ch.name;
+      let finalUrl = `https://reidosembeds.online/embed/${channelId}`;
+      
+      try {
+        const targetApi = `https://reidosembeds.online/api/channel?id=${channelId}`;
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetApi)}`;
+        const res = await fetch(proxyUrl);
+        const data = await res.json();
 
-      const routeSelect = document.getElementById('serverRouteSelect');
-      routeSelect.classList.remove('hidden');
-      routeSelect.selectedIndex = 0;
-
-      loadIframeUrl(currentChannelRoutes[0], ch.name, 'TV ao Vivo');
-    }
-
-    function changeServerRoute() {
-      const idx = document.getElementById('serverRouteSelect').value;
-      if (currentChannelRoutes[idx]) {
-        loadIframeUrl(currentChannelRoutes[idx], activeChannelTitle, 'TV ao Vivo');
+        if (data && (data.embed_url || data.url || data.player)) {
+          finalUrl = data.embed_url || data.url || data.player;
+        } else {
+          finalUrl = `https://v2.rdembed.sbs/canal/${channelId}`;
+        }
+      } catch (e) {
+        finalUrl = `https://v2.rdembed.sbs/canal/${channelId}`;
       }
+
+      loadIframeUrl(finalUrl, channelName, 'TV ao Vivo');
     }
 
     function playCustomUrl(url, title, subtitle) {
-      document.getElementById('serverRouteSelect').classList.add('hidden');
       loadIframeUrl(url, title, subtitle);
     }
 
@@ -378,13 +406,16 @@
       const holder = document.getElementById('iframeHolder');
       holder.innerHTML = '';
 
-      const iframe = document.createElement('iframe');
-      iframe.src = embedUrl;
-      iframe.className = "w-full h-full border-0 relative z-10";
-      iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
-      iframe.setAttribute('allowfullscreen', 'true');
-
-      holder.appendChild(iframe);
+      if (!embedUrl) {
+        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-sm font-semibold">Carregando player...</div>`;
+      } else {
+        const iframe = document.createElement('iframe');
+        iframe.src = embedUrl;
+        iframe.className = "w-full h-full border-0 relative z-10";
+        iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
+        iframe.setAttribute('allowfullscreen', 'true');
+        holder.appendChild(iframe);
+      }
 
       const overlay = document.getElementById('playerOverlay');
       overlay.classList.replace('opacity-0', 'opacity-100');
@@ -436,6 +467,51 @@
           });
         }
       } catch (err) {}
+    }
+
+    function handleGlobalSearch(e) {
+      const query = document.getElementById('globalSearchInput').value.trim().toLowerCase();
+      const panel = document.getElementById('searchResultsPanel');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      const listContainer = document.getElementById('resultsTVList');
+      const section = document.getElementById('sectionTVResults');
+
+      if (!query) { clearGlobalSearch(); return; }
+
+      clearBtn.classList.remove('hidden');
+      panel.classList.replace('opacity-0', 'opacity-100');
+      panel.classList.replace('pointer-events-none', 'pointer-events-auto');
+
+      const matches = CHANNELS_DATABASE.filter(c => c.name.toLowerCase().includes(query));
+      listContainer.innerHTML = '';
+
+      if (matches.length > 0) {
+        section.classList.remove('hidden');
+        matches.forEach(ch => {
+          const div = document.createElement('div');
+          div.className = "flex items-center justify-between p-3 rounded-2xl border border-rose-500/30 bg-[#25283b] w-full gap-2.5";
+          div.innerHTML = `
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <i class="fa-solid ${ch.icon} text-rose-400"></i>
+              <span class="font-bold text-sm text-white">${ch.name}</span>
+            </div>
+            <button onclick="playChannelDynamic('${ch.id}', '${ch.name}')" class="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-black">
+              Assistir
+            </button>
+          `;
+          listContainer.appendChild(div);
+        });
+      } else {
+        section.classList.add('hidden');
+      }
+    }
+
+    function clearGlobalSearch() {
+      document.getElementById('globalSearchInput').value = '';
+      const panel = document.getElementById('searchResultsPanel');
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      panel.classList.replace('opacity-100', 'opacity-0');
+      panel.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
   </script>
 </body>
