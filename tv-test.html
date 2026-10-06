@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Laboratório de Teste • TV ao Vivo</title>
+  <title>Laboratório de Teste • TV ao Vivo (API Dinâmica)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -16,42 +16,52 @@
 </head>
 <body class="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
 
-  <!-- CABEÇALHO DO TESTADOR -->
+  <!-- CABEÇALHO -->
   <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xl">
     <div>
       <h1 class="text-xl font-black text-rose-500 flex items-center gap-2">
-        <i class="fa-solid fa-flask"></i> Laboratório de Testes de Canais (TV ao Vivo)
+        <i class="fa-solid fa-flask"></i> Laboratório de Testes de Canais (API Dinâmica)
       </h1>
       <p class="text-xs text-zinc-400 mt-1">
-        Ambiente de teste isolado para validar os links diretos sem a subpasta /canal/.
+        Consumindo IDs exatos e oficiais diretamente da documentação da API.
       </p>
     </div>
     
-    <div class="flex items-center gap-2 w-full md:w-auto">
-      <label class="text-xs font-bold text-zinc-300">Servidor / Rota:</label>
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+      <button onclick="fetchChannelsFromAPI()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer">
+        <i class="fa-solid fa-arrows-rotate"></i> Sincronizar API
+      </button>
       <select id="serverSelect" onchange="switchServerRoute()" class="bg-zinc-800 border border-zinc-700 text-white text-xs font-bold py-2 px-3 rounded-xl focus:outline-none cursor-pointer">
         <option value="v2_direct">Mirror v2 Direto (v2.rdembed.sbs/id)</option>
-        <option value="reidos_embed">Rei dos Embeds Direct (reidosembeds.online/embed/id)</option>
         <option value="reidos_root">Rei dos Embeds Raiz (reidosembeds.online/id)</option>
-        <option value="embed_subdomain">Subdomínio Direct (embed.reidosembeds.online/id)</option>
+        <option value="reidos_embed">Rei dos Embeds Direct (reidosembeds.online/embed/id)</option>
       </select>
     </div>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     
-    <!-- LISTA DE CANAIS PARA TESTAR -->
+    <!-- LISTA DE CANAIS -->
     <div class="lg:col-span-1 space-y-3">
-      <h2 class="text-sm font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-        <i class="fa-solid fa-list"></i> Selecione um Canal
-      </h2>
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+          <i class="fa-solid fa-list"></i> Canais Disponíveis
+        </h2>
+        <span id="channelCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400">0 canais</span>
+      </div>
 
-      <div class="space-y-2 max-h-[70vh] overflow-y-auto pr-1" id="channelsList">
-        <!-- Gerado via JS -->
+      <!-- BUSCA RÁPIDA -->
+      <input type="text" id="searchInput" onkeyup="filterChannels()" placeholder="Buscar canal..." class="w-full bg-zinc-900 border border-zinc-800 text-xs text-white rounded-xl px-3 py-2 focus:outline-none focus:border-rose-500">
+
+      <div class="space-y-2 max-h-[65vh] overflow-y-auto pr-1" id="channelsList">
+        <div class="text-center py-8 text-zinc-500 text-xs">
+          <i class="fa-solid fa-spinner animate-spin text-lg mb-2 block"></i>
+          Carregando lista de canais da API...
+        </div>
       </div>
     </div>
 
-    <!-- PLAYER DE EXIBIÇÃO E LOGS -->
+    <!-- PLAYER E DIAGNÓSTICO -->
     <div class="lg:col-span-2 space-y-4">
       <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3 shadow-2xl">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-800 pb-2 gap-1">
@@ -62,7 +72,7 @@
         <div id="playerBox" class="aspect-video w-full bg-black rounded-xl overflow-hidden flex items-center justify-center relative border border-zinc-800 shadow-inner">
           <div class="text-center text-zinc-500 space-y-2 p-4">
             <i class="fa-solid fa-play-circle text-4xl"></i>
-            <p class="text-xs">Clique em um canal da lista ao lado para testar a transmissão.</p>
+            <p class="text-xs">Clique em um canal para iniciar a transmissão.</p>
           </div>
         </div>
       </div>
@@ -70,11 +80,11 @@
       <!-- LOGS DE DIAGNÓSTICO -->
       <div class="bg-black/80 border border-zinc-800 rounded-2xl p-4 space-y-2 font-mono text-xs shadow-2xl">
         <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-          <span class="text-zinc-400 font-bold"><i class="fa-solid fa-terminal mr-1"></i> Console de Diagnóstico</span>
+          <span class="text-zinc-400 font-bold"><i class="fa-solid fa-terminal mr-1"></i> Logs da API</span>
           <button onclick="clearLogs()" class="text-[10px] text-zinc-500 hover:text-zinc-300">Limpar</button>
         </div>
         <div id="logOutput" class="h-28 overflow-y-auto space-y-1 text-[11px] text-emerald-400">
-          <div>[SISTEMA]: Testador pronto com as novas rotas diretas sem /canal/.</div>
+          <div>[SISTEMA]: Inicializando testador de API...</div>
         </div>
       </div>
     </div>
@@ -82,36 +92,87 @@
   </div>
 
   <script>
-    const TEST_CHANNELS = [
+    // LISTA DE FALLBACK COM GRAFIA CORRETA DOS IDS OFICIAIS (SEM HÍFENS ONDE NÃO EXISTE)
+    const FALLBACK_CHANNELS = [
+      { id: "globorj", name: "Globo RJ", category: "Abertos" },
+      { id: "globosp", name: "Globo SP", category: "Abertos" },
       { id: "combate", name: "Combate", category: "Esportes" },
-      { id: "globo-rj", name: "Globo RJ", category: "Abertos" },
-      { id: "globo-sp", name: "Globo SP", category: "Abertos" },
       { id: "sportv", name: "SporTV 1", category: "Esportes" },
-      { id: "sportv-2", name: "SporTV 2", category: "Esportes" },
-      { id: "sportv-3", name: "SporTV 3", category: "Esportes" },
+      { id: "sportv2", name: "SporTV 2", category: "Esportes" },
+      { id: "sportv3", name: "SporTV 3", category: "Esportes" },
       { id: "espn", name: "ESPN 1", category: "Esportes" },
-      { id: "espn-2", name: "ESPN 2", category: "Esportes" },
-      { id: "premiere-clubes", name: "Premiere Clubes", category: "Esportes" },
+      { id: "espn2", name: "ESPN 2", category: "Esportes" },
+      { id: "premiereclubes", name: "Premiere Clubes", category: "Esportes" },
       { id: "cazetv", name: "CazéTV", category: "Esportes" },
       { id: "sbt", name: "SBT", category: "Abertos" },
-      { id: "record-tv", name: "Record TV", category: "Abertos" },
+      { id: "record", name: "Record TV", category: "Abertos" },
       { id: "band", name: "Band", category: "Abertos" },
-      { id: "telecine-pipoca", name: "Telecine Pipoca", category: "Filmes" },
-      { id: "telecine-action", name: "Telecine Action", category: "Filmes" },
+      { id: "telecinepipoca", name: "Telecine Pipoca", category: "Filmes" },
+      { id: "telecineaction", name: "Telecine Action", category: "Filmes" },
       { id: "hbo", name: "HBO", category: "Filmes" }
     ];
 
+    let loadedChannels = [];
     let currentSelectedChannel = null;
 
     window.addEventListener('DOMContentLoaded', () => {
-      renderChannelsList();
+      fetchChannelsFromAPI();
     });
 
-    function renderChannelsList() {
+    async function fetchChannelsFromAPI() {
+      log("Conectando à API 'https://reidosembeds.online/api/channels'...");
+      
+      try {
+        // Tenta consultar a API diretamente e via Proxy AllOrigins se houver CORS
+        let rawData = null;
+        try {
+          const res = await fetch("https://reidosembeds.online/api/channels");
+          if (res.ok) rawData = await res.json();
+        } catch (e) {
+          log("CORS direto impedido. Utilizando proxy de consulta...", "warn");
+          const proxyRes = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://reidosembeds.online/api/channels"));
+          if (proxyRes.ok) rawData = await proxyRes.json();
+        }
+
+        let apiList = [];
+        if (Array.isArray(rawData)) {
+          apiList = rawData;
+        } else if (rawData && Array.isArray(rawData.channels)) {
+          apiList = rawData.channels;
+        } else if (rawData && Array.isArray(rawData.data)) {
+          apiList = rawData.data;
+        }
+
+        if (apiList.length > 0) {
+          loadedChannels = apiList.map(item => ({
+            id: item.id || item.slug || item.code,
+            name: item.name || item.title || item.id,
+            category: item.category || "Canais",
+            embed_url: item.embed_url || item.url || null
+          }));
+          log(`API sincronizada com sucesso! ${loadedChannels.length} canais carregados.`);
+        } else {
+          throw new Error("Formato de resposta não reconhecido.");
+        }
+      } catch (err) {
+        log(`Não foi possível ler a API em tempo real (${err.message}). Utilizando base offline com nomes corrigidos.`, "warn");
+        loadedChannels = FALLBACK_CHANNELS;
+      }
+
+      renderChannelsList(loadedChannels);
+    }
+
+    function renderChannelsList(list) {
       const container = document.getElementById('channelsList');
+      document.getElementById('channelCountBadge').innerText = `${list.length} canais`;
       container.innerHTML = '';
 
-      TEST_CHANNELS.forEach(ch => {
+      if (list.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-zinc-500 text-xs">Nenhum canal encontrado.</div>`;
+        return;
+      }
+
+      list.forEach(ch => {
         const btn = document.createElement('button');
         btn.className = "w-full text-left p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-rose-500/50 hover:bg-zinc-800 transition flex items-center justify-between group cursor-pointer";
         btn.onclick = () => testChannel(ch);
@@ -119,12 +180,18 @@
         btn.innerHTML = `
           <div>
             <div class="text-xs font-bold text-white group-hover:text-rose-400 transition">${ch.name}</div>
-            <div class="text-[10px] text-zinc-500">${ch.category} • ID: ${ch.id}</div>
+            <div class="text-[10px] text-zinc-500">${ch.category} • ID: <span class="text-emerald-400 font-mono">${ch.id}</span></div>
           </div>
           <i class="fa-solid fa-play text-xs text-zinc-600 group-hover:text-rose-500 transition"></i>
         `;
         container.appendChild(btn);
       });
+    }
+
+    function filterChannels() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = loadedChannels.filter(c => c.name.toLowerCase().includes(query) || c.id.toLowerCase().includes(query));
+      renderChannelsList(filtered);
     }
 
     function testChannel(ch) {
@@ -134,18 +201,18 @@
       const routeType = document.getElementById('serverSelect').value;
       let targetUrl = "";
 
-      if (routeType === 'v2_direct') {
+      if (ch.embed_url && routeType === 'v2_direct') {
+        targetUrl = ch.embed_url;
+      } else if (routeType === 'v2_direct') {
         targetUrl = `https://v2.rdembed.sbs/${ch.id}`;
-      } else if (routeType === 'reidos_embed') {
-        targetUrl = `https://reidosembeds.online/embed/${ch.id}`;
       } else if (routeType === 'reidos_root') {
         targetUrl = `https://reidosembeds.online/${ch.id}`;
-      } else if (routeType === 'embed_subdomain') {
-        targetUrl = `https://embed.reidosembeds.online/${ch.id}`;
+      } else if (routeType === 'reidos_embed') {
+        targetUrl = `https://reidosembeds.online/embed/${ch.id}`;
       }
 
       document.getElementById('currentUrlDisplay').innerText = `URL: ${targetUrl}`;
-      log(`Carregando ${ch.name} -> ${targetUrl}`);
+      log(`Testando ID: [${ch.id}] -> ${targetUrl}`);
       loadIframe(targetUrl);
     }
 
@@ -166,7 +233,6 @@
       iframe.setAttribute('allowfullscreen', 'true');
       
       box.appendChild(iframe);
-      log(`Iframe injetado com sucesso.`);
     }
 
     function log(msg, level = 'info') {
