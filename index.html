@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>RJ FLIX • Filmes, Séries, Animes & TV ao Vivo</title>
   
-  <!-- ARQUIVOS DE ÍCONES E MANIFEST -->
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="apple-touch-icon" href="./favicon.svg">
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#08090c">
 
-  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -27,7 +25,6 @@
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
-  <!-- Firebase SDK (v9 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -51,7 +48,6 @@
       user-select: text;
     }
 
-    /* LIQUID GLASS iOS STYLES */
     .liquid-glass {
       background: rgba(22, 24, 34, 0.95);
       backdrop-filter: blur(20px) saturate(180%);
@@ -110,17 +106,13 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative">
 
-  <!-- GLOW DE FUNDO -->
   <div class="fixed top-0 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
   <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
-  <!-- BACKDROP BUSCA -->
   <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-transparent z-30 pointer-events-none"></div>
 
-  <!-- TOAST CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- AUTH CONTAINER -->
   <div id="authScreenContainer"></div>
 
   <!-- MODAL RESET SENHA -->
@@ -150,10 +142,8 @@
     </div>
   </div>
 
-  <!-- MAIN APP CONTAINER -->
   <div id="appScreen" class="hidden flex-col min-h-screen relative z-10">
     
-    <!-- NAVBAR RJ FLIX -->
     <header class="sticky top-0 z-40 bg-black/50 border-b border-white/10 backdrop-blur-xl px-4 py-3.5 sm:px-8 flex items-center justify-between shadow-2xl">
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('home')">
@@ -163,7 +153,6 @@
           <span class="font-black text-xl tracking-wider text-white">RJ<span class="text-brand-500"> FLIX</span></span>
         </div>
 
-        <!-- MENU DE NAVEGAÇÃO DESKTOP -->
         <nav class="hidden md:flex items-center gap-1.5 ml-4">
           <button onclick="switchTab('home')" id="tab-home" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Início</button>
           <button onclick="switchTab('movies')" id="tab-movies" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Filmes</button>
@@ -200,7 +189,6 @@
       </div>
     </header>
 
-    <!-- NAVEGAÇÃO MOBILE -->
     <div class="md:hidden flex items-center justify-between bg-black/50 border-b border-white/10 px-3 py-2.5 overflow-x-auto hide-scrollbar backdrop-blur-xl">
       <button onclick="switchTab('home')" class="px-3 py-1.5 text-xs font-bold text-white whitespace-nowrap rounded-xl bg-white/10">Início</button>
       <button onclick="switchTab('movies')" class="px-3 py-1.5 text-xs font-semibold text-zinc-300 whitespace-nowrap">Filmes</button>
@@ -214,7 +202,6 @@
       </button>
     </div>
 
-    <!-- MAIN BODY -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-8">
 
       <!-- BARRA DE BUSCA GLOBAL -->
@@ -227,7 +214,6 @@
           </button>
         </div>
 
-        <!-- PAINEL DE RESULTADOS DA BUSCA -->
         <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-200 absolute left-0 right-0 top-full mt-3 bg-[#181a26] border-2 border-zinc-700/80 rounded-3xl shadow-2xl max-h-[75vh] overflow-y-auto p-3.5 sm:p-5 space-y-4 z-50">
           <div class="flex items-center justify-between border-b border-zinc-700/80 pb-3">
             <span class="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
@@ -236,6 +222,14 @@
             <button onclick="clearGlobalSearch()" class="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 transition flex items-center gap-1 cursor-pointer shadow-md">
               <i class="fa-solid fa-xmark"></i> Fechar
             </button>
+          </div>
+
+          <!-- SEÇÃO CANAIS DE TV NA BUSCA -->
+          <div id="sectionTVResults" class="hidden space-y-2">
+            <h3 class="text-xs font-black uppercase tracking-wider text-rose-400 flex items-center gap-1.5 border-b border-zinc-700/60 pb-1">
+              <i class="fa-solid fa-tv"></i> Canais de TV ao Vivo
+            </h3>
+            <div id="resultsTVList" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
           </div>
 
           <div id="sectionSaved" class="hidden space-y-2">
@@ -258,7 +252,7 @@
         </div>
       </div>
 
-      <!-- HERO BANNER (HOME) -->
+      <!-- HERO BANNER -->
       <section id="heroSection" class="relative rounded-3xl overflow-hidden liquid-glass min-h-[280px] sm:min-h-[360px] flex items-end p-6 sm:p-10 border border-white/15 shadow-2xl">
         <div id="heroBg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 opacity-45"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-[#08090c] via-[#08090c]/60 to-transparent"></div>
@@ -280,7 +274,7 @@
         </div>
       </section>
 
-      <!-- HOME SEÇÃO 1: EM ALTA NA SEMANA -->
+      <!-- HOME SEÇÕES -->
       <section id="sectionTrending" class="space-y-3">
         <div class="flex items-center justify-between border-b border-white/10 pb-2">
           <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -290,7 +284,6 @@
         <div id="gridTrending" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
       </section>
 
-      <!-- HOME SEÇÃO 2: LANÇAMENTOS DE CINEMA -->
       <section id="sectionHomeMovies" class="space-y-3">
         <div class="flex items-center justify-between border-b border-white/10 pb-2">
           <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -301,7 +294,6 @@
         <div id="gridHomeMovies" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
       </section>
 
-      <!-- HOME SEÇÃO 3: SÉRIES RECENTES -->
       <section id="sectionHomeSeries" class="space-y-3">
         <div class="flex items-center justify-between border-b border-white/10 pb-2">
           <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -312,7 +304,6 @@
         <div id="gridHomeSeries" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
       </section>
 
-      <!-- HOME SEÇÃO 4: ANIMES -->
       <section id="sectionHomeAnimes" class="space-y-3">
         <div class="flex items-center justify-between border-b border-white/10 pb-2">
           <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -323,7 +314,7 @@
         <div id="gridHomeAnimes" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
       </section>
 
-      <!-- ABA DEDICADA: FILMES -->
+      <!-- FILMES -->
       <section id="sectionMovies" class="hidden space-y-6">
         <div class="liquid-glass p-6 rounded-3xl space-y-4">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -359,7 +350,7 @@
         </div>
       </section>
 
-      <!-- ABA DEDICADA: SÉRIES -->
+      <!-- SÉRIES -->
       <section id="sectionSeries" class="hidden space-y-6">
         <div class="liquid-glass p-6 rounded-3xl space-y-4">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -392,7 +383,7 @@
         </div>
       </section>
 
-      <!-- ABA DEDICADA: ANIMES -->
+      <!-- ANIMES -->
       <section id="sectionAnimes" class="hidden space-y-6">
         <div class="liquid-glass p-6 rounded-3xl space-y-4">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -421,7 +412,7 @@
         </div>
       </section>
 
-      <!-- ABA DEDICADA: TV AO VIVO (REI DOS EMBEDS) -->
+      <!-- TV AO VIVO (REI DOS EMBEDS COM FALLBACK) -->
       <section id="sectionTV" class="hidden space-y-6">
         <div class="liquid-glass p-6 rounded-3xl space-y-4">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -446,17 +437,6 @@
           </div>
         </div>
 
-        <!-- SEÇÃO JOGOS/EVENTOS ESPORTIVOS AO VIVO -->
-        <div id="sectionLiveEvents" class="space-y-3 hidden">
-          <div class="flex items-center justify-between border-b border-rose-500/30 pb-2">
-            <h3 class="text-sm font-black text-rose-400 uppercase tracking-wider flex items-center gap-2">
-              <i class="fa-solid fa-circle text-xs text-rose-500 animate-ping"></i> Jogos & Eventos Esportivos Ao Vivo
-            </h3>
-          </div>
-          <div id="gridLiveEvents" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </div>
-
-        <!-- SEÇÃO CANAIS DE TV -->
         <div class="space-y-3">
           <div class="flex items-center justify-between border-b border-white/10 pb-2">
             <h3 class="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -467,7 +447,7 @@
         </div>
       </section>
 
-      <!-- ABA DEDICADA: MEU CATÁLOGO PRIVADO -->
+      <!-- MEU CATÁLOGO -->
       <section id="sectionMyCatalog" class="hidden space-y-4">
         <div class="flex items-center justify-between border-b border-emerald-500/30 pb-3 bg-emerald-950/20 p-5 rounded-3xl border backdrop-blur-md">
           <div>
@@ -584,7 +564,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE LEMBRETE PROTEGIDO -->
+  <!-- EDIT MODAL -->
   <div id="editModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl modal-closed flex items-center justify-center p-4 transition-all duration-300">
     <div class="liquid-glass rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
       <button onclick="closeEditModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white text-sm cursor-pointer">
@@ -607,7 +587,6 @@
         <div>
           <label class="block text-[11px] font-semibold text-emerald-400 mb-1.5">Lembrete / Temporada / Episódio</label>
           <input type="text" id="editNoteInput" placeholder="Ex: T2:E5, Ep 12 ou Parou em 14:20" required class="w-full bg-white/5 border border-emerald-500/50 rounded-2xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-400 font-bold shadow-inner">
-          <p class="text-[10px] text-zinc-400 mt-1">Sua anotação aparecerá na capa do item no seu catálogo.</p>
         </div>
 
         <div class="flex justify-end gap-2 pt-2 border-t border-white/10">
@@ -618,7 +597,7 @@
     </div>
   </div>
 
-  <!-- PLAYER OVERLAY COM BLOQUEADOR DE POPUPS -->
+  <!-- PLAYER OVERLAY -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
     <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/60 border border-white/15 p-2 rounded-2xl shadow-2xl backdrop-blur-xl">
       <div class="hidden sm:block px-3 text-left">
@@ -632,7 +611,6 @@
       </button>
     </div>
 
-    <!-- HOLDER DO PLAYER COM ESCUDO TRANSPARENTE ANTI-POPUP -->
     <div id="iframeHolder" class="w-full h-full relative"></div>
   </div>
 
@@ -640,7 +618,29 @@
     // DOMÍNIO PRINCIPAL REI DOS EMBEDS
     const REI_EMBEDS_DOMAIN = "https://v2.rdembed.sbs";
 
-    // PROTEÇÃO ANTI-INSPECIONAR
+    // BASE DE CANAIS REI DOS EMBEDS (ESTÁTICA DE GARANTIA)
+    const REI_DOS_EMBEDS_DATABASE = [
+      { id: "globo-rj", name: "Globo RJ", category: "abertos", icon: "fa-tv", color: "from-blue-600 to-indigo-800" },
+      { id: "sportv", name: "SporTV", category: "esportes", icon: "fa-futbol", color: "from-green-600 to-emerald-800" },
+      { id: "sportv-2", name: "SporTV 2", category: "esportes", icon: "fa-futbol", color: "from-green-700 to-teal-900" },
+      { id: "sportv-3", name: "SporTV 3", category: "esportes", icon: "fa-futbol", color: "from-emerald-600 to-green-900" },
+      { id: "espn", name: "ESPN", category: "esportes", icon: "fa-trophy", color: "from-red-600 to-rose-900" },
+      { id: "espn-2", name: "ESPN 2", category: "esportes", icon: "fa-trophy", color: "from-red-700 to-rose-950" },
+      { id: "premiere-clubes", name: "Premiere", category: "esportes", icon: "fa-shirt", color: "from-green-500 to-emerald-700" },
+      { id: "cazetv", name: "CazéTV", category: "esportes", icon: "fa-bolt", color: "from-yellow-500 to-amber-700" },
+      { id: "sbt", name: "SBT", category: "abertos", icon: "fa-tv", color: "from-blue-500 to-cyan-700" },
+      { id: "record-tv", name: "Record TV", category: "abertos", icon: "fa-tv", color: "from-purple-600 to-indigo-900" },
+      { id: "band", name: "Band", category: "abertos", icon: "fa-tv", color: "from-red-600 to-amber-700" },
+      { id: "telecine-pipoca", name: "Telecine Pipoca", category: "filmes", icon: "fa-film", color: "from-rose-600 to-red-900" },
+      { id: "telecine-action", name: "Telecine Action", category: "filmes", icon: "fa-film", color: "from-red-700 to-amber-900" },
+      { id: "hbo", name: "HBO", category: "filmes", icon: "fa-clapperboard", color: "from-purple-700 to-violet-950" },
+      { id: "tnt", name: "TNT", category: "filmes", icon: "fa-film", color: "from-pink-600 to-rose-900" },
+      { id: "cartoon-network", name: "Cartoon Network", category: "filmes", icon: "fa-child", color: "from-sky-500 to-blue-700" },
+      { id: "cnn-brasil", name: "CNN Brasil", category: "noticias", icon: "fa-newspaper", color: "from-red-700 to-rose-900" },
+      { id: "globonews", name: "GloboNews", category: "noticias", icon: "fa-newspaper", color: "from-red-800 to-zinc-900" }
+    ];
+
+    // ANTI-INSPECIONAR
     document.addEventListener('contextmenu', (e) => e.preventDefault(), false);
     document.addEventListener('keydown', (e) => {
       if (e.keyCode === 123) { e.preventDefault(); return false; }
@@ -650,7 +650,6 @@
       if (ctrlOrCmd && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
     }, false);
 
-    // MODAIS
     function openModal(id) {
       const el = document.getElementById(id);
       if (el) el.classList.replace('modal-closed', 'modal-open');
@@ -660,7 +659,6 @@
       if (el) el.classList.replace('modal-open', 'modal-closed');
     }
 
-    // TELA DE LOGIN
     function renderAuthScreen() {
       const container = document.getElementById('authScreenContainer');
       container.innerHTML = `
@@ -708,9 +706,7 @@
       `;
     }
 
-    function removeAuthScreen() {
-      document.getElementById('authScreenContainer').innerHTML = '';
-    }
+    function removeAuthScreen() { document.getElementById('authScreenContainer').innerHTML = ''; }
 
     function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
@@ -818,9 +814,7 @@
         if (userProfileRef) await userProfileRef.update({ name: newName });
         setWelcomeHeaderName(newName);
         showToast('Nome atualizado!');
-      } catch (err) {
-        showToast('Erro ao atualizar nome.', 'error');
-      }
+      } catch (err) { showToast('Erro ao atualizar nome.', 'error'); }
     }
 
     async function handleChangePassword(e) {
@@ -833,11 +827,9 @@
       }
       try {
         await currentUser.updatePassword(newPass);
-        showToast('Senha alterada com sucesso!');
+        showToast('Senha alterada!');
         closeProfileModal();
-      } catch (err) {
-        showToast('Erro ao alterar senha.', 'error');
-      }
+      } catch (err) { showToast('Erro ao alterar senha.', 'error'); }
     }
 
     function openResetPasswordModal() {
@@ -853,10 +845,8 @@
       try {
         await auth.sendPasswordResetEmail(email);
         closeResetPasswordModal();
-        showToast('E-mail de redefinição enviado!');
-      } catch (err) {
-        showToast('Erro ao enviar e-mail.', 'error');
-      }
+        showToast('E-mail enviado!');
+      } catch (err) { showToast('Erro ao enviar e-mail.', 'error'); }
     }
 
     function toggleAuthMode() {
@@ -896,15 +886,10 @@
           await auth.signInWithEmailAndPassword(email, password);
           showToast('Login bem-sucedido!');
         }
-      } catch (err) {
-        showToast(err.message || 'Erro de autenticação.', 'error');
-      }
+      } catch (err) { showToast(err.message || 'Erro de autenticação.', 'error'); }
     }
 
-    function logout() {
-      auth.signOut();
-      showToast('Sessão encerrada.');
-    }
+    function logout() { auth.signOut(); showToast('Sessão encerrada.'); }
 
     function listenToUserData() {
       userProfileRef.on('value', (snapshot) => {
@@ -953,7 +938,6 @@
       } else if (tabName === 'tv') {
         document.getElementById('sectionTV')?.classList.remove('hidden');
         fetchReiDosEmbedsChannels();
-        fetchReiDosEmbedsEvents();
       } else if (tabName === 'mycatalog') {
         document.getElementById('sectionMyCatalog')?.classList.remove('hidden');
         renderMyCatalogSection();
@@ -986,224 +970,114 @@
         if (dataHomeAnimes.results) {
           renderMovieCards('gridHomeAnimes', dataHomeAnimes.results.slice(0, 12), false, false);
         }
-
-      } catch (err) {
-        console.error("Erro ao carregar Home:", err);
-      }
+      } catch (err) { console.error("Erro na Home:", err); }
     }
 
     async function fetchMoviesData(replace = false) {
       try {
-        let url = '';
-        if (movieGenre === 'now_playing') {
-          url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}`;
-        } else if (movieGenre === 'upcoming') {
-          url = `https://api.themoviedb.org/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}`;
-        } else if (movieGenre === 'all') {
-          url = `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}`;
-        } else {
-          url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=${movieGenre}&sort_by=popularity.desc&page=${moviePage}`;
-        }
+        let url = movieGenre === 'now_playing' ? `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}` :
+                  movieGenre === 'upcoming' ? `https://api.themoviedb.org/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}` :
+                  movieGenre === 'all' ? `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${moviePage}` :
+                  `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=${movieGenre}&sort_by=popularity.desc&page=${moviePage}`;
 
         const res = await fetch(url);
         const data = await res.json();
-        if (data.results) {
-          renderMovieCards('gridMovies', data.results, !replace, true);
-        }
-      } catch (err) {
-        console.error("Erro ao carregar filmes:", err);
-      }
+        if (data.results) renderMovieCards('gridMovies', data.results, !replace, true);
+      } catch (err) { console.error("Erro em filmes:", err); }
     }
 
     function filterMoviesGenre(genreId, btn) {
-      movieGenre = genreId;
-      moviePage = 1;
+      movieGenre = genreId; moviePage = 1;
       document.querySelectorAll('#movieGenreButtons .genre-btn').forEach(b => b.classList.remove('genre-btn-active'));
       btn.classList.add('genre-btn-active');
       fetchMoviesData(true);
     }
-
-    function loadMoreMovies() {
-      moviePage++;
-      fetchMoviesData(false);
-    }
+    function loadMoreMovies() { moviePage++; fetchMoviesData(false); }
 
     async function fetchSeriesData(replace = false) {
       try {
-        let url = '';
-        if (seriesGenre === 'on_the_air') {
-          url = `https://api.themoviedb.org/3/tv/on_the_air?api_key=${TMDB_API_KEY}&language=pt-BR&page=${seriesPage}`;
-        } else if (seriesGenre === 'all') {
-          url = `https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${seriesPage}`;
-        } else {
-          url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=${seriesGenre}&sort_by=popularity.desc&page=${seriesPage}`;
-        }
+        let url = seriesGenre === 'on_the_air' ? `https://api.themoviedb.org/3/tv/on_the_air?api_key=${TMDB_API_KEY}&language=pt-BR&page=${seriesPage}` :
+                  seriesGenre === 'all' ? `https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${seriesPage}` :
+                  `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=${seriesGenre}&sort_by=popularity.desc&page=${seriesPage}`;
 
         const res = await fetch(url);
         const data = await res.json();
-        if (data.results) {
-          renderMovieCards('gridSeries', data.results, !replace, false);
-        }
-      } catch (err) {
-        console.error("Erro ao carregar séries:", err);
-      }
+        if (data.results) renderMovieCards('gridSeries', data.results, !replace, false);
+      } catch (err) { console.error("Erro em séries:", err); }
     }
 
     function filterSeriesGenre(genreId, btn) {
-      seriesGenre = genreId;
-      seriesPage = 1;
+      seriesGenre = genreId; seriesPage = 1;
       document.querySelectorAll('#seriesGenreButtons .genre-btn').forEach(b => b.classList.remove('genre-btn-active'));
       btn.classList.add('genre-btn-active');
       fetchSeriesData(true);
     }
-
-    function loadMoreSeries() {
-      seriesPage++;
-      fetchSeriesData(false);
-    }
+    function loadMoreSeries() { seriesPage++; fetchSeriesData(false); }
 
     async function fetchAnimesData(replace = false) {
       try {
         let sortBy = animeType === 'newest' ? 'first_air_date.desc' : 'popularity.desc';
         const url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_original_language=ja&sort_by=${sortBy}&page=${animePage}`;
-        
         const res = await fetch(url);
         const data = await res.json();
-        if (data.results) {
-          renderMovieCards('gridAnimes', data.results, !replace, false);
-        }
-      } catch (err) {
-        console.error("Erro ao carregar animes:", err);
-      }
+        if (data.results) renderMovieCards('gridAnimes', data.results, !replace, false);
+      } catch (err) { console.error("Erro em animes:", err); }
     }
 
     function filterAnimesType(type, btn) {
-      animeType = type;
-      animePage = 1;
+      animeType = type; animePage = 1;
       document.querySelectorAll('#animeFilterButtons .genre-btn').forEach(b => b.classList.remove('genre-btn-active'));
       btn.classList.add('genre-btn-active');
       fetchAnimesData(true);
     }
-
-    function loadMoreAnimes() {
-      animePage++;
-      fetchAnimesData(false);
-    }
+    function loadMoreAnimes() { animePage++; fetchAnimesData(false); }
 
     // ==========================================
-    // BUSCAR CANAIS DA API REI DOS EMBEDS
+    // TV AO VIVO COM FALLBACK SEGURO
     // ==========================================
     async function fetchReiDosEmbedsChannels() {
       const grid = document.getElementById('gridTVChannels');
-      grid.innerHTML = `<div class="col-span-full py-12 text-center text-xs text-zinc-400 font-bold"><i class="fa-solid fa-spinner animate-spin mr-2 text-rose-500"></i>Carregando canais do Rei dos Embeds...</div>`;
+      grid.innerHTML = `<div class="col-span-full py-12 text-center text-xs text-zinc-400 font-bold"><i class="fa-solid fa-spinner animate-spin mr-2 text-rose-500"></i>Carregando canais...</div>`;
 
-      let targetUrl = `https://reidosembeds.online/api/channels`;
+      let listToRender = REI_DOS_EMBEDS_DATABASE;
+
       if (tvCategory !== 'all') {
-        targetUrl = `https://reidosembeds.online/api/channels?category=${tvCategory}`;
+        listToRender = REI_DOS_EMBEDS_DATABASE.filter(c => c.category === tvCategory);
       }
 
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-
-      try {
-        const res = await fetch(proxyUrl);
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : (data?.data || []);
-
-        if (list.length > 0) {
-          renderReiDosEmbedsTVCards(list);
-        } else {
-          grid.innerHTML = `<div class="col-span-full py-12 text-center text-xs text-zinc-400 font-bold">Nenhum canal encontrado nesta categoria.</div>`;
-        }
-      } catch (err) {
-        console.error("Erro ao carregar canais do Rei dos Embeds:", err);
-        grid.innerHTML = `<div class="col-span-full py-12 text-center text-xs text-rose-400 font-bold">Erro ao conectar com Rei dos Embeds.</div>`;
-      }
+      renderReiDosEmbedsTVCards(listToRender);
     }
 
-    // ==========================================
-    // BUSCAR EVENTOS ESPORTIVOS AO VIVO (REI DOS EMBEDS)
-    // ==========================================
-    async function fetchReiDosEmbedsEvents() {
-      const sectionEvents = document.getElementById('sectionLiveEvents');
-      const gridEvents = document.getElementById('gridLiveEvents');
-
-      const targetUrl = `https://reidosembeds.online/api/events?category=futebol&status=live`;
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-
-      try {
-        const res = await fetch(proxyUrl);
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : (data?.data || []);
-
-        if (list.length > 0) {
-          sectionEvents.classList.remove('hidden');
-          gridEvents.innerHTML = '';
-
-          list.forEach(item => {
-            const title = item.name || item.title || 'Evento Esportivo';
-            const eventId = item.id || item.slug;
-            const playUrl = `${REI_EMBEDS_DOMAIN}/evento/${eventId}`;
-            const logo = item.logo || item.image || item.thumb || '';
-            const sport = item.sport || item.category || 'Ao Vivo';
-
-            const card = document.createElement('div');
-            card.className = "liquid-glass p-4 rounded-2xl flex items-center justify-between gap-3 border border-rose-500/30 hover:border-rose-500 transition cursor-pointer";
-            card.onclick = () => playCustomUrl(playUrl, encodeURIComponent(title), `Evento Ao Vivo • ${sport}`);
-
-            card.innerHTML = `
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="w-12 h-12 bg-black/50 rounded-xl overflow-hidden flex items-center justify-center border border-white/10 flex-shrink-0">
-                  ${logo ? `<img src="${logo}" alt="" class="w-full h-full object-contain p-1">` : `<i class="fa-solid fa-trophy text-amber-400"></i>`}
-                </div>
-                <div class="min-w-0">
-                  <h4 class="font-bold text-xs text-white truncate">${title}</h4>
-                  <span class="text-[10px] font-bold text-rose-400 flex items-center gap-1 mt-0.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span> ${sport}
-                  </span>
-                </div>
-              </div>
-
-              <button class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold transition flex-shrink-0">
-                Assistir
-              </button>
-            `;
-            gridEvents.appendChild(card);
-          });
-        } else {
-          sectionEvents.classList.add('hidden');
-        }
-      } catch (err) {
-        sectionEvents.classList.add('hidden');
-      }
-    }
-
-    // RENDERIZADOR DE CANAIS DE TV
     function renderReiDosEmbedsTVCards(channels) {
       const grid = document.getElementById('gridTVChannels');
       grid.innerHTML = '';
 
+      if (channels.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-12 text-center text-xs text-zinc-400 font-bold">Nenhum canal nesta categoria.</div>`;
+        return;
+      }
+
       channels.forEach((ch, index) => {
         const title = ch.name || ch.title || 'Canal de TV';
-        const logo = ch.logo || ch.image || ch.thumb || '';
         const chId = ch.id || ch.slug;
-        const playUrl = ch.embed_url || ch.url || `${REI_EMBEDS_DOMAIN}/canal/${chId}`;
+        const playUrl = `${REI_EMBEDS_DOMAIN}/canal/${chId}`;
+        const icon = ch.icon || 'fa-tv';
+        const gradient = ch.color || 'from-zinc-800 to-zinc-950';
 
         const div = document.createElement('div');
         div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer border-rose-500/20 hover:border-rose-500/80 transition shadow-lg";
         
         div.innerHTML = `
-          <div class="aspect-video w-full bg-black/60 relative overflow-hidden rounded-t-2xl flex items-center justify-center p-3" onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', 'TV ao Vivo')">
+          <div class="aspect-video w-full bg-gradient-to-br ${gradient} relative overflow-hidden rounded-t-2xl flex items-center justify-center p-3" onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', 'TV ao Vivo')">
             <div class="absolute top-2 left-2 z-20">
               <span class="badge-capa text-[9px] font-extrabold px-2 py-0.5 rounded-lg text-rose-400 flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> AO VIVO
               </span>
             </div>
 
-            ${logo ? `<img src="${logo}" alt="${title}" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" loading="lazy" class="max-h-full max-w-full object-contain relative z-10 group-hover:scale-110 transition duration-300">` : ''}
-
-            <div class="${logo ? 'hidden' : ''} text-center flex flex-col items-center gap-1 text-white">
-              <i class="fa-solid fa-tv text-2xl text-rose-400 drop-shadow-md"></i>
-              <span class="text-xs font-black tracking-wider uppercase">${title}</span>
+            <div class="text-center flex flex-col items-center gap-1 text-white">
+              <i class="fa-solid ${icon} text-3xl text-rose-400 drop-shadow-md group-hover:scale-110 transition duration-300"></i>
+              <span class="text-xs font-black tracking-wider uppercase mt-1">${title}</span>
             </div>
 
             <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[3px] transition-opacity duration-300 flex items-center justify-center z-20">
@@ -1216,10 +1090,10 @@
           <div class="p-3 flex items-center justify-between gap-1.5 bg-black/40 rounded-b-2xl border-t border-white/10">
             <div class="flex-1 min-w-0" onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', 'TV ao Vivo')">
               <h4 class="font-bold text-xs text-white truncate group-hover:text-rose-400 transition">${title}</h4>
-              <p class="text-[10px] text-zinc-400 font-medium mt-0.5">Transmissão HD</p>
+              <p class="text-[10px] text-zinc-400 font-medium mt-0.5">Rei dos Embeds HD</p>
             </div>
             
-            <button onclick="saveItemToCatalog('${encodeURIComponent(title)}', 'TV', '${logo}', '${playUrl}', '${chId}', 'AO VIVO', event)" title="Salvar no Catálogo" class="text-zinc-400 hover:text-emerald-400 p-1 cursor-pointer transition">
+            <button onclick="saveItemToCatalog('${encodeURIComponent(title)}', 'TV', '', '${playUrl}', '${chId}', 'AO VIVO', event)" title="Salvar no Catálogo" class="text-zinc-400 hover:text-emerald-400 p-1 cursor-pointer transition">
               <i class="fa-solid fa-bookmark text-xs"></i>
             </button>
           </div>
@@ -1264,7 +1138,6 @@
         const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
         const vote = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'HD';
         const tmdbId = item.id;
-        
         const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
 
         const div = document.createElement('div');
@@ -1316,7 +1189,6 @@
           div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer border-emerald-500/30 hover:border-emerald-500/70 transition";
           div.innerHTML = `
             <div class="aspect-[2/3] w-full bg-black/40 relative overflow-hidden rounded-t-2xl" onclick="playItem('${item.id}')">
-              
               <div class="absolute top-2 left-2 z-20">
                 <span class="badge-capa text-[10px] font-bold px-2.5 py-1 rounded-xl text-emerald-300 border border-emerald-500/50 bg-emerald-950/80 shadow-md">
                   ${item.seasonNote || 'HD'}
@@ -1366,21 +1238,18 @@
       openModal('editModal');
     }
 
-    function closeEditModal() {
-      closeModal('editModal');
-    }
+    function closeEditModal() { closeModal('editModal'); }
 
     function saveEditDetails(e) {
       e.preventDefault();
       if (!userCatalogRef) return;
       const id = document.getElementById('editItemId').value;
-
       const newNote = document.getElementById('editNoteInput').value.trim() || 'HD';
 
       userCatalogRef.child(id).update({ seasonNote: newNote }, (err) => {
         if (!err) {
           closeEditModal();
-          showToast('Lembrete atualizado com sucesso!');
+          showToast('Lembrete atualizado!');
         } else {
           showToast('Erro ao atualizar.', 'error');
         }
@@ -1388,10 +1257,7 @@
     }
 
     function saveItemToCatalog(title, type, banner, apiUrl, tmdbId, note, e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
+      if (e) { e.preventDefault(); e.stopPropagation(); }
       if (!userCatalogRef) return;
 
       const decodedTitle = decodeURIComponent(title);
@@ -1428,7 +1294,6 @@
       if (!item) return;
 
       let playerUrl = item.apiUrl || '';
-
       if (!playerUrl && item.tmdbId) {
         playerUrl = item.type === 'Filme' ? `https://superflixapi.quest/filme/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`;
       }
@@ -1436,7 +1301,6 @@
       playCustomUrl(playerUrl, encodeURIComponent(item.title), item.type);
     }
 
-    // RENDERIZAÇÃO DO PLAYER COM SANDBOX RIGOROSO ANTI-POPUPS
     function renderApiContent(rawContent, subtitle) {
       document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
       const holder = document.getElementById('iframeHolder');
@@ -1454,24 +1318,18 @@
       }
       cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
 
-      // IFRAME COM SANDBOX BLOQUEADOR DE REDIRECIONAMENTOS E POPUPS
       const iframe = document.createElement('iframe');
       iframe.src = cleanUrl;
       iframe.className = "w-full h-full border-0 relative z-10";
       iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
       iframe.setAttribute('allowfullscreen', 'true');
-      
-      // DIRETIVAS DO SANDBOX
       iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen');
 
-      // CAMADA TRANSPARENTE ESCUDO PARA QUEIMAR O PRIMEIRO CLIQUE DE POPUP
       const shield = document.createElement('div');
       shield.id = 'playerClickShield';
       shield.className = 'absolute inset-0 z-20 bg-transparent cursor-pointer flex items-center justify-center';
       shield.title = 'Clique para Iniciar o Vídeo';
-      shield.onclick = function() {
-        shield.remove();
-      };
+      shield.onclick = function() { shield.remove(); };
 
       holder.appendChild(iframe);
       holder.appendChild(shield);
@@ -1484,7 +1342,9 @@
       overlay.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
 
-    // BUSCA GLOBAL
+    // ==========================================
+    // BUSCA GLOBAL COMPLETA (INCLUI CANAIS DE TV)
+    // ==========================================
     function handleGlobalSearch(e) {
       if (e && e.key === "Escape") { clearGlobalSearch(); return; }
       clearTimeout(globalSearchTimeout);
@@ -1498,9 +1358,16 @@
       panel.classList.replace('opacity-0', 'opacity-100');
       panel.classList.replace('pointer-events-none', 'pointer-events-auto');
 
-      renderSavedSearchList(catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase())));
+      // 1. Busca nos Canais de TV
+      const matchedTV = REI_DOS_EMBEDS_DATABASE.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+      renderTVSearchList(matchedTV);
 
-      globalSearchTimeout = setTimeout(() => fetchTMDBSearch(query), 350);
+      // 2. Busca no Catálogo
+      const matchedSaved = catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase()));
+      renderSavedSearchList(matchedSaved);
+
+      // 3. Busca no TMDB
+      globalSearchTimeout = setTimeout(() => fetchTMDBSearch(query), 300);
     }
 
     function clearGlobalSearch() {
@@ -1510,6 +1377,35 @@
 
       panel.classList.replace('opacity-100', 'opacity-0');
       panel.classList.replace('pointer-events-auto', 'pointer-events-none');
+    }
+
+    function renderTVSearchList(channels) {
+      const section = document.getElementById('sectionTVResults');
+      const container = document.getElementById('resultsTVList');
+      container.innerHTML = '';
+      if (channels.length === 0) { section.classList.add('hidden'); return; }
+
+      section.classList.remove('hidden');
+      channels.forEach(ch => {
+        const playUrl = `${REI_EMBEDS_DOMAIN}/canal/${ch.id}`;
+        const div = document.createElement('div');
+        div.className = "flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl border border-rose-500/30 bg-[#25283b] shadow-md w-full gap-2.5";
+        div.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="w-9 h-9 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 font-bold text-xs flex-shrink-0 border border-rose-500/30">
+              <i class="fa-solid ${ch.icon || 'fa-tv'} text-xs"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <h4 class="font-bold text-sm text-white line-clamp-1">${ch.name}</h4>
+              <span class="text-xs text-rose-400 font-bold">Canal Ao Vivo • Rei dos Embeds</span>
+            </div>
+          </div>
+          <button onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(ch.name)}', 'TV ao Vivo')" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-black transition cursor-pointer shadow-md text-center flex-shrink-0">
+            Assistir
+          </button>
+        `;
+        container.appendChild(div);
+      });
     }
 
     function renderSavedSearchList(items) {
