@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>RJ FLIX • Filmes, Séries & Animes</title>
+  <title>RJ FLIX • Filmes, Séries, Animes & TV ao Vivo</title>
   
   <!-- Ícones SVG & PWA integrados -->
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
@@ -169,9 +169,8 @@
           <button onclick="switchTab('movies')" id="tab-movies" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Filmes</button>
           <button onclick="switchTab('series')" id="tab-series" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Séries</button>
           <button onclick="switchTab('animes')" id="tab-animes" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Animes</button>
-          
-          <button onclick="switchTab('tv')" id="tab-tv" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-500 hover:text-zinc-400 transition cursor-pointer flex items-center gap-1.5 opacity-60">
-            <i class="fa-solid fa-lock text-[11px] text-zinc-400"></i>
+          <button onclick="switchTab('tv')" id="tab-tv" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-tv text-rose-500"></i>
             <span>TV ao Vivo</span>
           </button>
           
@@ -202,13 +201,13 @@
     </header>
 
     <!-- NAVEGAÇÃO MOBILE -->
-    <div class="md:hidden flex items-center justify-between bg-black/50 border-b border-white/10 px-3 py-2.5 overflow-x-auto hide-scrollbar backdrop-blur-xl">
+    <div class="md:hidden flex items-center justify-between bg-black/50 border-b border-white/10 px-3 py-2.5 overflow-x-auto hide-scrollbar backdrop-blur-xl gap-1">
       <button onclick="switchTab('home')" class="px-3 py-1.5 text-xs font-bold text-white whitespace-nowrap rounded-xl bg-white/10">Início</button>
       <button onclick="switchTab('movies')" class="px-3 py-1.5 text-xs font-semibold text-zinc-300 whitespace-nowrap">Filmes</button>
       <button onclick="switchTab('series')" class="px-3 py-1.5 text-xs font-semibold text-zinc-300 whitespace-nowrap">Séries</button>
       <button onclick="switchTab('animes')" class="px-3 py-1.5 text-xs font-semibold text-zinc-300 whitespace-nowrap">Animes</button>
-      <button onclick="switchTab('tv')" class="px-3 py-1.5 text-xs font-semibold text-zinc-500 opacity-60 whitespace-nowrap flex items-center gap-1">
-        <i class="fa-solid fa-lock text-[10px]"></i> TV
+      <button onclick="switchTab('tv')" class="px-3 py-1.5 text-xs font-bold text-rose-400 whitespace-nowrap flex items-center gap-1">
+        <i class="fa-solid fa-tv text-[10px]"></i> TV
       </button>
       <button onclick="switchTab('mycatalog')" class="px-3 py-1.5 text-xs font-bold text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 rounded-xl whitespace-nowrap flex items-center gap-1">
         <i class="fa-solid fa-bookmark text-[10px]"></i> Catálogo
@@ -228,7 +227,7 @@
           </button>
         </div>
 
-        <!-- PAINEL DE RESULTADOS DA BUSCA (GRID RESPONSIVO E OTIMIZADO PARA MOBILE) -->
+        <!-- PAINEL DE RESULTADOS DA BUSCA -->
         <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-200 absolute left-0 right-0 top-full mt-3 bg-[#181a26] border-2 border-zinc-700/80 rounded-3xl shadow-2xl max-h-[75vh] overflow-y-auto p-3.5 sm:p-5 space-y-4 z-50">
           <div class="flex items-center justify-between border-b border-zinc-700/80 pb-3">
             <span class="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
@@ -419,6 +418,41 @@
           <button id="loadMoreAnimesBtn" onclick="loadMoreAnimes()" class="px-6 py-3 rounded-2xl bg-white/10 hover:bg-amber-500 text-white font-bold text-xs border border-white/15 transition cursor-pointer shadow-lg backdrop-blur-md">
             <i class="fa-solid fa-plus mr-1"></i> Carregar Mais Animes
           </button>
+        </div>
+      </section>
+
+      <!-- ABA DEDICADA: TV AO VIVO (AGORA DESBLOQUEADA E 100% FUNCIONAL) -->
+      <section id="sectionTv" class="hidden space-y-6">
+        <div class="liquid-glass p-6 rounded-3xl space-y-4 border border-rose-500/30">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+            <div>
+              <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-tv text-rose-500"></i> Canais de TV ao Vivo
+              </h2>
+              <p class="text-xs text-zinc-400">Transmissões ao vivo sincronizadas em alta definição</p>
+            </div>
+
+            <div class="relative w-full sm:w-64">
+              <input type="text" id="tvSearchInput" onkeyup="filterTvChannels()" placeholder="Buscar canal ao vivo..." class="w-full bg-white/5 border border-white/10 rounded-2xl pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-rose-500 font-medium">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1" id="tvCategoryButtons">
+            <button onclick="filterTvCategory('Todos', this)" class="genre-btn genre-btn-active px-4 py-2 rounded-2xl border border-white/10 text-xs font-bold transition whitespace-nowrap">
+              Todos os Canais
+            </button>
+            <button onclick="filterTvCategory('Esportes', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Esportes</button>
+            <button onclick="filterTvCategory('Abertos', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Abertos</button>
+            <button onclick="filterTvCategory('Filmes', this)" class="genre-btn bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 text-xs font-semibold text-zinc-300 transition whitespace-nowrap">Filmes & Séries</button>
+          </div>
+        </div>
+
+        <div id="gridTvChannels" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div class="col-span-full text-center py-12 text-zinc-400 text-xs font-bold flex flex-col items-center gap-2">
+            <i class="fa-solid fa-spinner animate-spin text-2xl text-rose-500"></i>
+            <span>Sincronizando grade de programação ao vivo...</span>
+          </div>
         </div>
       </section>
 
@@ -718,7 +752,31 @@
     let animePage = 1;
     let animeType = 'newest';
 
+    // DADOS TV AO VIVO
+    let tvChannelsList = [];
+    let activeTvCategory = 'Todos';
+
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
+
+    // BASE DE BACKUP COM OS IDS EXATOS DA API DO REI DOS EMBEDS (SEM HÍFENS ONDE NÃO EXISTE)
+    const FALLBACK_TV_CHANNELS = [
+      { id: "globorj", name: "Globo RJ", category: "Abertos" },
+      { id: "globosp", name: "Globo SP", category: "Abertos" },
+      { id: "combate", name: "Combate", category: "Esportes" },
+      { id: "sportv", name: "SporTV 1", category: "Esportes" },
+      { id: "sportv2", name: "SporTV 2", category: "Esportes" },
+      { id: "sportv3", name: "SporTV 3", category: "Esportes" },
+      { id: "espn", name: "ESPN 1", category: "Esportes" },
+      { id: "espn2", name: "ESPN 2", category: "Esportes" },
+      { id: "premiereclubes", name: "Premiere Clubes", category: "Esportes" },
+      { id: "cazetv", name: "CazéTV", category: "Esportes" },
+      { id: "sbt", name: "SBT", category: "Abertos" },
+      { id: "record", name: "Record TV", category: "Abertos" },
+      { id: "band", name: "Band", category: "Abertos" },
+      { id: "telecinepipoca", name: "Telecine Pipoca", category: "Filmes" },
+      { id: "telecineaction", name: "Telecine Action", category: "Filmes" },
+      { id: "hbo", name: "HBO", category: "Filmes" }
+    ];
 
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -869,26 +927,19 @@
     }
 
     function switchTab(tabName) {
-      if (tabName === 'tv') {
-        showToast('A seção de TV ao Vivo está temporariamente desativada.', 'error');
-        return;
-      }
-
       activeTab = tabName;
 
       document.querySelectorAll('.nav-tab').forEach(b => {
-        if (b.id !== 'tab-tv') {
-          b.classList.remove('nav-active', 'bg-brand-500/20', 'text-brand-500', 'border-brand-500/40');
-          b.classList.add('text-zinc-300');
-        }
+        b.classList.remove('nav-active', 'bg-brand-500/20', 'text-brand-500', 'border-brand-500/40');
+        b.classList.add('text-zinc-300');
       });
 
       const activeBtn = document.getElementById(`tab-${tabName}`);
-      if (activeBtn && tabName !== 'mycatalog' && tabName !== 'tv') {
+      if (activeBtn && tabName !== 'mycatalog') {
         activeBtn.classList.add('nav-active');
       }
 
-      const allSections = ['heroSection', 'sectionTrending', 'sectionHomeMovies', 'sectionHomeSeries', 'sectionHomeAnimes', 'sectionMovies', 'sectionSeries', 'sectionAnimes', 'sectionMyCatalog'];
+      const allSections = ['heroSection', 'sectionTrending', 'sectionHomeMovies', 'sectionHomeSeries', 'sectionHomeAnimes', 'sectionMovies', 'sectionSeries', 'sectionAnimes', 'sectionTv', 'sectionMyCatalog'];
       allSections.forEach(s => document.getElementById(s)?.classList.add('hidden'));
 
       if (tabName === 'home') {
@@ -906,6 +957,9 @@
         document.getElementById('sectionAnimes')?.classList.remove('hidden');
         animePage = 1;
         fetchAnimesData(true);
+      } else if (tabName === 'tv') {
+        document.getElementById('sectionTv')?.classList.remove('hidden');
+        loadTvChannelsData();
       } else if (tabName === 'mycatalog') {
         document.getElementById('sectionMyCatalog')?.classList.remove('hidden');
         renderMyCatalogSection();
@@ -1040,6 +1094,105 @@
     function loadMoreAnimes() {
       animePage++;
       fetchAnimesData(false);
+    }
+
+    // LÓGICA COMPLETA DE TV AO VIVO (API DINÂMICA)
+    async function loadTvChannelsData() {
+      const grid = document.getElementById('gridTvChannels');
+      
+      if (tvChannelsList.length === 0) {
+        try {
+          let rawData = null;
+          try {
+            const res = await fetch("https://reidosembeds.online/api/channels");
+            if (res.ok) rawData = await res.json();
+          } catch (e) {
+            const proxyRes = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://reidosembeds.online/api/channels"));
+            if (proxyRes.ok) rawData = await proxyRes.json();
+          }
+
+          let apiList = [];
+          if (Array.isArray(rawData)) apiList = rawData;
+          else if (rawData && Array.isArray(rawData.channels)) apiList = rawData.channels;
+          else if (rawData && Array.isArray(rawData.data)) apiList = rawData.data;
+
+          if (apiList.length > 0) {
+            tvChannelsList = apiList.map(item => ({
+              id: item.id || item.slug || item.code,
+              name: item.name || item.title || item.id,
+              category: item.category || "Canais",
+              embed_url: item.embed_url || item.url || null
+            }));
+          } else {
+            throw new Error("Não foi possível ler lista dinâmica");
+          }
+        } catch (err) {
+          tvChannelsList = FALLBACK_TV_CHANNELS;
+        }
+      }
+
+      renderTvChannelsGrid(tvChannelsList);
+    }
+
+    function renderTvChannelsGrid(list) {
+      const grid = document.getElementById('gridTvChannels');
+      if (!grid) return;
+
+      const filtered = list.filter(ch => {
+        const matchesCategory = activeTvCategory === 'Todos' || ch.category.toLowerCase().includes(activeTvCategory.toLowerCase());
+        const searchInput = document.getElementById('tvSearchInput')?.value.toLowerCase() || '';
+        const matchesSearch = !searchInput || ch.name.toLowerCase().includes(searchInput) || ch.id.toLowerCase().includes(searchInput);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-zinc-500 text-xs font-bold">Nenhum canal encontrado para esta categoria.</div>`;
+        return;
+      }
+
+      grid.innerHTML = '';
+      filtered.forEach(ch => {
+        const playUrl = ch.embed_url || `https://v2.rdembed.sbs/${ch.id}`;
+        
+        const div = document.createElement('div');
+        div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer border-rose-500/20 hover:border-rose-500/60 transition";
+        div.onclick = () => playCustomUrl(playUrl, encodeURIComponent(ch.name), 'TV ao Vivo');
+
+        div.innerHTML = `
+          <div class="aspect-video w-full bg-black/60 relative overflow-hidden rounded-t-2xl flex items-center justify-center p-4">
+            <div class="absolute top-2 left-2 z-20">
+              <span class="badge-capa text-[9px] font-black px-2 py-0.5 rounded-lg text-rose-400 border border-rose-500/30 uppercase">AO VIVO</span>
+            </div>
+
+            <div class="text-center space-y-1">
+              <i class="fa-solid fa-tv text-3xl text-zinc-600 group-hover:text-rose-500 transition duration-300"></i>
+            </div>
+
+            <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[3px] transition-opacity duration-300 flex items-center justify-center z-20">
+              <div class="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center shadow-2xl shadow-rose-600/50 transform scale-90 group-hover:scale-100 transition duration-300 border border-white/20">
+                <i class="fa-solid fa-play text-xs ml-0.5"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 bg-black/40 rounded-b-2xl border-t border-white/10">
+            <h4 class="font-bold text-xs text-white truncate group-hover:text-rose-400 transition">${ch.name}</h4>
+            <p class="text-[10px] text-zinc-400 font-medium mt-0.5">${ch.category}</p>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    function filterTvCategory(category, btn) {
+      activeTvCategory = category;
+      document.querySelectorAll('#tvCategoryButtons .genre-btn').forEach(b => b.classList.remove('genre-btn-active'));
+      btn.classList.add('genre-btn-active');
+      renderTvChannelsGrid(tvChannelsList);
+    }
+
+    function filterTvChannels() {
+      renderTvChannelsGrid(tvChannelsList);
     }
 
     function setupHeroBanner(item) {
@@ -1276,7 +1429,7 @@
       overlay.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
 
-    // BUSCA GLOBAL (LAYOUT TOTALMENTE OTIMIZADO PARA CELULAR E PC)
+    // BUSCA GLOBAL
     function handleGlobalSearch(e) {
       if (e && e.key === "Escape") { clearGlobalSearch(); return; }
       clearTimeout(globalSearchTimeout);
