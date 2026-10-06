@@ -10,6 +10,7 @@
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#08090c">
 
+  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,6 +26,7 @@
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
+  <!-- Firebase SDK (v9 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -106,13 +108,17 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white relative">
 
+  <!-- GLOW DE FUNDO -->
   <div class="fixed top-0 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
   <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
+  <!-- BACKDROP BUSCA -->
   <div id="searchBackdrop" onclick="clearGlobalSearch()" class="fixed inset-0 bg-transparent z-30 pointer-events-none"></div>
 
+  <!-- TOAST CONTAINER -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
+  <!-- AUTH CONTAINER -->
   <div id="authScreenContainer"></div>
 
   <!-- MODAL RESET SENHA -->
@@ -142,8 +148,10 @@
     </div>
   </div>
 
+  <!-- MAIN APP CONTAINER -->
   <div id="appScreen" class="hidden flex-col min-h-screen relative z-10">
     
+    <!-- NAVBAR RJ FLIX -->
     <header class="sticky top-0 z-40 bg-black/50 border-b border-white/10 backdrop-blur-xl px-4 py-3.5 sm:px-8 flex items-center justify-between shadow-2xl">
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('home')">
@@ -153,6 +161,7 @@
           <span class="font-black text-xl tracking-wider text-white">RJ<span class="text-brand-500"> FLIX</span></span>
         </div>
 
+        <!-- MENU DE NAVEGAÇÃO DESKTOP -->
         <nav class="hidden md:flex items-center gap-1.5 ml-4">
           <button onclick="switchTab('home')" id="tab-home" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Início</button>
           <button onclick="switchTab('movies')" id="tab-movies" class="nav-tab px-3.5 py-2 rounded-2xl text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer">Filmes</button>
@@ -189,6 +198,7 @@
       </div>
     </header>
 
+    <!-- NAVEGAÇÃO MOBILE -->
     <div class="md:hidden flex items-center justify-between bg-black/50 border-b border-white/10 px-3 py-2.5 overflow-x-auto hide-scrollbar backdrop-blur-xl">
       <button onclick="switchTab('home')" class="px-3 py-1.5 text-xs font-bold text-white whitespace-nowrap rounded-xl bg-white/10">Início</button>
       <button onclick="switchTab('movies')" class="px-3 py-1.5 text-xs font-semibold text-zinc-300 whitespace-nowrap">Filmes</button>
@@ -202,6 +212,7 @@
       </button>
     </div>
 
+    <!-- MAIN BODY -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-8">
 
       <!-- BARRA DE BUSCA GLOBAL -->
@@ -214,6 +225,7 @@
           </button>
         </div>
 
+        <!-- PAINEL DE RESULTADOS DA BUSCA -->
         <div id="searchResultsPanel" class="opacity-0 translate-y-2 pointer-events-none transition-all duration-200 absolute left-0 right-0 top-full mt-3 bg-[#181a26] border-2 border-zinc-700/80 rounded-3xl shadow-2xl max-h-[75vh] overflow-y-auto p-3.5 sm:p-5 space-y-4 z-50">
           <div class="flex items-center justify-between border-b border-zinc-700/80 pb-3">
             <span class="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
@@ -274,7 +286,7 @@
         </div>
       </section>
 
-      <!-- HOME SEÇÕES -->
+      <!-- SEÇÕES DA HOME -->
       <section id="sectionTrending" class="space-y-3">
         <div class="flex items-center justify-between border-b border-white/10 pb-2">
           <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -412,7 +424,7 @@
         </div>
       </section>
 
-      <!-- TV AO VIVO (REI DOS EMBEDS COM FALLBACK) -->
+      <!-- TV AO VIVO (REI DOS EMBEDS CORRIGIDO) -->
       <section id="sectionTV" class="hidden space-y-6">
         <div class="liquid-glass p-6 rounded-3xl space-y-4">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -615,10 +627,10 @@
   </div>
 
   <script>
-    // DOMÍNIO PRINCIPAL REI DOS EMBEDS
-    const REI_EMBEDS_DOMAIN = "https://v2.rdembed.sbs";
+    // DOMÍNIO E ROTAS OFICIAIS REI DOS EMBEDS
+    const REI_EMBEDS_BASE_API = "https://reidosembeds.online/api";
 
-    // BASE DE CANAIS REI DOS EMBEDS (ESTÁTICA DE GARANTIA)
+    // BASE DE CANAIS REI DOS EMBEDS
     const REI_DOS_EMBEDS_DATABASE = [
       { id: "globo-rj", name: "Globo RJ", category: "abertos", icon: "fa-tv", color: "from-blue-600 to-indigo-800" },
       { id: "sportv", name: "SporTV", category: "esportes", icon: "fa-futbol", color: "from-green-600 to-emerald-800" },
@@ -1033,7 +1045,7 @@
     function loadMoreAnimes() { animePage++; fetchAnimesData(false); }
 
     // ==========================================
-    // TV AO VIVO COM FALLBACK SEGURO
+    // TV AO VIVO (REI DOS EMBEDS)
     // ==========================================
     async function fetchReiDosEmbedsChannels() {
       const grid = document.getElementById('gridTVChannels');
@@ -1057,10 +1069,9 @@
         return;
       }
 
-      channels.forEach((ch, index) => {
+      channels.forEach((ch) => {
         const title = ch.name || ch.title || 'Canal de TV';
         const chId = ch.id || ch.slug;
-        const playUrl = `${REI_EMBEDS_DOMAIN}/canal/${chId}`;
         const icon = ch.icon || 'fa-tv';
         const gradient = ch.color || 'from-zinc-800 to-zinc-950';
 
@@ -1068,7 +1079,7 @@
         div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer border-rose-500/20 hover:border-rose-500/80 transition shadow-lg";
         
         div.innerHTML = `
-          <div class="aspect-video w-full bg-gradient-to-br ${gradient} relative overflow-hidden rounded-t-2xl flex items-center justify-center p-3" onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', 'TV ao Vivo')">
+          <div class="aspect-video w-full bg-gradient-to-br ${gradient} relative overflow-hidden rounded-t-2xl flex items-center justify-center p-3" onclick="playCustomUrl('${chId}', '${encodeURIComponent(title)}', 'TV ao Vivo')">
             <div class="absolute top-2 left-2 z-20">
               <span class="badge-capa text-[9px] font-extrabold px-2 py-0.5 rounded-lg text-rose-400 flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> AO VIVO
@@ -1088,12 +1099,12 @@
           </div>
 
           <div class="p-3 flex items-center justify-between gap-1.5 bg-black/40 rounded-b-2xl border-t border-white/10">
-            <div class="flex-1 min-w-0" onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(title)}', 'TV ao Vivo')">
+            <div class="flex-1 min-w-0" onclick="playCustomUrl('${chId}', '${encodeURIComponent(title)}', 'TV ao Vivo')">
               <h4 class="font-bold text-xs text-white truncate group-hover:text-rose-400 transition">${title}</h4>
               <p class="text-[10px] text-zinc-400 font-medium mt-0.5">Rei dos Embeds HD</p>
             </div>
             
-            <button onclick="saveItemToCatalog('${encodeURIComponent(title)}', 'TV', '', '${playUrl}', '${chId}', 'AO VIVO', event)" title="Salvar no Catálogo" class="text-zinc-400 hover:text-emerald-400 p-1 cursor-pointer transition">
+            <button onclick="saveItemToCatalog('${encodeURIComponent(title)}', 'TV', '', '${chId}', '${chId}', 'AO VIVO', event)" title="Salvar no Catálogo" class="text-zinc-400 hover:text-emerald-400 p-1 cursor-pointer transition">
               <i class="fa-solid fa-bookmark text-xs"></i>
             </button>
           </div>
@@ -1278,11 +1289,30 @@
       });
     }
 
-    function playCustomUrl(url, encodedTitle, subtitle) {
+    // ==========================================
+    // RESOLVER URL DO PLAYER SEM ERRO 404
+    // ==========================================
+    async function playCustomUrl(urlOrId, encodedTitle, subtitle) {
       const title = decodeURIComponent(encodedTitle);
       document.getElementById('playerTitle').innerText = title;
+      
+      let finalEmbedUrl = urlOrId;
 
-      renderApiContent(url, subtitle || 'Player Principal');
+      // Se for apenas o Slug do canal (Rei dos Embeds)
+      if (!urlOrId.startsWith('http')) {
+        try {
+          const apiTarget = `${REI_EMBEDS_BASE_API}/channel?id=${urlOrId}`;
+          const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiTarget)}`;
+          const res = await fetch(proxy);
+          const data = await res.json();
+          
+          finalEmbedUrl = data.embed_url || data.url || data.player || `https://reidosembeds.online/embed/${urlOrId}`;
+        } catch (err) {
+          finalEmbedUrl = `https://reidosembeds.online/embed/${urlOrId}`;
+        }
+      }
+
+      renderApiContent(finalEmbedUrl, subtitle || 'TV ao Vivo');
       
       const overlay = document.getElementById('playerOverlay');
       overlay.classList.replace('opacity-0', 'opacity-100');
@@ -1323,16 +1353,9 @@
       iframe.className = "w-full h-full border-0 relative z-10";
       iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
       iframe.setAttribute('allowfullscreen', 'true');
-      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen');
-
-      const shield = document.createElement('div');
-      shield.id = 'playerClickShield';
-      shield.className = 'absolute inset-0 z-20 bg-transparent cursor-pointer flex items-center justify-center';
-      shield.title = 'Clique para Iniciar o Vídeo';
-      shield.onclick = function() { shield.remove(); };
+      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-popups');
 
       holder.appendChild(iframe);
-      holder.appendChild(shield);
     }
 
     function closePlayer() {
@@ -1387,7 +1410,6 @@
 
       section.classList.remove('hidden');
       channels.forEach(ch => {
-        const playUrl = `${REI_EMBEDS_DOMAIN}/canal/${ch.id}`;
         const div = document.createElement('div');
         div.className = "flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl border border-rose-500/30 bg-[#25283b] shadow-md w-full gap-2.5";
         div.innerHTML = `
@@ -1400,7 +1422,7 @@
               <span class="text-xs text-rose-400 font-bold">Canal Ao Vivo • Rei dos Embeds</span>
             </div>
           </div>
-          <button onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(ch.name)}', 'TV ao Vivo')" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-black transition cursor-pointer shadow-md text-center flex-shrink-0">
+          <button onclick="playCustomUrl('${ch.id}', '${encodeURIComponent(ch.name)}', 'TV ao Vivo')" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-black transition cursor-pointer shadow-md text-center flex-shrink-0">
             Assistir
           </button>
         `;
