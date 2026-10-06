@@ -421,11 +421,11 @@
         </div>
       </section>
 
-      <!-- ABA DEDICADA: TV AO VIVO (COM JOGOS EM DESTAQUE E LOGOS DOS CANAIS) -->
+      <!-- ABA DEDICADA: TV AO VIVO -->
       <section id="sectionTv" class="hidden space-y-8">
         
-        <!-- SEÇÃO 1: JOGOS E EVENTOS ESPORTIVOS DO DIA -->
-        <div class="space-y-3">
+        <!-- SEÇÃO 1: JOGOS E EVENTOS ESPORTIVOS DO DIA (100% DINÂMICA: SÓ APARECE SE HOUVER EVENTOS) -->
+        <div id="sectionTvEventsWrapper" class="hidden space-y-3">
           <div class="flex items-center justify-between border-b border-white/10 pb-2">
             <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
               <i class="fa-solid fa-futbol text-emerald-400 animate-pulse"></i> Jogos & Eventos de Hoje
@@ -433,15 +433,10 @@
             <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">AO VIVO / HOJE</span>
           </div>
 
-          <div id="gridTvEvents" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="col-span-full text-center py-6 text-zinc-400 text-xs font-bold flex items-center justify-center gap-2">
-              <i class="fa-solid fa-spinner animate-spin text-rose-500"></i>
-              <span>Consultando agenda esportiva da API...</span>
-            </div>
-          </div>
+          <div id="gridTvEvents" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
-        <!-- SEÇÃO 2: GRADE COMPLETA DE CANAIS DE TV -->
+        <!-- SEÇÃO 2: GRADE COMPLETA DE CANAIS DE TV COM CARDS E BANNERS ELEGANTES -->
         <div class="space-y-4">
           <div class="liquid-glass p-6 rounded-3xl space-y-4 border border-rose-500/30">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -449,7 +444,7 @@
                 <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
                   <i class="fa-solid fa-tv text-rose-500"></i> Grade de Canais ao Vivo
                 </h2>
-                <p class="text-xs text-zinc-400">Logos oficiais das emissoras e transmissões em HD</p>
+                <p class="text-xs text-zinc-400">Transmissões ao vivo sincronizadas em alta definição</p>
               </div>
 
               <div class="relative w-full sm:w-64">
@@ -471,7 +466,7 @@
           <div id="gridTvChannels" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <div class="col-span-full text-center py-12 text-zinc-400 text-xs font-bold flex flex-col items-center gap-2">
               <i class="fa-solid fa-spinner animate-spin text-2xl text-rose-500"></i>
-              <span>Carregando canais e logos oficiais...</span>
+              <span>Carregando canais...</span>
             </div>
           </div>
         </div>
@@ -781,35 +776,21 @@
 
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
-    // BASE DE LOGOS OFICIAIS DE REFORÇO
-    const CHANNEL_LOGOS = {
-      "globorj": "https://upload.wikimedia.org/wikipedia/commons/ thumb/a/a6/TV_Globo_logo_2021.svg/512px-TV_Globo_logo_2021.svg.png",
-      "globosp": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/TV_Globo_logo_2021.svg/512px-TV_Globo_logo_2021.svg.png",
-      "combate": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Canal_Combate_logo_2022.png/640px-Canal_Combate_logo_2022.png",
-      "sportv": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/SporTV_logo_2021.svg/640px-SporTV_logo_2021.svg.png",
-      "sportv2": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/SporTV_logo_2021.svg/640px-SporTV_logo_2021.svg.png",
-      "sportv3": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/SporTV_logo_2021.svg/640px-SporTV_logo_2021.svg.png",
-      "cazetv": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Caz%C3%A9TV_logo.png/640px-Caz%C3%A9TV_logo.png",
-      "sbt": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/SBT_logo_2014.svg/512px-SBT_logo_2014.svg.png",
-      "record": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Record_TV_logo_2023.svg/512px-Record_TV_logo_2023.svg.png",
-      "band": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Rede_Bandeirantes_logo_2018.svg/512px-Rede_Bandeirantes_logo_2018.svg.png"
-    };
-
     // BASE DE BACKUP COM OS IDS EXATOS DA API DO REI DOS EMBEDS
     const FALLBACK_TV_CHANNELS = [
-      { id: "globorj", name: "Globo RJ", category: "Abertos", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/TV_Globo_logo_2021.svg/512px-TV_Globo_logo_2021.svg.png" },
-      { id: "globosp", name: "Globo SP", category: "Abertos", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/TV_Globo_logo_2021.svg/512px-TV_Globo_logo_2021.svg.png" },
-      { id: "combate", name: "Combate", category: "Esportes", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Canal_Combate_logo_2022.png/640px-Canal_Combate_logo_2022.png" },
-      { id: "sportv", name: "SporTV 1", category: "Esportes", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/SporTV_logo_2021.svg/640px-SporTV_logo_2021.svg.png" },
-      { id: "sportv2", name: "SporTV 2", category: "Esportes", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/SporTV_logo_2021.svg/640px-SporTV_logo_2021.svg.png" },
-      { id: "sportv3", name: "SporTV 3", category: "Esportes", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/SporTV_logo_2021.svg/640px-SporTV_logo_2021.svg.png" },
+      { id: "globorj", name: "Globo RJ", category: "Abertos" },
+      { id: "globosp", name: "Globo SP", category: "Abertos" },
+      { id: "combate", name: "Combate", category: "Esportes" },
+      { id: "sportv", name: "SporTV 1", category: "Esportes" },
+      { id: "sportv2", name: "SporTV 2", category: "Esportes" },
+      { id: "sportv3", name: "SporTV 3", category: "Esportes" },
       { id: "espn", name: "ESPN 1", category: "Esportes" },
       { id: "espn2", name: "ESPN 2", category: "Esportes" },
       { id: "premiereclubes", name: "Premiere Clubes", category: "Esportes" },
-      { id: "cazetv", name: "CazéTV", category: "Esportes", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Caz%C3%A9TV_logo.png/640px-Caz%C3%A9TV_logo.png" },
-      { id: "sbt", name: "SBT", category: "Abertos", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/SBT_logo_2014.svg/512px-SBT_logo_2014.svg.png" },
-      { id: "record", name: "Record TV", category: "Abertos", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Record_TV_logo_2023.svg/512px-Record_TV_logo_2023.svg.png" },
-      { id: "band", name: "Band", category: "Abertos", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Rede_Bandeirantes_logo_2018.svg/512px-Rede_Bandeirantes_logo_2018.svg.png" },
+      { id: "cazetv", name: "CazéTV", category: "Esportes" },
+      { id: "sbt", name: "SBT", category: "Abertos" },
+      { id: "record", name: "Record TV", category: "Abertos" },
+      { id: "band", name: "Band", category: "Abertos" },
       { id: "telecinepipoca", name: "Telecine Pipoca", category: "Filmes" },
       { id: "telecineaction", name: "Telecine Action", category: "Filmes" },
       { id: "hbo", name: "HBO", category: "Filmes" }
@@ -1134,10 +1115,11 @@
       fetchAnimesData(false);
     }
 
-    // 1. CARREGAMENTO DOS JOGOS E EVENTOS DO DIA
+    // 1. LÓGICA DINÂMICA DE EVENTOS / JOGOS DE HOJE
     async function loadTvEventsData() {
+      const wrapper = document.getElementById('sectionTvEventsWrapper');
       const grid = document.getElementById('gridTvEvents');
-      if (!grid) return;
+      if (!wrapper || !grid) return;
 
       try {
         let rawData = null;
@@ -1154,45 +1136,29 @@
         else if (rawData && Array.isArray(rawData.data)) events = rawData.data;
         else if (rawData && Array.isArray(rawData.events)) events = rawData.events;
 
-        if (events.length === 0) {
-          // Fallback para todos os eventos esportivos gerais se não houver no momento
-          try {
-            const fallbackRes = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://reidosembeds.online/api/eventos"));
-            const fallbackData = await fallbackRes.json();
-            if (Array.isArray(fallbackData)) events = fallbackData.slice(0, 6);
-          } catch(err) {}
+        if (events && events.length > 0) {
+          wrapper.classList.remove('hidden');
+          renderTvEventsGrid(events);
+        } else {
+          // Oculta completamente a seção se não houver eventos/jogos
+          wrapper.classList.add('hidden');
+          grid.innerHTML = '';
         }
-
-        renderTvEventsGrid(events);
       } catch (err) {
-        grid.innerHTML = `
-          <div class="col-span-full p-4 rounded-2xl bg-white/5 border border-white/10 text-center text-xs text-zinc-400">
-            Nenhum jogo ao vivo registrado no momento. Acompanhe a grade abaixo nos canais de esportes.
-          </div>
-        `;
+        wrapper.classList.add('hidden');
       }
     }
 
     function renderTvEventsGrid(events) {
       const grid = document.getElementById('gridTvEvents');
       if (!grid) return;
-
-      if (!events || events.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full p-4 rounded-2xl bg-white/5 border border-white/10 text-center text-xs text-zinc-400">
-            Nenhum jogo ao vivo transmitido agora. Escolha um canal de esportes na lista abaixo.
-          </div>
-        `;
-        return;
-      }
-
       grid.innerHTML = '';
+
       events.slice(0, 6).forEach(item => {
         const title = item.title || item.name || `${item.team_home || 'Time A'} x ${item.team_away || 'Time B'}`;
         const category = item.category || 'Futebol';
         const time = item.time || item.hour || 'AO VIVO';
         const playUrl = item.embed_url || item.url || `https://v2.rdembed.sbs/${item.id || item.slug || 'sportv'}`;
-        const banner = item.banner || item.image || item.thumb || '';
 
         const div = document.createElement('div');
         div.className = "liquid-glass p-4 rounded-2xl border border-emerald-500/30 hover:border-emerald-500/70 transition flex items-center justify-between gap-3 cursor-pointer group shadow-xl";
@@ -1219,7 +1185,7 @@
       });
     }
 
-    // 2. CARREGAMENTO DOS CANAIS DE TV COM LOGOS OFICIAIS
+    // 2. CARREGAMENTO DOS CANAIS DE TV COM BANNERS & LOGOS TRATADAS
     async function loadTvChannelsData() {
       const grid = document.getElementById('gridTvChannels');
       
@@ -1242,16 +1208,17 @@
           if (apiList.length > 0) {
             tvChannelsList = apiList.map(item => {
               const channelId = item.id || item.slug || item.code;
+              const imgUrl = item.logo || item.image || item.icon || item.logo_url || item.poster || item.img || null;
               return {
                 id: channelId,
                 name: item.name || item.title || item.id,
                 category: item.category || "Canais",
-                logo: item.logo || item.image || item.icon || CHANNEL_LOGOS[channelId] || null,
+                logo: imgUrl,
                 embed_url: item.embed_url || item.url || null
               };
             });
           } else {
-            throw new Error("Usando lista fallback de segurança");
+            throw new Error("Usando lista fallback");
           }
         } catch (err) {
           tvChannelsList = FALLBACK_TV_CHANNELS;
@@ -1280,21 +1247,28 @@
       grid.innerHTML = '';
       filtered.forEach(ch => {
         const playUrl = ch.embed_url || `https://v2.rdembed.sbs/${ch.id}`;
-        const logoUrl = ch.logo || CHANNEL_LOGOS[ch.id] || null;
         
         const div = document.createElement('div');
         div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer border-rose-500/20 hover:border-rose-500/60 transition";
         div.onclick = () => playCustomUrl(playUrl, encodeURIComponent(ch.name), 'TV ao Vivo');
 
+        // Criação de banner visual com iniciais caso não exista imagem válida
+        const initials = ch.name ? ch.name.split(' ').map(n => n[0]).join('').substring(0, 3).toUpperCase() : 'TV';
+
         div.innerHTML = `
-          <div class="aspect-video w-full bg-black/60 relative overflow-hidden rounded-t-2xl flex items-center justify-center p-4">
+          <div class="aspect-video w-full bg-gradient-to-br from-zinc-900 via-rose-950/30 to-black relative overflow-hidden rounded-t-2xl flex items-center justify-center p-3 border-b border-white/5">
             <div class="absolute top-2 left-2 z-20">
               <span class="badge-capa text-[9px] font-black px-2 py-0.5 rounded-lg text-rose-400 border border-rose-500/30 uppercase">AO VIVO</span>
             </div>
 
-            ${logoUrl ? `<img src="${logoUrl}" alt="${ch.name}" loading="lazy" class="max-h-12 max-w-[80%] object-contain relative z-10 group-hover:scale-110 transition duration-300">` : `
-              <div class="text-center space-y-1">
-                <i class="fa-solid fa-tv text-3xl text-zinc-600 group-hover:text-rose-500 transition duration-300"></i>
+            ${ch.logo ? `
+              <img src="${ch.logo}" alt="${ch.name}" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" loading="lazy" class="max-h-12 max-w-[85%] object-contain relative z-10 group-hover:scale-110 transition duration-300">
+              <div class="hidden text-center space-y-1 relative z-10">
+                <span class="text-xl font-black text-rose-500 tracking-wider font-mono">${initials}</span>
+              </div>
+            ` : `
+              <div class="text-center space-y-1 relative z-10">
+                <span class="text-xl font-black text-rose-500 tracking-wider font-mono">${initials}</span>
               </div>
             `}
 
