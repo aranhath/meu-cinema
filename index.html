@@ -647,6 +647,26 @@
       if (ctrlOrCmd && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
     }, false);
 
+    // CANAIS DE EMERGÊNCIA (FALLBACK GARANTIDO)
+    const FALLBACK_CHANNELS = [
+      { title: "Globo RJ", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/TV_Globo_logo_2021.svg/512px-TV_Globo_logo_2021.svg.png", embed_url: "https://superflixapi.quest/tv/globo" },
+      { title: "SporTV", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/SporTV_logo_2021.svg/512px-SporTV_logo_2021.svg.png", embed_url: "https://superflixapi.quest/tv/sportv" },
+      { title: "SporTV 2", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/SporTV_logo_2021.svg/512px-SporTV_logo_2021.svg.png", embed_url: "https://superflixapi.quest/tv/sportv2" },
+      { title: "SporTV 3", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/SporTV_logo_2021.svg/512px-SporTV_logo_2021.svg.png", embed_url: "https://superflixapi.quest/tv/sportv3" },
+      { title: "ESPN", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/ESPN_logo.svg/512px-ESPN_logo.svg.png", embed_url: "https://superflixapi.quest/tv/espn" },
+      { title: "ESPN 2", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/ESPN_logo.svg/512px-ESPN_logo.svg.png", embed_url: "https://superflixapi.quest/tv/espn2" },
+      { title: "Premiere", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Premiere_logo_2021.png/512px-Premiere_logo_2021.png", embed_url: "https://superflixapi.quest/tv/premiere" },
+      { title: "CazéTV", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Caz%C3%A9TV_logo.png/512px-Caz%C3%A9TV_logo.png", embed_url: "https://superflixapi.quest/tv/cazetv" },
+      { title: "SBT", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/SBT_logo_2014.svg/512px-SBT_logo_2014.svg.png", embed_url: "https://superflixapi.quest/tv/sbt" },
+      { title: "Record TV", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Record_logo_2023.png/512px-Record_logo_2023.png", embed_url: "https://superflixapi.quest/tv/record" },
+      { title: "Band", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Rede_Bandeirantes_logo_2018.png/512px-Rede_Bandeirantes_logo_2018.png", embed_url: "https://superflixapi.quest/tv/band" },
+      { title: "Telecine Pipoca", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Telecine_2019_logo.svg/512px-Telecine_2019_logo.svg.png", embed_url: "https://superflixapi.quest/tv/telecine-pipoca" },
+      { title: "Telecine Action", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Telecine_2019_logo.svg/512px-Telecine_2019_logo.svg.png", embed_url: "https://superflixapi.quest/tv/telecine-action" },
+      { title: "HBO", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/HBO_logo.svg/512px-HBO_logo.svg.png", embed_url: "https://superflixapi.quest/tv/hbo" },
+      { title: "TNT", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/TNT_Logo_2016.svg/512px-TNT_Logo_2016.svg.png", embed_url: "https://superflixapi.quest/tv/tnt" },
+      { title: "Cartoon Network", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Cartoon_Network_2010_logo.svg/512px-Cartoon_Network_2010_logo.svg.png", embed_url: "https://superflixapi.quest/tv/cartoon-network" }
+    ];
+
     // MODAIS
     function openModal(id) {
       const el = document.getElementById(id);
@@ -1087,40 +1107,44 @@
       fetchAnimesData(false);
     }
 
-    // BUSCAR CANAIS DA SUPERFLIX API
+    // BUSCAR CANAIS DA SUPERFLIX API COM PROXY ANTI-CORS E FALLBACK
     async function fetchTVChannels() {
       const grid = document.getElementById('gridTVChannels');
-      grid.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-zinc-400">Carregando lista de canais ao vivo...</div>`;
+      grid.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-zinc-400"><i class="fa-solid fa-spinner animate-spin mr-2"></i>Carregando lista de canais...</div>`;
+
+      let rawUrl = `https://superflixapi.quest/lista?category=canais&format=json`;
+      if (tvGenre !== 'all') {
+        rawUrl = `https://superflixapi.quest/lista?category=canais&genre=${tvGenre}&format=json`;
+      }
+
+      const proxyUrl = `https://corsproxy.io/?` + encodeURIComponent(rawUrl);
 
       try {
-        let url = `https://superflixapi.quest/lista?category=canais&format=json`;
-        if (tvGenre !== 'all') {
-          url = `https://superflixapi.quest/lista?category=canais&genre=${tvGenre}&format=json`;
-        }
-
-        const res = await fetch(url);
+        const res = await fetch(proxyUrl);
         const channels = await res.json();
+        const list = Array.isArray(channels) ? channels : (channels?.data || []);
 
-        if (Array.isArray(channels) && channels.length > 0) {
-          renderTVCards(channels);
-        } else if (channels && channels.data && Array.isArray(channels.data)) {
-          renderTVCards(channels.data);
+        if (list.length > 0) {
+          renderTVCards(list);
         } else {
-          grid.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-zinc-400">Nenhum canal encontrado nesta categoria.</div>`;
+          renderTVCards(FALLBACK_CHANNELS);
         }
       } catch (err) {
-        console.error("Erro ao carregar canais:", err);
-        grid.innerHTML = `<div class="col-span-full py-8 text-center text-xs text-rose-400">Erro ao carregar grade de canais ao vivo.</div>`;
+        console.warn("API de canais bloqueada por CORS/Timeout. Carregando grade estática...", err);
+        renderTVCards(FALLBACK_CHANNELS);
       }
     }
 
-    // BUSCAR JOGOS E EVENTOS ESPORTIVOS
+    // BUSCAR JOGOS E EVENTOS AO VIVO COM PROXY CORS
     async function fetchLiveEvents() {
       const sectionEvents = document.getElementById('sectionLiveEvents');
       const gridEvents = document.getElementById('gridLiveEvents');
 
+      const rawUrl = `https://superflixapi.quest/lista?category=eventos&status=live&format=json`;
+      const proxyUrl = `https://corsproxy.io/?` + encodeURIComponent(rawUrl);
+
       try {
-        const res = await fetch(`https://superflixapi.quest/lista?category=eventos&status=live&format=json`);
+        const res = await fetch(proxyUrl);
         const events = await res.json();
         const list = Array.isArray(events) ? events : (events?.data || []);
 
