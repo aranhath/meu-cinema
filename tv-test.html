@@ -650,7 +650,7 @@
     </div>
   </div>
 
-  <!-- PLAYER OVERLAY COM PROTEÇÃO ANTI-REDIRECT E SANDBOX RESTRITIVO -->
+  <!-- PLAYER OVERLAY COM MÁSCARA CAPTURA-CLIQUE ANTI-ANÚNCIO -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
     <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/60 border border-white/15 p-2 rounded-2xl shadow-2xl backdrop-blur-xl">
       <div class="hidden sm:block px-3 text-left">
@@ -664,11 +664,15 @@
       </button>
     </div>
 
-    <div id="iframeHolder" class="w-full h-full"></div>
+    <!-- CONTAINER DO PLAYER COM CAMADA CAPTURA-CLIQUE -->
+    <div class="w-full h-full relative">
+      <div id="clickShield" onclick="handleShieldClick(event)" class="absolute inset-0 z-40 bg-transparent cursor-pointer"></div>
+      <div id="iframeHolder" class="w-full h-full"></div>
+    </div>
   </div>
 
   <script>
-    // PROTEÇÃO ANTI-INSPECIONAR E BLOQUEIO DE REDIRECIONAMENTOS EXTERNOS
+    // PROTEÇÃO ANTI-INSPECIONAR
     document.addEventListener('contextmenu', (e) => e.preventDefault(), false);
     document.addEventListener('keydown', (e) => {
       if (e.keyCode === 123) { e.preventDefault(); return false; }
@@ -678,14 +682,17 @@
       if (ctrlOrCmd && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
     }, false);
 
-    // TRAVA ANTI-UNLOAD ENQUANTO O PLAYER ESTIVER ABERTO
-    let isPlayerActive = false;
-    window.addEventListener('beforeunload', (e) => {
-      if (isPlayerActive) {
+    // MÁSCARA TRANSPARENTE NEUTRALIZADORA DE POP-UPS DA API
+    function handleShieldClick(e) {
+      if (e) {
         e.preventDefault();
-        e.returnValue = '';
+        e.stopPropagation();
       }
-    });
+      const shield = document.getElementById('clickShield');
+      if (shield) {
+        shield.classList.add('hidden');
+      }
+    }
 
     // MODAIS
     function openModal(id) {
@@ -1390,7 +1397,7 @@
                 ${ch.next1 ? `
                   <div class="pt-1 border-t border-white/10">
                     <span class="text-[8px] text-zinc-400 font-semibold uppercase block">A Seguir</span>
-                    <p class="text-[10px] text-zinc-300 font-medium line-clamp-1">${ch.next1}</p>
+                    <p class="text-[10px] font-medium text-zinc-300 line-clamp-1">${ch.next1}</p>
                   </div>
                 ` : ''}
               </div>
@@ -1584,9 +1591,14 @@
       const title = decodeURIComponent(encodedTitle);
       document.getElementById('playerTitle').innerText = title;
 
+      // RECTIFICA A CAMADA DE MÁSCARA TRANSPARENTE
+      const shield = document.getElementById('clickShield');
+      if (shield) {
+        shield.classList.remove('hidden');
+      }
+
       renderApiContent(url, subtitle || 'Player Principal');
       
-      isPlayerActive = true;
       const overlay = document.getElementById('playerOverlay');
       overlay.classList.replace('opacity-0', 'opacity-100');
       overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
@@ -1605,7 +1617,7 @@
       playCustomUrl(playerUrl, encodeURIComponent(item.title), item.type);
     }
 
-    // RENDERIZAÇÃO DO IFRAME COM A MÁSCARA RESTRITIVA DE SANDBOX
+    // RENDERIZAÇÃO LIMPA E TOTALMENTE FUNCIONAL DO IFRAME
     function renderApiContent(rawContent, subtitle) {
       document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
       const holder = document.getElementById('iframeHolder');
@@ -1626,9 +1638,6 @@
       const iframe = document.createElement('iframe');
       iframe.src = cleanUrl;
       iframe.className = "w-full h-full border-0";
-      
-      // PERMISSÕES SELETAIS QUE BLOQUEIAM O REDIRECIONAMENTO DA JANELA PRINCIPAL
-      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
       iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
       iframe.setAttribute('allowfullscreen', 'true');
       
@@ -1636,7 +1645,6 @@
     }
 
     function closePlayer() {
-      isPlayerActive = false;
       document.getElementById('iframeHolder').innerHTML = '';
       const overlay = document.getElementById('playerOverlay');
       overlay.classList.replace('opacity-100', 'opacity-0');
