@@ -66,13 +66,13 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 1.25rem;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.3s ease;
     }
 
     .liquid-glass-card:hover {
-      transform: translateY(-6px) scale(1.02);
+      transform: translateY(-4px);
       border-color: rgba(229, 9, 20, 0.5);
-      box-shadow: 0 20px 40px -10px rgba(229, 9, 20, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+      box-shadow: 0 15px 30px -10px rgba(229, 9, 20, 0.3);
     }
 
     .liquid-glass-card:hover .play-overlay {
@@ -80,10 +80,10 @@
     }
 
     .badge-capa {
-      background: rgba(10, 10, 15, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .nav-active {
@@ -217,7 +217,7 @@
     <!-- MAIN BODY -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-8">
 
-      <!-- BARRA DE BUSCA GLOBAL ÚNICA (PESQUISA TUDO: FILMES, SÉRIES, ANIMES E CANAIS) -->
+      <!-- BARRA DE BUSCA GLOBAL ÚNICA (PESQUISA FILMES, SÉRIES, ANIMES E CANAIS DE TV) -->
       <div class="relative z-30">
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-sm"></i>
@@ -428,14 +428,14 @@
         </div>
       </section>
 
-      <!-- ABA DEDICADA: TV AO VIVO (COM EPG / GUIA DE PROGRAMAÇÃO E FILTROS DIVERSIFICADOS) -->
+      <!-- ABA DEDICADA: TV AO VIVO (OTIMIZADA, LEVE E SEM PISCA-PISCA) -->
       <section id="sectionTv" class="hidden space-y-8">
         
-        <!-- SEÇÃO 1: JOGOS E EVENTOS ESPORTIVOS DO DIA (100% DINÂMICA) -->
+        <!-- SEÇÃO 1: JOGOS E EVENTOS ESPORTIVOS DO DIA (COMPLETAMENTE DINÂMICO) -->
         <div id="sectionTvEventsWrapper" class="hidden space-y-3">
           <div class="flex items-center justify-between border-b border-white/10 pb-2">
             <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <i class="fa-solid fa-futbol text-emerald-400 animate-pulse"></i> Jogos & Eventos de Hoje
+              <i class="fa-solid fa-futbol text-emerald-400"></i> Jogos & Eventos de Hoje
             </h2>
             <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">AO VIVO / HOJE</span>
           </div>
@@ -443,7 +443,7 @@
           <div id="gridTvEvents" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
-        <!-- SEÇÃO 2: GRADE COMPLETA DE CANAIS COM FILTROS DIVERSIFICADOS E EPG -->
+        <!-- SEÇÃO 2: GRADE COMPLETA DE CANAIS DE TV -->
         <div class="space-y-4">
           <div class="liquid-glass p-6 rounded-3xl space-y-4 border border-rose-500/30">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
@@ -451,11 +451,11 @@
                 <h2 class="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
                   <i class="fa-solid fa-tv text-rose-500"></i> Grade de Canais ao Vivo
                 </h2>
-                <p class="text-xs text-zinc-400">Guia de programação com transmissões ao vivo sincronizadas em HD</p>
+                <p class="text-xs text-zinc-400">Transmissões ao vivo em alta definição com player integrado</p>
               </div>
             </div>
 
-            <!-- FILTROS OTIMIZADOS E DIVERSIFICADOS -->
+            <!-- FILTROS OTIMIZADOS DA GRADE -->
             <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1" id="tvCategoryButtons">
               <button onclick="filterTvCategory('Todos', this)" class="genre-btn genre-btn-active px-4 py-2 rounded-2xl border border-white/10 text-xs font-bold transition whitespace-nowrap">
                 Todos os Canais
@@ -470,11 +470,11 @@
             </div>
           </div>
 
-          <!-- GRID DOS CARDS DE CANAIS NA PROPORÇÃO DOS FILMES (VERTICAL 2:3) COM EPG -->
+          <!-- GRID VERTICAL DOS CARDS (SÓ EXIBE EPG SE O CANAL REALMENTE TIVER DADOS) -->
           <div id="gridTvChannels" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <div class="col-span-full text-center py-12 text-zinc-400 text-xs font-bold flex flex-col items-center gap-2">
               <i class="fa-solid fa-spinner animate-spin text-2xl text-rose-500"></i>
-              <span>Carregando guia de programação...</span>
+              <span>Sincronizando transmissões...</span>
             </div>
           </div>
         </div>
@@ -778,31 +778,30 @@
     let animePage = 1;
     let animeType = 'newest';
 
-    // DADOS TV AO VIVO & EVENTOS ESPORTIVOS
+    // DADOS TV AO VIVO
     let tvChannelsList = [];
-    let tvEventsList = [];
     let activeTvCategory = 'Todos';
 
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
-    // BASE DE BACKUP COM OS IDS EXATOS E EPG SIMULADO/OFICIAL
+    // BASE DE BACKUP OFICIAL
     const FALLBACK_TV_CHANNELS = [
-      { id: "globorj", name: "Globo RJ", category: "Abertos", current: "Jornal Nacional", next1: "21:20 Novela das Nove", next2: "22:30 BBB" },
-      { id: "globosp", name: "Globo SP", category: "Abertos", current: "Jornal SP2", next1: "21:20 Novela das Nove", next2: "22:30 BBB" },
-      { id: "combate", name: "Combate", category: "Esportes", current: "UFC Combate Ao Vivo", next1: "22:00 Replay Noche UFC", next2: "23:30 Countdown" },
-      { id: "sportv", name: "SporTV 1", category: "Esportes", current: "Tá na Área", next1: "21:30 Brasileirão Ao Vivo", next2: "23:30 Troca de Passe" },
-      { id: "sportv2", name: "SporTV 2", category: "Esportes", current: "Vôlei Superliga", next1: "21:00 Basquete NBB", next2: "23:00 SporTV News" },
-      { id: "sportv3", name: "SporTV 3", category: "Esportes", current: "Tênis ATP Tour", next1: "22:00 Automobilismo", next2: "23:30 Magazine" },
-      { id: "espn", name: "ESPN 1", category: "Esportes", current: "ESPN F90", next1: "21:30 Premier League", next2: "23:30 SportsCenter" },
-      { id: "espn2", name: "ESPN 2", category: "Esportes", current: "NBA Basketball", next1: "23:00 SportsCenter", next2: "00:00 MLB Baseball" },
-      { id: "premiereclubes", name: "Premiere Clubes", category: "Esportes", current: "Pré-Jogo Brasileirão", next1: "21:30 Futebol Ao Vivo", next2: "23:30 Pós-Jogo" },
-      { id: "cazetv", name: "CazéTV", category: "Esportes", current: "CazéTV Ao Vivo", next1: "21:00 Liga Europa", next2: "23:00 Melhores Momentos" },
-      { id: "sbt", name: "SBT", category: "Abertos", current: "SBT Brasil", next1: "21:00 A Infância de Romeu e Julieta", next2: "22:00 Programa do Ratinho" },
-      { id: "record", name: "Record TV", category: "Abertos", current: "Jornal da Record", next1: "21:00 Reis", next2: "22:30 A Fazenda" },
-      { id: "band", name: "Band", category: "Abertos", current: "Jornal da Band", next1: "20:30 Show da Fé", next2: "22:00 Perrengue na Band" },
-      { id: "telecinepipoca", name: "Telecine Pipoca", category: "Filmes", current: "Super Mario Bros: O Filme", next1: "21:30 Velozes e Furiosos 10", next2: "23:45 Gato de Botas 2" },
-      { id: "telecineaction", name: "Telecine Action", category: "Filmes", current: "John Wick 4", next1: "22:00 Resgate 2", next2: "00:10 Carga Explosiva" },
-      { id: "hbo", name: "HBO", category: "Filmes", current: "House of the Dragon", next1: "21:00 The Last of Us", next2: "22:00 Batman" }
+      { id: "globorj", name: "Globo RJ", category: "Abertos" },
+      { id: "globosp", name: "Globo SP", category: "Abertos" },
+      { id: "combate", name: "Combate", category: "Esportes" },
+      { id: "sportv", name: "SporTV 1", category: "Esportes" },
+      { id: "sportv2", name: "SporTV 2", category: "Esportes" },
+      { id: "sportv3", name: "SporTV 3", category: "Esportes" },
+      { id: "espn", name: "ESPN 1", category: "Esportes" },
+      { id: "espn2", name: "ESPN 2", category: "Esportes" },
+      { id: "premiereclubes", name: "Premiere Clubes", category: "Esportes" },
+      { id: "cazetv", name: "CazéTV", category: "Esportes" },
+      { id: "sbt", name: "SBT", category: "Abertos" },
+      { id: "record", name: "Record TV", category: "Abertos" },
+      { id: "band", name: "Band", category: "Abertos" },
+      { id: "telecinepipoca", name: "Telecine Pipoca", category: "Filmes" },
+      { id: "telecineaction", name: "Telecine Action", category: "Filmes" },
+      { id: "hbo", name: "HBO", category: "Filmes" }
     ];
 
     auth.onAuthStateChanged((user) => {
@@ -1124,7 +1123,7 @@
       fetchAnimesData(false);
     }
 
-    // 1. CARREGAMENTO DINÂMICO DE EVENTOS ESPORTIVOS DO DIA
+    // 1. CARREGAMENTO DE EVENTOS AO VIVO (100% DINÂMICO)
     async function loadTvEventsData() {
       const wrapper = document.getElementById('sectionTvEventsWrapper');
       const grid = document.getElementById('gridTvEvents');
@@ -1193,7 +1192,7 @@
       });
     }
 
-    // 2. CARREGAMENTO DOS CANAIS DE TV COM PROPORÇÃO VERTICAL DE FILMES (2:3), BOTÃO DE SALVAR E GUIA DE PROGRAMAÇÃO (EPG)
+    // 2. CARREGAMENTO DOS CANAIS DE TV COM BOTÃO DE SALVAR CLICÁVEL E APENAS EPG REAL
     async function loadTvChannelsData() {
       if (tvChannelsList.length === 0) {
         try {
@@ -1216,9 +1215,9 @@
               const channelId = item.id || item.slug || item.code;
               const imgUrl = item.logo || item.image || item.icon || item.logo_url || item.poster || item.img || null;
               
-              // Tenta localizar dados de EPG na resposta da API
-              const epgCurrent = item.current_program || item.now || item.title_program || "Programação Ao Vivo HD";
-              const epgNext1 = item.next_program || item.next || "Próxima Atração";
+              // APENAS PEGA INFORMAÇÃO SE TIVER REALMENTE NA API
+              const epgCurrent = item.current_program || item.now || item.program_title || null;
+              const epgNext1 = item.next_program || item.next || null;
 
               return {
                 id: channelId,
@@ -1258,9 +1257,6 @@
       filtered.forEach(ch => {
         const playUrl = ch.embed_url || `https://v2.rdembed.sbs/${ch.id}`;
         const initials = ch.name ? ch.name.split(' ').map(n => n[0]).join('').substring(0, 3).toUpperCase() : 'TV';
-        
-        const currentProg = ch.current || "Programação Ao Vivo HD";
-        const nextProg = ch.next1 || "A Seguir: Variedades";
 
         const div = document.createElement('div');
         div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer border-rose-500/20 hover:border-rose-500/60 transition";
@@ -1268,19 +1264,18 @@
         div.innerHTML = `
           <div class="aspect-[2/3] w-full bg-gradient-to-b from-zinc-950 via-[#12131f] to-black relative overflow-hidden rounded-t-2xl flex flex-col justify-between p-3" onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(ch.name)}', 'TV ao Vivo')">
             
-            <!-- BADGE AO VIVO & BOTÃO SALVAR NO CATÁLOGO -->
-            <div class="flex items-center justify-between z-20 w-full">
-              <span class="badge-capa text-[9px] font-black px-2 py-0.5 rounded-lg text-rose-400 border border-rose-500/30 uppercase flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
-                <span>AO VIVO</span>
+            <!-- BADGE E BOTÃO SALVAR (COM Z-INDEX ALTO PARA PERMITIR CLIQUE SEM BLOQUEIO DO HOVER) -->
+            <div class="flex items-center justify-between z-40 w-full relative">
+              <span class="badge-capa text-[9px] font-black px-2 py-0.5 rounded-lg text-rose-400 border border-rose-500/30 uppercase">
+                AO VIVO
               </span>
 
-              <button onclick="saveItemToCatalog('${encodeURIComponent(ch.name)}', 'TV ao Vivo', '${ch.logo || ''}', '${playUrl}', '${ch.id}', 'AO VIVO', event)" title="Salvar no Catálogo" class="w-7 h-7 rounded-xl bg-black/60 hover:bg-emerald-600 text-zinc-300 hover:text-white flex items-center justify-center border border-white/10 transition cursor-pointer">
+              <button onclick="saveItemToCatalog('${encodeURIComponent(ch.name)}', 'TV ao Vivo', '${ch.logo || ''}', '${playUrl}', '${ch.id}', 'AO VIVO', event)" title="Salvar no Catálogo" class="w-7 h-7 rounded-xl bg-black/80 hover:bg-emerald-600 text-zinc-300 hover:text-white flex items-center justify-center border border-white/20 transition cursor-pointer shadow-lg">
                 <i class="fa-solid fa-bookmark text-[10px]"></i>
               </button>
             </div>
 
-            <!-- LOGO CENTRALIZADA NO TOPO DO CARD -->
+            <!-- LOGO CENTRALIZADA -->
             <div class="flex-1 flex items-center justify-center my-2 relative z-10 p-2">
               ${ch.logo ? `
                 <img src="${ch.logo}" alt="${ch.name}" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" loading="lazy" class="max-h-16 max-w-[85%] object-contain filter drop-shadow-lg group-hover:scale-105 transition duration-300">
@@ -1294,27 +1289,27 @@
               `}
             </div>
 
-            <!-- INFORMAÇÕES DO PROGRAMA ATUAL E PRÓXIMOS (ESTILO GUIA EPG) -->
-            <div class="bg-black/80 backdrop-blur-md rounded-xl p-2.5 border border-white/10 space-y-1.5 relative z-10 text-left">
-              <div>
-                <div class="flex items-center justify-between text-[9px] text-rose-400 font-extrabold uppercase tracking-wider mb-0.5">
-                  <span>No Ar Agora</span>
-                  <i class="fa-solid fa-circle text-[6px] animate-pulse"></i>
-                </div>
-                <h5 class="text-[11px] font-bold text-white line-clamp-1 leading-snug">${currentProg}</h5>
-                <div class="w-full bg-white/10 h-1 rounded-full mt-1 overflow-hidden">
-                  <div class="bg-rose-500 h-full w-2/3 rounded-full"></div>
-                </div>
-              </div>
+            <!-- EXIBIÇÃO DINÂMICA DE EPG (SÓ RENDERIZA SE EXISTIR DADO REAL) -->
+            ${(ch.current || ch.next1) ? `
+              <div class="bg-black/80 backdrop-blur-md rounded-xl p-2.5 border border-white/10 space-y-1.5 relative z-10 text-left">
+                ${ch.current ? `
+                  <div>
+                    <span class="text-[9px] text-rose-400 font-extrabold uppercase tracking-wider block mb-0.5">No Ar Agora</span>
+                    <h5 class="text-[11px] font-bold text-white line-clamp-1 leading-snug">${ch.current}</h5>
+                  </div>
+                ` : ''}
 
-              <div class="pt-1 border-t border-white/10">
-                <span class="text-[8px] text-zinc-400 font-semibold uppercase block">A Seguir</span>
-                <p class="text-[10px] font-medium text-zinc-300 line-clamp-1">${nextProg}</p>
+                ${ch.next1 ? `
+                  <div class="pt-1 border-t border-white/10">
+                    <span class="text-[8px] text-zinc-400 font-semibold uppercase block">A Seguir</span>
+                    <p class="text-[10px] font-medium text-zinc-300 line-clamp-1">${ch.next1}</p>
+                  </div>
+                ` : ''}
               </div>
-            </div>
+            ` : ''}
 
-            <!-- OVERLAY DE PLAY -->
-            <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[3px] transition-opacity duration-300 flex items-center justify-center z-30">
+            <!-- OVERLAY DE PLAY NO HOVER -->
+            <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 flex items-center justify-center z-20 pointer-events-none">
               <div class="w-12 h-12 rounded-2xl bg-rose-600 text-white flex items-center justify-center shadow-2xl shadow-rose-600/50 transform scale-90 group-hover:scale-100 transition duration-300 border border-white/20">
                 <i class="fa-solid fa-play text-sm ml-0.5"></i>
               </div>
@@ -1322,7 +1317,7 @@
 
           </div>
 
-          <!-- NOME E CATEGORIA DO CANAL NO RODAPÉ -->
+          <!-- NOME E CATEGORIA -->
           <div class="p-3 bg-black/40 rounded-b-2xl border-t border-white/10">
             <h4 class="font-bold text-xs text-white truncate group-hover:text-rose-400 transition">${ch.name}</h4>
             <p class="text-[10px] text-zinc-400 font-medium mt-0.5 truncate">${ch.category}</p>
@@ -1573,7 +1568,7 @@
       overlay.classList.replace('pointer-events-auto', 'pointer-events-none');
     }
 
-    // BUSCA GLOBAL UNIFICADA (FILMES, SÉRIES, ANIMES E CANAIS DE TV)
+    // BUSCA GLOBAL UNIFICADA
     function handleGlobalSearch(e) {
       if (e && e.key === "Escape") { clearGlobalSearch(); return; }
       clearTimeout(globalSearchTimeout);
@@ -1587,13 +1582,9 @@
       panel.classList.replace('opacity-0', 'opacity-100');
       panel.classList.replace('pointer-events-none', 'pointer-events-auto');
 
-      // 1. Busca nos Canais de TV
       renderTvSearchList(tvChannelsList.filter(c => c.name.toLowerCase().includes(query.toLowerCase())));
-
-      // 2. Busca no Catálogo Privado
       renderSavedSearchList(catalog.filter(i => i.title.toLowerCase().includes(query.toLowerCase())));
 
-      // 3. Busca Global no TMDB
       globalSearchTimeout = setTimeout(() => fetchTMDBSearch(query), 350);
     }
 
