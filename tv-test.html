@@ -668,18 +668,6 @@
   </div>
 
   <script>
-    // INTERCEPTADOR DE NOVAS ABAS DE ANÚNCIO DISPARADAS PELO PLAYER
-    let originalWindowOpen = window.open;
-    let isPlayerOpen = false;
-
-    window.open = function(url, target, features) {
-      if (isPlayerOpen) {
-        console.warn("Anúncio/Pop-under bloqueado durante a reprodução:", url);
-        return null; // Anula a abertura da aba de propaganda
-      }
-      return originalWindowOpen.apply(this, arguments);
-    };
-
     // PROTEÇÃO ANTI-INSPECIONAR
     document.addEventListener('contextmenu', (e) => e.preventDefault(), false);
     document.addEventListener('keydown', (e) => {
@@ -689,6 +677,15 @@
       if (ctrlOrCmd && (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))) { e.preventDefault(); return false; }
       if (ctrlOrCmd && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
     }, false);
+
+    // FUNÇÃO AUXILIAR PARA GERAR URLS LIMPAS DOS PLAYERS ALTERNATIVOS
+    function buildCleanPlayerUrl(tmdbId, isMovie) {
+      if (isMovie) {
+        return `https://embed.warezcdn.com/filme/${tmdbId}`;
+      } else {
+        return `https://player.autoembed.cc/embed/tv/${tmdbId}/1/1`;
+      }
+    }
 
     // MODAIS
     function openModal(id) {
@@ -1087,7 +1084,7 @@
       const isMovie = item.media_type === 'movie' || !item.first_air_date;
       const rating = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : '★ 8.5';
       const tmdbId = item.id;
-      const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
+      const playUrl = buildCleanPlayerUrl(tmdbId, isMovie);
 
       document.getElementById('heroBg').style.backgroundImage = bgUrl ? `url('${bgUrl}')` : 'none';
       document.getElementById('heroTitle').innerText = title;
@@ -1436,7 +1433,7 @@
         const vote = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'HD';
         const tmdbId = item.id;
         
-        const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
+        const playUrl = buildCleanPlayerUrl(tmdbId, isMovie);
 
         const div = document.createElement('div');
         div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer";
@@ -1587,8 +1584,6 @@
       const title = decodeURIComponent(encodedTitle);
       document.getElementById('playerTitle').innerText = title;
 
-      isPlayerOpen = true; // ATIVA O BLOQUEADOR DE JANELAS/ANÚNCIOS
-
       renderApiContent(url, subtitle || 'Player Principal');
       
       const overlay = document.getElementById('playerOverlay');
@@ -1603,7 +1598,7 @@
       let playerUrl = item.apiUrl || '';
 
       if (!playerUrl && item.tmdbId) {
-        playerUrl = item.type === 'Filme' ? `https://superflixapi.quest/filme/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`;
+        playerUrl = buildCleanPlayerUrl(item.tmdbId, item.type === 'Filme');
       }
 
       playCustomUrl(playerUrl, encodeURIComponent(item.title), item.type);
@@ -1637,7 +1632,6 @@
     }
 
     function closePlayer() {
-      isPlayerOpen = false; // DESATIVA O BLOQUEADOR AO FECHAR O PLAYER
       document.getElementById('iframeHolder').innerHTML = '';
       const overlay = document.getElementById('playerOverlay');
       overlay.classList.replace('opacity-100', 'opacity-0');
@@ -1755,7 +1749,7 @@
           const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
           const vote = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'HD';
           const tmdbId = item.id;
-          const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
+          const playUrl = buildCleanPlayerUrl(tmdbId, isMovie);
 
           const div = document.createElement('div');
           div.className = "flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl border border-zinc-700/80 bg-[#25283b] shadow-md w-full gap-3";
