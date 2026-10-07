@@ -27,6 +27,9 @@
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
+  <!-- HLS.js Player para Mídia Limpa HLS / .m3u8 -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
   <!-- Firebase SDK (v9 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -668,6 +671,9 @@
   </div>
 
   <script>
+    // CONFIGURAÇÃO DO SEU BACKEND PROXY
+    const PROXY_URL = "https://rjflix-backend.vercel.app/api/extract";
+
     // PROTEÇÃO ANTI-INSPECIONAR
     document.addEventListener('contextmenu', (e) => e.preventDefault(), false);
     document.addEventListener('keydown', (e) => {
@@ -677,15 +683,6 @@
       if (ctrlOrCmd && (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))) { e.preventDefault(); return false; }
       if (ctrlOrCmd && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
     }, false);
-
-    // FUNÇÃO AUXILIAR PARA GERAR URLS LIMPAS DOS PLAYERS ALTERNATIVOS
-    function buildCleanPlayerUrl(tmdbId, isMovie) {
-      if (isMovie) {
-        return `https://embed.warezcdn.com/filme/${tmdbId}`;
-      } else {
-        return `https://player.autoembed.cc/embed/tv/${tmdbId}/1/1`;
-      }
-    }
 
     // MODAIS
     function openModal(id) {
@@ -1084,7 +1081,7 @@
       const isMovie = item.media_type === 'movie' || !item.first_air_date;
       const rating = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : '★ 8.5';
       const tmdbId = item.id;
-      const playUrl = buildCleanPlayerUrl(tmdbId, isMovie);
+      const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
 
       document.getElementById('heroBg').style.backgroundImage = bgUrl ? `url('${bgUrl}')` : 'none';
       document.getElementById('heroTitle').innerText = title;
@@ -1433,7 +1430,7 @@
         const vote = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'HD';
         const tmdbId = item.id;
         
-        const playUrl = buildCleanPlayerUrl(tmdbId, isMovie);
+        const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
 
         const div = document.createElement('div');
         div.className = "liquid-glass-card group relative overflow-hidden flex flex-col cursor-pointer";
@@ -1580,15 +1577,64 @@
       });
     }
 
-    function playCustomUrl(url, encodedTitle, subtitle) {
+    // NAVEGAÇÃO PROXY NO PLAYER
+    async function playCustomUrl(url, encodedTitle, subtitle) {
       const title = decodeURIComponent(encodedTitle);
       document.getElementById('playerTitle').innerText = title;
+      document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
 
-      renderApiContent(url, subtitle || 'Player Principal');
+      // Captura o ID do TMDB da URL
+      const tmdbMatch = url.match(/\/(filme|serie)\/(\d+)/i);
       
+      if (tmdbMatch) {
+        const type = tmdbMatch[1];
+        const tmdbId = tmdbMatch[2];
+        showToast('Obtendo sinal limpo do servidor...');
+
+        try {
+          const res = await fetch(`${PROXY_URL}?type=${type}&id=${tmdbId}`);
+          const data = await res.json();
+
+          if (data.success && data.streamUrl) {
+            renderCleanPlayer(data.streamUrl);
+          } else {
+            renderCleanPlayer(url);
+          }
+        } catch (err) {
+          renderCleanPlayer(url);
+        }
+      } else {
+        renderCleanPlayer(url);
+      }
+
       const overlay = document.getElementById('playerOverlay');
       overlay.classList.replace('opacity-0', 'opacity-100');
       overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
+    }
+
+    function renderCleanPlayer(sourceUrl) {
+      const holder = document.getElementById('iframeHolder');
+      holder.innerHTML = '';
+
+      if (sourceUrl.includes('.m3u8') && Hls.isSupported()) {
+        const video = document.createElement('video');
+        video.className = "w-full h-full";
+        video.controls = true;
+        video.autoplay = true;
+
+        const hls = new Hls();
+        hls.loadSource(sourceUrl);
+        hls.attachMedia(video);
+
+        holder.appendChild(video);
+      } else {
+        const iframe = document.createElement('iframe');
+        iframe.src = sourceUrl;
+        iframe.className = "w-full h-full border-0";
+        iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
+        iframe.setAttribute('allowfullscreen', 'true');
+        holder.appendChild(iframe);
+      }
     }
 
     function playItem(id) {
@@ -1598,37 +1644,10 @@
       let playerUrl = item.apiUrl || '';
 
       if (!playerUrl && item.tmdbId) {
-        playerUrl = buildCleanPlayerUrl(item.tmdbId, item.type === 'Filme');
+        playerUrl = item.type === 'Filme' ? `https://superflixapi.quest/filme/${item.tmdbId}` : `https://superflixapi.quest/serie/${item.tmdbId}`;
       }
 
       playCustomUrl(playerUrl, encodeURIComponent(item.title), item.type);
-    }
-
-    // RENDERIZAÇÃO DO IFRAME
-    function renderApiContent(rawContent, subtitle) {
-      document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
-      const holder = document.getElementById('iframeHolder');
-      holder.innerHTML = '';
-
-      if (!rawContent) {
-        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-sm font-semibold">URL do Player não configurada.</div>`;
-        return;
-      }
-
-      let cleanUrl = rawContent;
-      if (cleanUrl.includes('src=')) {
-        const match = cleanUrl.match(/src=["']([^"']+)["']/i);
-        if (match && match[1]) cleanUrl = match[1];
-      }
-      cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
-
-      const iframe = document.createElement('iframe');
-      iframe.src = cleanUrl;
-      iframe.className = "w-full h-full border-0";
-      iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
-      iframe.setAttribute('allowfullscreen', 'true');
-      
-      holder.appendChild(iframe);
     }
 
     function closePlayer() {
@@ -1749,7 +1768,7 @@
           const poster = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '';
           const vote = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'HD';
           const tmdbId = item.id;
-          const playUrl = buildCleanPlayerUrl(tmdbId, isMovie);
+          const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
 
           const div = document.createElement('div');
           div.className = "flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl border border-zinc-700/80 bg-[#25283b] shadow-md w-full gap-3";
