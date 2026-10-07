@@ -650,7 +650,7 @@
     </div>
   </div>
 
-  <!-- PLAYER OVERLAY COM MÁSCARA CAPTURA-CLIQUE ANTI-ANÚNCIO -->
+  <!-- PLAYER OVERLAY -->
   <div id="playerOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col">
     <div id="playerHeader" class="absolute top-4 right-4 z-50 flex items-center gap-2 bg-black/60 border border-white/15 p-2 rounded-2xl shadow-2xl backdrop-blur-xl">
       <div class="hidden sm:block px-3 text-left">
@@ -664,14 +664,22 @@
       </button>
     </div>
 
-    <!-- CONTAINER DO PLAYER COM CAMADA CAPTURA-CLIQUE -->
-    <div class="w-full h-full relative">
-      <div id="clickShield" onclick="handleShieldClick(event)" class="absolute inset-0 z-40 bg-transparent cursor-pointer"></div>
-      <div id="iframeHolder" class="w-full h-full"></div>
-    </div>
+    <div id="iframeHolder" class="w-full h-full"></div>
   </div>
 
   <script>
+    // INTERCEPTADOR DE NOVAS ABAS DE ANÚNCIO DISPARADAS PELO PLAYER
+    let originalWindowOpen = window.open;
+    let isPlayerOpen = false;
+
+    window.open = function(url, target, features) {
+      if (isPlayerOpen) {
+        console.warn("Anúncio/Pop-under bloqueado durante a reprodução:", url);
+        return null; // Anula a abertura da aba de propaganda
+      }
+      return originalWindowOpen.apply(this, arguments);
+    };
+
     // PROTEÇÃO ANTI-INSPECIONAR
     document.addEventListener('contextmenu', (e) => e.preventDefault(), false);
     document.addEventListener('keydown', (e) => {
@@ -681,18 +689,6 @@
       if (ctrlOrCmd && (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))) { e.preventDefault(); return false; }
       if (ctrlOrCmd && (e.keyCode === 85 || e.keyCode === 83)) { e.preventDefault(); return false; }
     }, false);
-
-    // MÁSCARA TRANSPARENTE NEUTRALIZADORA DE POP-UPS DA API
-    function handleShieldClick(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      const shield = document.getElementById('clickShield');
-      if (shield) {
-        shield.classList.add('hidden');
-      }
-    }
 
     // MODAIS
     function openModal(id) {
@@ -1591,11 +1587,7 @@
       const title = decodeURIComponent(encodedTitle);
       document.getElementById('playerTitle').innerText = title;
 
-      // RECTIFICA A CAMADA DE MÁSCARA TRANSPARENTE
-      const shield = document.getElementById('clickShield');
-      if (shield) {
-        shield.classList.remove('hidden');
-      }
+      isPlayerOpen = true; // ATIVA O BLOQUEADOR DE JANELAS/ANÚNCIOS
 
       renderApiContent(url, subtitle || 'Player Principal');
       
@@ -1617,7 +1609,7 @@
       playCustomUrl(playerUrl, encodeURIComponent(item.title), item.type);
     }
 
-    // RENDERIZAÇÃO LIMPA E TOTALMENTE FUNCIONAL DO IFRAME
+    // RENDERIZAÇÃO DO IFRAME
     function renderApiContent(rawContent, subtitle) {
       document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
       const holder = document.getElementById('iframeHolder');
@@ -1645,6 +1637,7 @@
     }
 
     function closePlayer() {
+      isPlayerOpen = false; // DESATIVA O BLOQUEADOR AO FECHAR O PLAYER
       document.getElementById('iframeHolder').innerHTML = '';
       const overlay = document.getElementById('playerOverlay');
       overlay.classList.replace('opacity-100', 'opacity-0');
