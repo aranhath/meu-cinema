@@ -217,7 +217,7 @@
     <!-- MAIN BODY -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-8 space-y-8">
 
-      <!-- BARRA DE BUSCA GLOBAL ÚNICA (PESQUISA FILMES, SÉRIES, ANIMES E CANAIS DE TV) -->
+      <!-- BARRA DE BUSCA GLOBAL ÚNICA -->
       <div class="relative z-30">
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 text-sm"></i>
@@ -265,17 +265,30 @@
         </div>
       </div>
 
-      <!-- HERO BANNER (HOME) -->
-      <section id="heroSection" class="relative rounded-3xl overflow-hidden liquid-glass min-h-[280px] sm:min-h-[360px] flex items-end p-6 sm:p-10 border border-white/15 shadow-2xl">
+      <!-- HERO BANNER DINÂMICO / CARROSSEL ROTATIVO -->
+      <section id="heroSection" class="relative rounded-3xl overflow-hidden liquid-glass min-h-[300px] sm:min-h-[380px] flex items-end p-6 sm:p-10 border border-white/15 shadow-2xl group">
         <div id="heroBg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 opacity-45"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-[#08090c] via-[#08090c]/60 to-transparent"></div>
         
+        <!-- CONTROLES DO SLIDER -->
+        <button onclick="prevHeroSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-2xl bg-black/50 hover:bg-brand-500 border border-white/20 text-white flex items-center justify-center text-sm transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer shadow-lg">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button onclick="nextHeroSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-2xl bg-black/50 hover:bg-brand-500 border border-white/20 text-white flex items-center justify-center text-sm transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer shadow-lg">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
         <div class="relative z-10 max-w-2xl space-y-3">
-          <span id="heroBadge" class="px-3.5 py-1 rounded-xl bg-brand-500/20 text-brand-400 border border-brand-500/40 text-[11px] font-extrabold uppercase tracking-wider backdrop-blur-md">
-            Destaque em Alta
-          </span>
+          <div class="flex items-center gap-2">
+            <span id="heroBadge" class="px-3.5 py-1 rounded-xl bg-brand-500/20 text-brand-400 border border-brand-500/40 text-[11px] font-extrabold uppercase tracking-wider backdrop-blur-md">
+              Destaque em Alta
+            </span>
+            <span id="heroRating" class="px-2.5 py-0.5 rounded-lg bg-black/60 text-amber-400 text-xs font-bold border border-white/10">★ 8.5</span>
+          </div>
+
           <h2 id="heroTitle" class="text-2xl sm:text-4xl font-black text-white leading-tight">Carregando...</h2>
           <p id="heroOverview" class="text-xs sm:text-sm text-zinc-300 line-clamp-2 font-medium"></p>
+          
           <div class="flex items-center gap-3 pt-2">
             <button id="heroPlayBtn" onclick="" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-2xl shadow-xl shadow-brand-500/30 transition flex items-center gap-2 cursor-pointer">
               <i class="fa-solid fa-play"></i> Assistir Agora
@@ -285,6 +298,9 @@
             </button>
           </div>
         </div>
+
+        <!-- INDICADORES / BOLINHAS DO CARROSSEL -->
+        <div id="heroDots" class="absolute bottom-3 right-6 z-20 flex items-center gap-1.5"></div>
       </section>
 
       <!-- HOME SEÇÃO 1: EM ALTA NA SEMANA -->
@@ -293,6 +309,9 @@
           <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
             <i class="fa-solid fa-fire text-brand-500"></i> Em Alta na Semana
           </h2>
+          <button onclick="loadFullHomeData(true)" class="text-xs font-bold text-zinc-400 hover:text-white flex items-center gap-1 transition cursor-pointer">
+            <i class="fa-solid fa-rotate-right text-[10px]"></i> Atualizar Sugestões
+          </button>
         </div>
         <div id="gridTrending" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
       </section>
@@ -428,10 +447,10 @@
         </div>
       </section>
 
-      <!-- ABA DEDICADA: TV AO VIVO (OTIMIZADA, LEVE E SEM PISCA-PISCA) -->
+      <!-- ABA DEDICADA: TV AO VIVO -->
       <section id="sectionTv" class="hidden space-y-8">
         
-        <!-- SEÇÃO 1: JOGOS E EVENTOS ESPORTIVOS DO DIA (COMPLETAMENTE DINÂMICO) -->
+        <!-- SEÇÃO 1: JOGOS E EVENTOS ESPORTIVOS DO DIA -->
         <div id="sectionTvEventsWrapper" class="hidden space-y-3">
           <div class="flex items-center justify-between border-b border-white/10 pb-2">
             <h2 class="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -455,7 +474,7 @@
               </div>
             </div>
 
-            <!-- FILTROS OTIMIZADOS DA GRADE -->
+            <!-- FILTROS DA GRADE -->
             <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1" id="tvCategoryButtons">
               <button onclick="filterTvCategory('Todos', this)" class="genre-btn genre-btn-active px-4 py-2 rounded-2xl border border-white/10 text-xs font-bold transition whitespace-nowrap">
                 Todos os Canais
@@ -470,7 +489,6 @@
             </div>
           </div>
 
-          <!-- GRID VERTICAL DOS CARDS (SÓ EXIBE EPG SE O CANAL REALMENTE TIVER DADOS) -->
           <div id="gridTvChannels" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <div class="col-span-full text-center py-12 text-zinc-400 text-xs font-bold flex flex-col items-center gap-2">
               <i class="fa-solid fa-spinner animate-spin text-2xl text-rose-500"></i>
@@ -778,13 +796,17 @@
     let animePage = 1;
     let animeType = 'newest';
 
+    // SLIDER HERO DINÂMICO
+    let heroItems = [];
+    let currentHeroIndex = 0;
+    let heroTimer = null;
+
     // DADOS TV AO VIVO
     let tvChannelsList = [];
     let activeTvCategory = 'Todos';
 
     const TMDB_API_KEY = "15d2ea6d0dc1d476efbca3eba2b9bbfb";
 
-    // BASE DE BACKUP OFICIAL
     const FALLBACK_TV_CHANNELS = [
       { id: "globorj", name: "Globo RJ", category: "Abertos" },
       { id: "globosp", name: "Globo SP", category: "Abertos" },
@@ -993,36 +1015,108 @@
       }
     }
 
-    async function loadFullHomeData() {
+    // CARREGAMENTO DINÂMICO DE VERDADE NA HOME (ROTAÇÃO E BANNER AUTOMÁTICO)
+    async function loadFullHomeData(forceRandom = false) {
       try {
+        // PÁGINA ALEATÓRIA PARA RECOMENDAÇÕES DIVERSAS
+        const randomPageMovie = forceRandom ? Math.floor(Math.random() * 5) + 1 : 1;
+        const randomPageSeries = forceRandom ? Math.floor(Math.random() * 5) + 1 : 1;
+
+        // 1. Destaques em alta para o Slider do Banner
         const resTrend = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}&language=pt-BR`);
         const dataTrend = await resTrend.json();
         if (dataTrend.results && dataTrend.results.length > 0) {
-          setupHeroBanner(dataTrend.results[0]);
-          renderMovieCards('gridTrending', dataTrend.results.slice(1, 13), false);
+          heroItems = dataTrend.results.slice(0, 10);
+          setupHeroSlider();
+          renderMovieCards('gridTrending', dataTrend.results.slice(0, 12), false);
         }
 
-        const resHomeMovies = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`);
+        // 2. Filmes em alta na semana / cinema
+        const resHomeMovies = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=pt-BR&page=${randomPageMovie}`);
         const dataHomeMovies = await resHomeMovies.json();
         if (dataHomeMovies.results) {
           renderMovieCards('gridHomeMovies', dataHomeMovies.results.slice(0, 12), false, true);
         }
 
-        const resHomeSeries = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=1`);
+        // 3. Séries em destaque
+        const resHomeSeries = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${randomPageSeries}`);
         const dataHomeSeries = await resHomeSeries.json();
         if (dataHomeSeries.results) {
           renderMovieCards('gridHomeSeries', dataHomeSeries.results.slice(0, 12), false, false);
         }
 
-        const resHomeAnimes = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_original_language=ja&sort_by=popularity.desc&page=1`);
+        // 4. Animes populares
+        const resHomeAnimes = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_original_language=ja&sort_by=popularity.desc&page=${randomPageMovie}`);
         const dataHomeAnimes = await resHomeAnimes.json();
         if (dataHomeAnimes.results) {
           renderMovieCards('gridHomeAnimes', dataHomeAnimes.results.slice(0, 12), false, false);
         }
 
+        if (forceRandom) showToast('Sugestões da Home atualizadas!');
+
       } catch (err) {
         console.error("Erro ao carregar Home:", err);
       }
+    }
+
+    // CARROSSEL HERO AUTOMÁTICO DURAÇÃO 6S
+    function setupHeroSlider() {
+      clearInterval(heroTimer);
+      if (heroItems.length === 0) return;
+
+      currentHeroIndex = 0;
+      updateHeroDisplay();
+
+      // Rotação automática
+      heroTimer = setInterval(() => {
+        nextHeroSlide();
+      }, 6000);
+    }
+
+    function updateHeroDisplay() {
+      const item = heroItems[currentHeroIndex];
+      if (!item) return;
+
+      const title = item.title || item.name;
+      const overview = item.overview || 'Confira este incrível destaque em HD!';
+      const bgUrl = item.backdrop_path ? `https://image.tmdb.org/t/p/original${item.backdrop_path}` : '';
+      const isMovie = item.media_type === 'movie' || !item.first_air_date;
+      const rating = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : '★ 8.5';
+      const tmdbId = item.id;
+      const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
+
+      document.getElementById('heroBg').style.backgroundImage = bgUrl ? `url('${bgUrl}')` : 'none';
+      document.getElementById('heroTitle').innerText = title;
+      document.getElementById('heroOverview').innerText = overview;
+      document.getElementById('heroRating').innerText = rating;
+
+      document.getElementById('heroPlayBtn').onclick = () => playCustomUrl(playUrl, encodeURIComponent(title), isMovie ? 'Filme' : 'Série');
+      document.getElementById('heroSaveBtn').onclick = () => saveItemToCatalog(encodeURIComponent(title), isMovie ? 'Filme' : 'Série', `https://image.tmdb.org/t/p/w500${item.poster_path}`, playUrl, String(tmdbId), rating);
+
+      // Renderizar Bolinhas do Carrossel
+      const dotsContainer = document.getElementById('heroDots');
+      dotsContainer.innerHTML = '';
+      heroItems.forEach((_, idx) => {
+        const dot = document.createElement('button');
+        dot.className = `w-2.5 h-2.5 rounded-full transition-all cursor-pointer ${idx === currentHeroIndex ? 'bg-brand-500 w-6' : 'bg-white/40 hover:bg-white'}`;
+        dot.onclick = () => {
+          currentHeroIndex = idx;
+          updateHeroDisplay();
+        };
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    function nextHeroSlide() {
+      if (heroItems.length === 0) return;
+      currentHeroIndex = (currentHeroIndex + 1) % heroItems.length;
+      updateHeroDisplay();
+    }
+
+    function prevHeroSlide() {
+      if (heroItems.length === 0) return;
+      currentHeroIndex = (currentHeroIndex - 1 + heroItems.length) % heroItems.length;
+      updateHeroDisplay();
     }
 
     async function fetchMoviesData(replace = false) {
@@ -1123,7 +1217,7 @@
       fetchAnimesData(false);
     }
 
-    // 1. CARREGAMENTO DE EVENTOS AO VIVO (100% DINÂMICO)
+    // 1. CARREGAMENTO DE EVENTOS AO VIVO
     async function loadTvEventsData() {
       const wrapper = document.getElementById('sectionTvEventsWrapper');
       const grid = document.getElementById('gridTvEvents');
@@ -1192,7 +1286,7 @@
       });
     }
 
-    // 2. CARREGAMENTO DOS CANAIS DE TV COM BOTÃO DE SALVAR CLICÁVEL E APENAS EPG REAL
+    // 2. CARREGAMENTO DOS CANAIS DE TV
     async function loadTvChannelsData() {
       if (tvChannelsList.length === 0) {
         try {
@@ -1215,7 +1309,6 @@
               const channelId = item.id || item.slug || item.code;
               const imgUrl = item.logo || item.image || item.icon || item.logo_url || item.poster || item.img || null;
               
-              // APENAS PEGA INFORMAÇÃO SE TIVER REALMENTE NA API
               const epgCurrent = item.current_program || item.now || item.program_title || null;
               const epgNext1 = item.next_program || item.next || null;
 
@@ -1264,7 +1357,6 @@
         div.innerHTML = `
           <div class="aspect-[2/3] w-full bg-gradient-to-b from-zinc-950 via-[#12131f] to-black relative overflow-hidden rounded-t-2xl flex flex-col justify-between p-3" onclick="playCustomUrl('${playUrl}', '${encodeURIComponent(ch.name)}', 'TV ao Vivo')">
             
-            <!-- BADGE E BOTÃO SALVAR (COM Z-INDEX ALTO PARA PERMITIR CLIQUE SEM BLOQUEIO DO HOVER) -->
             <div class="flex items-center justify-between z-40 w-full relative">
               <span class="badge-capa text-[9px] font-black px-2 py-0.5 rounded-lg text-rose-400 border border-rose-500/30 uppercase">
                 AO VIVO
@@ -1275,7 +1367,6 @@
               </button>
             </div>
 
-            <!-- LOGO CENTRALIZADA -->
             <div class="flex-1 flex items-center justify-center my-2 relative z-10 p-2">
               ${ch.logo ? `
                 <img src="${ch.logo}" alt="${ch.name}" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" loading="lazy" class="max-h-16 max-w-[85%] object-contain filter drop-shadow-lg group-hover:scale-105 transition duration-300">
@@ -1289,7 +1380,6 @@
               `}
             </div>
 
-            <!-- EXIBIÇÃO DINÂMICA DE EPG (SÓ RENDERIZA SE EXISTIR DADO REAL) -->
             ${(ch.current || ch.next1) ? `
               <div class="bg-black/80 backdrop-blur-md rounded-xl p-2.5 border border-white/10 space-y-1.5 relative z-10 text-left">
                 ${ch.current ? `
@@ -1308,7 +1398,6 @@
               </div>
             ` : ''}
 
-            <!-- OVERLAY DE PLAY NO HOVER -->
             <div class="play-overlay opacity-0 absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 flex items-center justify-center z-20 pointer-events-none">
               <div class="w-12 h-12 rounded-2xl bg-rose-600 text-white flex items-center justify-center shadow-2xl shadow-rose-600/50 transform scale-90 group-hover:scale-100 transition duration-300 border border-white/20">
                 <i class="fa-solid fa-play text-sm ml-0.5"></i>
@@ -1317,7 +1406,6 @@
 
           </div>
 
-          <!-- NOME E CATEGORIA -->
           <div class="p-3 bg-black/40 rounded-b-2xl border-t border-white/10">
             <h4 class="font-bold text-xs text-white truncate group-hover:text-rose-400 transition">${ch.name}</h4>
             <p class="text-[10px] text-zinc-400 font-medium mt-0.5 truncate">${ch.category}</p>
@@ -1332,23 +1420,6 @@
       document.querySelectorAll('#tvCategoryButtons .genre-btn').forEach(b => b.classList.remove('genre-btn-active'));
       btn.classList.add('genre-btn-active');
       renderTvChannelsGrid(tvChannelsList);
-    }
-
-    function setupHeroBanner(item) {
-      const title = item.title || item.name;
-      const overview = item.overview || 'Confira este incrível título disponível em HD na plataforma!';
-      const bgUrl = item.backdrop_path ? `https://image.tmdb.org/t/p/original${item.backdrop_path}` : '';
-      const isMovie = item.media_type === 'movie' || !item.first_air_date;
-      
-      document.getElementById('heroBg').style.backgroundImage = bgUrl ? `url('${bgUrl}')` : 'none';
-      document.getElementById('heroTitle').innerText = title;
-      document.getElementById('heroOverview').innerText = overview;
-
-      const tmdbId = item.id;
-      const playUrl = isMovie ? `https://superflixapi.quest/filme/${tmdbId}` : `https://superflixapi.quest/serie/${tmdbId}`;
-
-      document.getElementById('heroPlayBtn').onclick = () => playCustomUrl(playUrl, title, isMovie ? 'Filme' : 'Série');
-      document.getElementById('heroSaveBtn').onclick = () => saveItemToCatalog(title, isMovie ? 'Filme' : 'Série', `https://image.tmdb.org/t/p/w500${item.poster_path}`, playUrl, String(tmdbId), `★ ${item.vote_average?.toFixed(1) || '8.5'}`);
     }
 
     function renderMovieCards(containerId, items, append = false, defaultIsMovie = true) {
