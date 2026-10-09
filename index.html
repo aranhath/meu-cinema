@@ -27,6 +27,9 @@
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
+  <!-- HLS.js Player para Mídia Limpa HLS / .m3u8 -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
   <!-- Firebase SDK (v9 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -668,6 +671,9 @@
   </div>
 
   <script>
+    // CONFIGURAÇÃO DO SEU BACKEND PROXY VERIFICADOR NO RENDER
+    const PROXY_URL = "https://rjflix-backend-verificador.onrender.com";
+
     // PROTEÇÃO ANTI-INSPECIONAR
     document.addEventListener('contextmenu', (e) => e.preventDefault(), false);
     document.addEventListener('keydown', (e) => {
@@ -1015,14 +1021,11 @@
       }
     }
 
-    // CARREGAMENTO DINÂMICO DE VERDADE NA HOME (ROTAÇÃO E BANNER AUTOMÁTICO)
     async function loadFullHomeData(forceRandom = false) {
       try {
-        // PÁGINA ALEATÓRIA PARA RECOMENDAÇÕES DIVERSAS
         const randomPageMovie = forceRandom ? Math.floor(Math.random() * 5) + 1 : 1;
         const randomPageSeries = forceRandom ? Math.floor(Math.random() * 5) + 1 : 1;
 
-        // 1. Destaques em alta para o Slider do Banner
         const resTrend = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}&language=pt-BR`);
         const dataTrend = await resTrend.json();
         if (dataTrend.results && dataTrend.results.length > 0) {
@@ -1031,21 +1034,18 @@
           renderMovieCards('gridTrending', dataTrend.results.slice(0, 12), false);
         }
 
-        // 2. Filmes em alta na semana / cinema
         const resHomeMovies = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=pt-BR&page=${randomPageMovie}`);
         const dataHomeMovies = await resHomeMovies.json();
         if (dataHomeMovies.results) {
           renderMovieCards('gridHomeMovies', dataHomeMovies.results.slice(0, 12), false, true);
         }
 
-        // 3. Séries em destaque
         const resHomeSeries = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${TMDB_API_KEY}&language=pt-BR&page=${randomPageSeries}`);
         const dataHomeSeries = await resHomeSeries.json();
         if (dataHomeSeries.results) {
           renderMovieCards('gridHomeSeries', dataHomeSeries.results.slice(0, 12), false, false);
         }
 
-        // 4. Animes populares
         const resHomeAnimes = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_original_language=ja&sort_by=popularity.desc&page=${randomPageMovie}`);
         const dataHomeAnimes = await resHomeAnimes.json();
         if (dataHomeAnimes.results) {
@@ -1059,7 +1059,6 @@
       }
     }
 
-    // CARROSSEL HERO AUTOMÁTICO DURAÇÃO 6S
     function setupHeroSlider() {
       clearInterval(heroTimer);
       if (heroItems.length === 0) return;
@@ -1067,7 +1066,6 @@
       currentHeroIndex = 0;
       updateHeroDisplay();
 
-      // Rotação automática
       heroTimer = setInterval(() => {
         nextHeroSlide();
       }, 6000);
@@ -1093,7 +1091,6 @@
       document.getElementById('heroPlayBtn').onclick = () => playCustomUrl(playUrl, encodeURIComponent(title), isMovie ? 'Filme' : 'Série');
       document.getElementById('heroSaveBtn').onclick = () => saveItemToCatalog(encodeURIComponent(title), isMovie ? 'Filme' : 'Série', `https://image.tmdb.org/t/p/w500${item.poster_path}`, playUrl, String(tmdbId), rating);
 
-      // Renderizar Bolinhas do Carrossel
       const dotsContainer = document.getElementById('heroDots');
       dotsContainer.innerHTML = '';
       heroItems.forEach((_, idx) => {
@@ -1217,7 +1214,6 @@
       fetchAnimesData(false);
     }
 
-    // 1. CARREGAMENTO DE EVENTOS AO VIVO
     async function loadTvEventsData() {
       const wrapper = document.getElementById('sectionTvEventsWrapper');
       const grid = document.getElementById('gridTvEvents');
@@ -1286,7 +1282,6 @@
       });
     }
 
-    // 2. CARREGAMENTO DOS CANAIS DE TV
     async function loadTvChannelsData() {
       if (tvChannelsList.length === 0) {
         try {
@@ -1582,15 +1577,68 @@
       });
     }
 
-    function playCustomUrl(url, encodedTitle, subtitle) {
+    // NAVEGAÇÃO COM VERIFICAÇÃO DE SINAL LIMPO NO PROXY (RENDER)
+    async function playCustomUrl(url, encodedTitle, subtitle) {
       const title = decodeURIComponent(encodedTitle);
       document.getElementById('playerTitle').innerText = title;
+      document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
 
-      renderApiContent(url, subtitle || 'Player Principal');
+      const tmdbMatch = url.match(/\/(filme|serie)\/(\d+)/i);
       
-      const overlay = document.getElementById('playerOverlay');
-      overlay.classList.replace('opacity-0', 'opacity-100');
-      overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
+      if (tmdbMatch) {
+        const type = tmdbMatch[1];
+        const tmdbId = tmdbMatch[2];
+        showToast('Verificando sinal limpo sem anúncios...');
+
+        try {
+          const res = await fetch(`${PROXY_URL}?type=${type}&id=${tmdbId}`);
+          const data = await res.json();
+
+          // SÓ ABRE SE O BACKEND CONFIRMAR O ARQUIVO DIRETO (.mp4 / .m3u8)
+          if (data.success && data.streamUrl) {
+            renderCleanPlayer(data.streamUrl);
+            const overlay = document.getElementById('playerOverlay');
+            overlay.classList.replace('opacity-0', 'opacity-100');
+            overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
+          } else {
+            // SE NÃO TIVER O VÍDEO LIMPO, NÃO ABRE O IFRAME NEM POP-UPS E EXIBE AVISO
+            showToast('Vídeo limpo sem anúncios indisponível para este título no momento.', 'error');
+          }
+        } catch (err) {
+          showToast('Servidor de verificação iniciando... aguarde alguns segundos.', 'error');
+        }
+      } else {
+        // Para canais de TV ao vivo ou mídias diretas
+        renderCleanPlayer(url);
+        const overlay = document.getElementById('playerOverlay');
+        overlay.classList.replace('opacity-0', 'opacity-100');
+        overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
+      }
+    }
+
+    function renderCleanPlayer(sourceUrl) {
+      const holder = document.getElementById('iframeHolder');
+      holder.innerHTML = '';
+
+      if (sourceUrl.includes('.m3u8') && Hls.isSupported()) {
+        const video = document.createElement('video');
+        video.className = "w-full h-full";
+        video.controls = true;
+        video.autoplay = true;
+
+        const hls = new Hls();
+        hls.loadSource(sourceUrl);
+        hls.attachMedia(video);
+
+        holder.appendChild(video);
+      } else {
+        const iframe = document.createElement('iframe');
+        iframe.src = sourceUrl;
+        iframe.className = "w-full h-full border-0";
+        iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
+        iframe.setAttribute('allowfullscreen', 'true');
+        holder.appendChild(iframe);
+      }
     }
 
     function playItem(id) {
@@ -1604,32 +1652,6 @@
       }
 
       playCustomUrl(playerUrl, encodeURIComponent(item.title), item.type);
-    }
-
-    function renderApiContent(rawContent, subtitle) {
-      document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
-      const holder = document.getElementById('iframeHolder');
-      holder.innerHTML = '';
-
-      if (!rawContent) {
-        holder.innerHTML = `<div class="w-full h-full flex items-center justify-center text-zinc-400 text-sm font-semibold">URL do Player não configurada.</div>`;
-        return;
-      }
-
-      let cleanUrl = rawContent;
-      if (cleanUrl.includes('src=')) {
-        const match = cleanUrl.match(/src=["']([^"']+)["']/i);
-        if (match && match[1]) cleanUrl = match[1];
-      }
-      cleanUrl = cleanUrl.replace(/^["']|["']$/g, '').trim();
-
-      const iframe = document.createElement('iframe');
-      iframe.src = cleanUrl;
-      iframe.className = "w-full h-full border-0";
-      iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
-      iframe.setAttribute('allowfullscreen', 'true');
-      
-      holder.appendChild(iframe);
     }
 
     function closePlayer() {
