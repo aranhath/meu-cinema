@@ -671,8 +671,8 @@
   </div>
 
   <script>
-    // CONFIGURAÇÃO DO SEU BACKEND PROXY VERIFICADOR NO RENDER
-    const PROXY_URL = "https://rjflix-backend-verificador.onrender.com";
+    // ENDEREÇO OFICIAL DO TEU BACKEND NO RENDER
+    const PROXY_URL = "https://rjflix-backend-verificador.onrender.com/api/extract";
 
     // PROTEÇÃO ANTI-INSPECIONAR
     document.addEventListener('contextmenu', (e) => e.preventDefault(), false);
@@ -1577,43 +1577,39 @@
       });
     }
 
-    // NAVEGAÇÃO REFORÇADA COM VERIFICAÇÃO DE SINAL LIMPO NO PROXY (RENDER)
+    // NAVEGAÇÃO COM VERIFICAÇÃO NO RENDER (COM TIMEOUT DE ACORDO DE SERVIDOR)
     async function playCustomUrl(url, encodedTitle, subtitle) {
       const title = decodeURIComponent(encodedTitle);
       document.getElementById('playerTitle').innerText = title;
       document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
 
-      // Captura qualquer número ID presente na URL (filmes, séries ou animes)
       const tmdbMatch = url.match(/\d+/);
       const tmdbId = tmdbMatch ? tmdbMatch[0] : null;
 
       if (tmdbId) {
-        showToast('Verificando sinal limpo... (aguarde caso o servidor esteja iniciando)');
+        showToast('Verificando sinal limpo... (pode levar 20s se o servidor estiver a iniciar)');
 
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 segundos de tolerance para o Render "acordar"
+          const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s para o Render acordar
 
           const res = await fetch(`${PROXY_URL}?type=filme&id=${tmdbId}`, { signal: controller.signal });
           clearTimeout(timeoutId);
 
           const data = await res.json();
 
-          // SÓ ABRE SE O BACKEND CONFIRMAR O ARQUIVO DIRETO (.mp4 / .m3u8)
           if (data.success && data.streamUrl) {
             renderCleanPlayer(data.streamUrl);
             const overlay = document.getElementById('playerOverlay');
             overlay.classList.replace('opacity-0', 'opacity-100');
             overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
           } else {
-            // BLOQUEIA A ABERTURA SE NÃO HOUVER MÍDIA LIMPA (0% DE ANÚNCIOS OU POP-UPS)
             showToast('Sinal limpo sem anúncios indisponível para este título no momento.', 'error');
           }
         } catch (err) {
-          showToast('O servidor de verificação está iniciando. Tente novamente em 15s.', 'error');
+          showToast('Servidor no Render estava inativo. Tente novamente agora que já iniciou.', 'error');
         }
       } else {
-        // Para canais de TV ao vivo com transmissões diretas HLS/m3u8
         if (url.includes('.m3u8') || url.includes('.mp4')) {
           renderCleanPlayer(url);
           const overlay = document.getElementById('playerOverlay');
