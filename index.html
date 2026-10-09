@@ -1577,21 +1577,26 @@
       });
     }
 
-    // NAVEGAÇÃO COM VERIFICAÇÃO DE SINAL LIMPO NO PROXY (RENDER)
+    // NAVEGAÇÃO REFORÇADA COM VERIFICAÇÃO DE SINAL LIMPO NO PROXY (RENDER)
     async function playCustomUrl(url, encodedTitle, subtitle) {
       const title = decodeURIComponent(encodedTitle);
       document.getElementById('playerTitle').innerText = title;
       document.getElementById('playerSubtitle').innerText = subtitle || 'Player Principal';
 
-      const tmdbMatch = url.match(/\/(filme|serie)\/(\d+)/i);
-      
-      if (tmdbMatch) {
-        const type = tmdbMatch[1];
-        const tmdbId = tmdbMatch[2];
-        showToast('Verificando sinal limpo sem anúncios...');
+      // Captura qualquer número ID presente na URL (filmes, séries ou animes)
+      const tmdbMatch = url.match(/\d+/);
+      const tmdbId = tmdbMatch ? tmdbMatch[0] : null;
+
+      if (tmdbId) {
+        showToast('Verificando sinal limpo... (aguarde caso o servidor esteja iniciando)');
 
         try {
-          const res = await fetch(`${PROXY_URL}?type=${type}&id=${tmdbId}`);
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 segundos de tolerance para o Render "acordar"
+
+          const res = await fetch(`${PROXY_URL}?type=filme&id=${tmdbId}`, { signal: controller.signal });
+          clearTimeout(timeoutId);
+
           const data = await res.json();
 
           // SÓ ABRE SE O BACKEND CONFIRMAR O ARQUIVO DIRETO (.mp4 / .m3u8)
@@ -1601,18 +1606,22 @@
             overlay.classList.replace('opacity-0', 'opacity-100');
             overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
           } else {
-            // SE NÃO TIVER O VÍDEO LIMPO, NÃO ABRE O IFRAME NEM POP-UPS E EXIBE AVISO
-            showToast('Vídeo limpo sem anúncios indisponível para este título no momento.', 'error');
+            // BLOQUEIA A ABERTURA SE NÃO HOUVER MÍDIA LIMPA (0% DE ANÚNCIOS OU POP-UPS)
+            showToast('Sinal limpo sem anúncios indisponível para este título no momento.', 'error');
           }
         } catch (err) {
-          showToast('Servidor de verificação iniciando... aguarde alguns segundos.', 'error');
+          showToast('O servidor de verificação está iniciando. Tente novamente em 15s.', 'error');
         }
       } else {
-        // Para canais de TV ao vivo ou mídias diretas
-        renderCleanPlayer(url);
-        const overlay = document.getElementById('playerOverlay');
-        overlay.classList.replace('opacity-0', 'opacity-100');
-        overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
+        // Para canais de TV ao vivo com transmissões diretas HLS/m3u8
+        if (url.includes('.m3u8') || url.includes('.mp4')) {
+          renderCleanPlayer(url);
+          const overlay = document.getElementById('playerOverlay');
+          overlay.classList.replace('opacity-0', 'opacity-100');
+          overlay.classList.replace('pointer-events-none', 'pointer-events-auto');
+        } else {
+          showToast('Mídia externa sem suporte a sinal limpo.', 'error');
+        }
       }
     }
 
